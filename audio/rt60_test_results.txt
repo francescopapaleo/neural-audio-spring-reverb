@@ -1,0 +1,11 @@
+Input #0, wav, from 'audio/vermona_retroverb_ir.wav':
+  Metadata:
+    artist          : Xavi Lizarraga
+    comment         : Vermona Retrover Impulse Response
+  Duration: 00:00:02.00, bitrate: 706 kb/s
+  Stream #0:0: Audio: pcm_s16le ([1][0][0][0] / 0x0001), 44100 Hz, 1 channels, s16, 705 kb/s
+
+python measure_rt60.py audio/vermona_retroverb_ir.wav --fs 44100 --decay_db 60 --plot --rt60_tgt 1.0
+
+The RT60 is 1788 ms
+
