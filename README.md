@@ -43,6 +43,7 @@ Some modifications have been made, preprocessing, cropping and training loop.
 
 ## Training_TCN_mod
 [code](training_TCN_mod.py)
+
 Learning rate schedule: 1:1.00e-03 -> 2800:1.00e-04 -> 3325:1.00e-05
 Loss: 7.914e-01 | : 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3500/3500 [09:58<00:00,  5.84it/s]
 
