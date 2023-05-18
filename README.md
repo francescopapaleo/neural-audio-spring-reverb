@@ -4,7 +4,9 @@ I created this repository and cloned it on the HPC, set up a working environment
 
 ## Measured the available samples from Steinmetz et al. :
 [measurement](/util/get_audio_leght.py)
+
 Audio file: acgtr_clean.wav, Length: 11.52 seconds, 508032 samples
+
 Audio file: acgtr_reverb.wav, Length: 11.52 seconds, 508032 samples
 
 
