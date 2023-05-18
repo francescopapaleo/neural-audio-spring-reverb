@@ -1,5 +1,12 @@
+import os
+
 # Folders
-DATASET = '/homedtic/fpapaleo/smc-spring-reverb/dataset_subset'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATASET = os.path.join(BASE_DIR, 'dataset')
+MODELS = os.path.join(BASE_DIR, 'models')
+RESULTS = os.path.join(BASE_DIR, 'results')
+
+LOCAL = '/Users/francescopapaleo/datasets/spring'
 
 # Training loop parameters
 cond_dim = 0

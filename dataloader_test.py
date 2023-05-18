@@ -1,27 +1,49 @@
-from dataloader_subset import DataLoader
+from dataloader import DataRetriever, SubsetGenerator, SubsetRetriever
 from config import *
 
 
-data_loader = DataLoader(DATASET)
-x_train, y_train, x_valid, y_valid, x_test, y_test = data_loader.load_data()
+# Load the data
+# data_retriever = DataRetriever(LOCAL)
+# x_train, y_train, x_valid, y_valid = data_retriever.retrieve_data()
 
+def test_classes():
+    # 1. Test DataRetriever class
+    data_folder = LOCAL  # Substitute with your actual folder path
+    retriever = DataRetriever(data_folder)
+    x_train, y_train, x_val_test, y_val_test = retriever.retrieve_data()
+    assert x_train is not None and y_train is not None and x_val_test is not None and y_val_test is not None
+    print('DataRetriever Test Passed')
 
-# # Iterate over the train_dataloader
-# for batch_idx, (input_data, output_data) in enumerate(train_dataloader):
-#     print(f"Batch {batch_idx}:")
-#     print(f"Input Data shape: {input_data.shape}")
-#     print(f"Output Data shape: {output_data.shape}")
-#     print()
+    # 2. Test SubsetGenerator class
+    subset_size = 18  # Substitute with the desired subset size
+    subset_generator = SubsetGenerator(data_folder, subset_size)
+    x_train_subset, y_train_subset, x_val_test_subset, y_val_test_subset = subset_generator.retrieve_subset()
+    assert len(x_train_subset) == subset_size and len(y_train_subset) == subset_size
+    assert len(x_val_test_subset) == subset_size // 2 and len(y_val_test_subset) == subset_size // 2
+    print('SubsetGenerator Test Passed')
 
-#     # You can break the loop after the first iteration to see just one batch
-#     break
+    # 3. Test SubsetRetriever class
+    subset_data_folder = 'dataset_subset'
+    subset_retriever = SubsetRetriever(subset_data_folder)
+    x_train_concat, y_train_concat, x_val_test_concat, y_val_test_concat = subset_retriever.retrieve_data(concatenate=True)
+    assert x_train_concat.shape[1] == len(x_train_subset) and y_train_concat.shape[1] == len(y_train_subset)
+    assert x_val_test_concat.shape[1] == len(x_val_test_subset) and y_val_test_concat.shape[1] == len(y_val_test_subset)
+    print('SubsetRetriever with Concatenation Test Passed')
 
-# # Iterate over the val_dataloader
-# for batch_idx, (input_data, output_data) in enumerate(val_dataloader):
-#     print(f"Batch {batch_idx}:")
-#     print(f"Input Data shape: {input_data.shape}")
-#     print(f"Output Data shape: {output_data.shape}")
-#     print()
+    x_train_no_concat, y_train_no_concat, x_val_test_no_concat, y_val_test_no_concat = subset_retriever.retrieve_data(concatenate=False)
+    assert x_train_no_concat.shape[0] == len(x_train_subset) and y_train_no_concat.shape[0] == len(y_train_subset)
+    assert x_val_test_no_concat.shape[0] == len(x_val_test_subset) and y_val_test_no_concat.shape[0] == len(y_val_test_subset)
+    print('SubsetRetriever without Concatenation Test Passed')
 
-#     # You can break the loop after the first iteration to see just one batch
-#     break
+# Run the tests
+# test_classes()
+
+# Load a subset of the data
+subset_retriever = SubsetRetriever('dataset_subset')
+x_train, y_train, x_test, y_test = subset_retriever.retrieve_data(concatenate=True)
+
+print(f'x', x_train.shape)
+print(f'y', y_train.shape)
+print()
+print(f'x', x_test.shape)
+print(f'y', y_test.shape)
