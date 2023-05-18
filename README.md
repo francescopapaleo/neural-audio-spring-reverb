@@ -18,10 +18,15 @@ Audio file: acgtr_reverb.wav, Length: 11.52 seconds, 508032 samples
 
 ## Current subset:
 Audio file: dry_train_subset.h5, Total Length: 34.00 seconds, 544000 samples
+
 Audio file: wet_train_subset.h5, Total Length: 34.00 seconds, 544000 samples
+
 Audio file: wet_val_subset.h5, Total Length: 4.00 seconds, 64000 samples
+
 Audio file: dry_val_subset.h5, Total Length: 4.00 seconds, 64000 samples
+
 Audio file: wet_test_subset.h5, Total Length: 4.00 seconds, 64000 samples
+
 Audio file: dry_test_subset.h5, Total Length: 4.00 seconds, 64000 samples
 
 - lenghts are different because the data is downsampled at 16KHz but the number of samples is the same
