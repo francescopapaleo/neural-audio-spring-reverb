@@ -14,7 +14,7 @@ kernel_size = 9
 n_blocks = 5
 dilation_growth = 10
 n_channels = 32
-n_iters = 2500
+n_iters = 50
 length = 88800
 lr = 0.001
 

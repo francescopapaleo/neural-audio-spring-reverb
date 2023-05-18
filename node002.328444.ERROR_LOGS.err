@@ -1,0 +1,7 @@
+/soft/easybuild/x86_64/software/Anaconda3/2020.02/bin/conda: line 3: import: command not found
+/soft/easybuild/x86_64/software/Anaconda3/2020.02/bin/conda: line 6: syntax error near unexpected token `sys.argv'
+/soft/easybuild/x86_64/software/Anaconda3/2020.02/bin/conda: line 6: `if len(sys.argv) > 1 and sys.argv[1].startswith('shell.') and sys.path and sys.path[0] == '':'
+Traceback (most recent call last):
+  File "train.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'

@@ -1,10 +1,7 @@
 from dataloader import DataRetriever, SubsetGenerator, SubsetRetriever
 from config import *
 
-
-# Load the data
-# data_retriever = DataRetriever(LOCAL)
-# x_train, y_train, x_valid, y_valid = data_retriever.retrieve_data()
+# This script tests the classes in dataloader.py
 
 def test_classes():
     # 1. Test DataRetriever class
@@ -22,7 +19,7 @@ def test_classes():
     assert len(x_val_test_subset) == subset_size // 2 and len(y_val_test_subset) == subset_size // 2
     print('SubsetGenerator Test Passed')
 
-    # 3. Test SubsetRetriever class
+    # 3. Test SubsetRetriever classn
     subset_data_folder = 'dataset_subset'
     subset_retriever = SubsetRetriever(subset_data_folder)
     x_train_concat, y_train_concat, x_val_test_concat, y_val_test_concat = subset_retriever.retrieve_data(concatenate=True)
@@ -47,3 +44,6 @@ print(f'y', y_train.shape)
 print()
 print(f'x', x_test.shape)
 print(f'y', y_test.shape)
+
+# Load tensors
+

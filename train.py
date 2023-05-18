@@ -1,6 +1,6 @@
 import torch
 import auraloss
-import numpy as np
+import numpy
 
 from tqdm import tqdm
 
@@ -8,15 +8,15 @@ from dataloader import SubsetRetriever
 from model import TCN, causal_crop
 from config import *
 
-# Expected data is a 2D array of shape (n_channels, n_samples)
+# Expects data is a 2D array of shape (n_channels, n_samples)
 
 # Load the subset
 subset_retriever = SubsetRetriever('dataset_subset')
-x_concatenated, y_concatenated, _ , _  = subset_retriever.retrieve_data(concatenate=True)
+x_train_concate, y_train_concate, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
 
-
-x_torch = torch.tensor(x_concatenated, dtype=torch.float32)
-y_torch = torch.tensor(y_concatenated, dtype=torch.float32)
+# Load tensors
+x_torch = torch.tensor(x_train_concate, dtype=torch.float32)
+y_torch = torch.tensor(y_train_concate, dtype=torch.float32)
 
 x = x_torch
 y = y_torch
@@ -127,4 +127,4 @@ for n in pbar:
 
 y_hat /= y_hat.abs().max()
 
-torch.save(model.state_dict(), 'model_weights.pth')
+torch.save(model.state_dict(), 'model_TCN_weights.pth')
