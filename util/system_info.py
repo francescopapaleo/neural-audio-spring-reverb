@@ -1,6 +1,7 @@
 import sys
 import platform
 import pkg_resources
+import torch
 
 # System information
 print("System Information:")
@@ -16,7 +17,11 @@ print("\nPython Version:")
 print(sys.version)
 
 # Installed modules
-print("\nInstalled Modules:")
-installed_packages = pkg_resources.working_set
-for package in installed_packages:
-    print(f"{package.project_name} {package.version}")
+# print("\nInstalled Modules:")
+# installed_packages = pkg_resources.working_set
+# for package in installed_packages:
+#     print(f"{package.project_name} {package.version}")
+
+# CUDA version
+print("\nCUDA Version:")
+print(torch.version.cuda)
