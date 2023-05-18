@@ -46,6 +46,8 @@ Loss: 7.914e-01 | : 100%|██████████████████�
 
 
 [parameters](config.py)
+
+
 After many trials and errors, with concatenation a way to train the original model without modifications in the training loop is achieved
 
 Learning rate schedule: 1:1.00e-03 -> 2800:1.00e-04 -> 3325:1.00e-05
