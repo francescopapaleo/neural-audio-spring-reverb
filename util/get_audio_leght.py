@@ -35,7 +35,7 @@ def main(audio_directory):
         # Check if the file is an audio file by looking at its extension
         if file_path.endswith(('.wav', '.flac', '.ogg', '.aiff', '.caf', '.h5')):
             total_length_seconds, total_length_samples = get_audio_length(file_path)
-            print(f'Audio file: {file_name}, Total Length: {total_length_seconds:.2f} seconds, {total_length_samples} samples')
+            print(f'File: {file_name}, Total Length: {total_length_seconds:.2f} seconds, {total_length_samples} samples')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Measure the length of audio files in a directory")

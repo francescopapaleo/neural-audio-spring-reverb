@@ -8,10 +8,14 @@ from dataloader import SubsetRetriever
 from model import TCN, causal_crop
 from config import *
 
+torch.cuda.empty_cache()
+
+print("### Training...")
+
 # Expects data is a 2D array of shape (n_channels, n_samples)
 
 # Load the subset
-subset_retriever = SubsetRetriever('dataset_subset')
+subset_retriever = SubsetRetriever(SUBSET)
 x_train_concate, y_train_concate, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
 
 # Load tensors
@@ -127,4 +131,8 @@ for n in pbar:
 
 y_hat /= y_hat.abs().max()
 
-torch.save(model.state_dict(), 'model_TCN_weights.pth')
+save_path = os.path.join(MODELS, model_trained)
+
+torch.save(model, save_path)
+
+print(f"Saved model to {model_trained}")

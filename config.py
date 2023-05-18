@@ -3,6 +3,7 @@ import os
 # Folders
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATASET = os.path.join(BASE_DIR, 'dataset')
+SUBSET = os.path.join(BASE_DIR, 'dataset_subset')
 MODELS = os.path.join(BASE_DIR, 'models')
 RESULTS = os.path.join(BASE_DIR, 'results')
 
@@ -24,3 +25,10 @@ sample_rate = 16000
 # Define input and output channels
 input_channels = 1
 output_channels = 1
+
+# Evaluation
+model_trained = "steinmetz_pretrained.pt"
+model_to_evaluate = "steinmetz_pretrained.pt"
+
+# Number of parts to split the test data into
+n_parts = 10

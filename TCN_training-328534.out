@@ -1,9 +1,0 @@
-node021
-Thu May 18 23:19:42 CEST 2023
-CUDA_VISIBLE_DEVICES = 0
-cudaDev = 0
-Thu May 18 23:19:43 CEST 2023
-Using CPU
-Parameters: 31.494 k
-Receptive field: 88889 samples or 5555.6 ms
-Learning rate schedule: 1:1.00e-03 -> 40:1.00e-04 -> 47:1.00e-05
