@@ -26,6 +26,8 @@ Audio file: dry_test_subset.h5, Total Length: 4.00 seconds, 64000 samples
 
 ## A dataloader is written with Pytorch
 [dataloader](dataloader_subset.py)
+
+
 [tests](dataloader_test.py)
 
 Even with the dataloader the model cannot be trained.
@@ -41,6 +43,8 @@ Loss: 7.914e-01 | : 100%|██████████████████�
 
 ## Training_TCN
 [code](training_TCN.py)
+
+
 [parameters](config.py)
 After many trials and errors, with concatenation a way to train the original model without modifications in the training loop is achieved
 
