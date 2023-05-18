@@ -6,56 +6,48 @@ import scipy
 
 from tqdm import tqdm
 
-from torch.utils.data import DataLoader
-from dataloader_subset import CustomH5Dataset, load_data
-from tcn_model import TCN, causal_crop
+from dataloader_subset import DataLoader
+from model_tcn import TCN, causal_crop
 from config import *
 
-# Load the dataset
-# train_dry_data_list, train_wet_data_list, val_dry_data_list, val_wet_data_list = load_data(DATASET)
+# Load the data
+data_loader = DataLoader(DATASET)
+x_train, y_train, x_valid, y_valid, _ , _ = data_loader.load_data('subset')
 
-# train_dataset = CustomH5Dataset(train_dry_data_list, train_wet_data_list)
-# val_dataset = CustomH5Dataset(val_dry_data_list, val_wet_data_list)
+# print(x_train.shape)
+# print(y_train.shape)
+# print(x_valid.shape)
+# print(y_valid.shape)
 
-# train_dataloader = DataLoader(train_dataset, batch_size=1, shuffle=True, num_workers=0)
-# val_dataloader = DataLoader(val_dataset, batch_size=1, shuffle=True, num_workers=0)
 
-# Load the h5 files
-with h5py.File('/homedtic/fpapaleo/smc-spring-reverb/dataset_subset/dry_train_subset.h5', 'r') as h5f:
-    x_data = h5f['Xtrain_subset'][:]
+# Concatenate
+x_concatenated = np.concatenate(x_train, axis=1)
+y_concatenated = np.concatenate(y_train, axis=1)
+################################################
+# # Concatenate audio data from the first five samples in samples_list
+# x_concat = np.concatenate([Xtrain[i, :, 0] for i in samples_list[:5]])
+# y_concat = np.concatenate([Ytrain_0[i, :, 0] for i in samples_list[:5]])
 
-with h5py.File('/homedtic/fpapaleo/smc-spring-reverb/dataset_subset/wet_train_subset.h5', 'r') as h5f:
-    y_data = h5f['Ytrain_0_subset'][:]
 
-# # Convert the data to PyTorch tensors
-# x_tensor = torch.tensor(x_data, dtype=torch.float32)
-# y_tensor = torch.tensor(y_data, dtype=torch.float32)
-
-# # Concatenate the tensors along the time (second) dimension
-# x_concat = torch.cat(tuple(x_tensor), dim=1)
-# y_concat = torch.cat(tuple(y_tensor), dim=1)
-
-# # Check the shape of the concatenated tensors
-# print("Concatenated x shape:", x_concat.shape)
-# print("Concatenated y shape:", y_concat.shape)
-
-x_concatenated = np.concatenate(x_data, axis=0)
-y_concatenated = np.concatenate(y_data, axis=0)
-
+# ./data/Xtrain.wav torch.Size([1, 35904000])
+# Convert to torch tensors
 x_torch = torch.tensor(x_concatenated, dtype=torch.float32)
 y_torch = torch.tensor(y_concatenated, dtype=torch.float32)
-
-print("Concatenated x shape:", x_torch.shape)
-print("Concatenated y shape:", y_torch.shape)
 
 x = x_torch
 y = y_torch
 
+print(x.shape)
+print(y.shape)
 
+# Use GPU if available
 if torch.cuda.is_available():
-  device = "cuda"
+    device = "cuda"
+    print("Using GPU")
 else:
-  device = "cpu"
+    device = "cpu"
+    print("Using CPU")
+
 
 # Reshape the audio
 x_batch = x.view(1, 1, -1)
@@ -64,7 +56,6 @@ c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
 
 _, x_ch, x_samp = x_batch.size()
 _, y_ch, y_samp = y_batch.size()
-
 
 # Instantiate the model
 model = TCN(
@@ -76,8 +67,12 @@ model = TCN(
     dilation_growth=dilation_growth, 
     n_channels=n_channels)
 
+# Receptive field and number of parameters
 rf = model.compute_receptive_field()
 params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+print(f"Parameters: {params*1e-3:0.3f} k")
+print(f"Receptive field: {rf} samples or {(rf/sample_rate)*1e3:0.1f} ms")
 
 # Loss function
 loss_fn = auraloss.freq.MultiResolutionSTFTLoss(

@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from torch.utils.data import DataLoader
 from dataloader_subset import CustomH5Dataset, load_data
-from tcn_model import TCN, causal_crop
+from model_tcn import TCN, causal_crop
 from config import *
 
 

@@ -1,0 +1,3 @@
+Parameters: 31.494 k
+Receptive field: 88889 samples or 5555.6 ms
+Learning rate schedule: 1:1.00e-03 -> 2000:1.00e-04 -> 2375:1.00e-05

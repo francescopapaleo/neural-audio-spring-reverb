@@ -1,49 +1,30 @@
-import os
 import h5py
 import numpy as np
-import torch
-from torch.utils.data import Dataset, DataLoader
+import os
 
-class CustomH5Dataset(Dataset):
-    def __init__(self, input_data_list, output_data_list):
-        self.input_data_list = input_data_list
-        self.output_data_list = output_data_list
+class DataLoader:
+    def __init__(self, data_folder):
+        self.data_folder = data_folder
 
-    def __len__(self):
-        return len(self.input_data_list)
+    def load_data(self, dataset_name):
+        file_list = [f for f in os.listdir(self.data_folder) if f.endswith('.h5') and dataset_name in f]
+        data_list = []
 
-    def __getitem__(self, idx):
-        input_data = self.input_data_list[idx]
-        output_data = self.output_data_list[idx]
-        
-        # Reshape the input and output data
-        input_data = input_data.squeeze(-1)
-        output_data = output_data.squeeze(-1)
+        for file_name in file_list:
+            file_path = os.path.join(self.data_folder, file_name)
+            with h5py.File(file_path, 'r') as f:
+                dataset_key = list(f.keys())[0]  # assumes only one dataset per file
+                data = f[dataset_key][:]
+                data_list.append(data)
 
-        return input_data, output_data
+        return data_list
 
-def load_data(h5_data_path):
-    train_dry_data_list = []
-    train_wet_data_list = []
-    val_dry_data_list = []
-    val_wet_data_list = []
+    def get_datasets(self):
+        x_train = self.load_data('Xtrain_subset')
+        y_train = self.load_data('Ytrain_0_subset')
+        x_valid = self.load_data('Xvalidation_subset')
+        y_valid = self.load_data('Yvalidation_0_subset')
+        x_test = self.load_data('Xtest_subset')
+        y_test = self.load_data('Ytest_0_subset')
 
-    for file_name in os.listdir(h5_data_path):
-        if file_name.endswith('.h5'):
-            with h5py.File(os.path.join(h5_data_path, file_name), 'r') as f:
-                for dataset_name in f.keys():
-                    data = torch.from_numpy(np.array(f[dataset_name]))
-
-                    if 'train' in file_name:
-                        if 'dry' in file_name:
-                            train_dry_data_list.append(data)
-                        elif 'wet' in file_name:
-                            train_wet_data_list.append(data)
-                    elif 'val' in file_name or 'validation' in file_name:
-                        if 'dry' in file_name:
-                            val_dry_data_list.append(data)
-                        elif 'wet' in file_name:
-                            val_wet_data_list.append(data)
-
-    return train_dry_data_list, train_wet_data_list, val_dry_data_list, val_wet_data_list
-
+        return x_train, y_train, x_valid, y_valid, x_test, y_test

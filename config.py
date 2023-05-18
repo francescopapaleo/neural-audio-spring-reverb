@@ -2,13 +2,13 @@
 DATASET = '/homedtic/fpapaleo/smc-spring-reverb/dataset_subset'
 
 # Training loop parameters
-cond_dim = 2
-kernel_size = 7 # Change this value to a smaller number
+cond_dim = 0
+kernel_size = 9
 n_blocks = 5
-dilation_growth = 8
-n_channels = 16
-n_iters = 3500
-length = 160000
+dilation_growth = 10
+n_channels = 32
+n_iters = 2500
+length = 88800
 lr = 0.001
 
 # Define sample rate
