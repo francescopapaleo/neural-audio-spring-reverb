@@ -27,3 +27,10 @@ print(sys.version)
 # CUDA version
 print("\nCUDA Version:")
 print(torch.version.cuda)
+
+if torch.cuda.is_available():
+    device = "cuda"
+    print("Using GPU")
+else:
+    device = "cpu"
+    print("Using CPU")

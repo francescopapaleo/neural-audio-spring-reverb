@@ -1,10 +1,10 @@
 import torch
-import scipy
 import numpy as np
 
 from model import TCN, causal_crop
 from dataloader import SubsetRetriever
 from config import *
+from plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrum, get_spectrogram, plot_spectrogram
 
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -45,7 +45,7 @@ model = TCN(
     dilation_growth=dilation_growth, 
     n_channels=n_channels)
 
-load_this_model = os.path.join(MODELS, model_to_evaluate)
+load_this_model = os.path.join(MODELS, model_for_prediction)
 
 model = torch.load(load_this_model)
 model.eval()
@@ -68,12 +68,28 @@ error = torch.sum(torch.pow(y_pred - y_pred, 2))
 signal = torch.sum(torch.pow(y, 2))
 esr = error / (signal + 1e-10)
 
-# Save the audio
-torchaudio.save(os.path.join(AUDIO, "x.wav"), x, sample_rate)
-torchaudio.save(os.path.join(AUDIO, "y_pred.wav"), y_pred, sample_rate)
-torchaudio.save(os.path.join(AUDIO, "y.wav"), y, sample_rate)
-
-# Print results
 print(str(model_to_evaluate))
 print(f"Average MSE: {mse}")
 print(f"Average ESR: {esr}")
+print("")
+
+print("Saving audio files")
+torchaudio.save(os.path.join(AUDIO, "x.wav"), x, sample_rate)
+torchaudio.save(os.path.join(AUDIO, "y_pred.wav"), y_pred, sample_rate)
+torchaudio.save(os.path.join(AUDIO, "y_.wav"), y, sample_rate)
+
+print("Plotting the results")
+plot_compare_waveform(y[0], y_pred[0], sample_rate)
+plot_zoom_waveform(y[0], y_pred[0], sample_rate, 0.5, 0.6)
+# plot_compare_spectrum(y[0], y_pred[0], x[0], sample_rate)
+
+# Let's assume 'y', 'y_pred', and 'x' are your waveforms
+# Ensure they are in the format [channel, time], where channel is 1 for mono audio
+y_spec = get_spectrogram(y)
+y_pred_spec = get_spectrogram(y_pred)
+x_spec = get_spectrogram(x)
+
+# Plot the spectrograms
+plot_spectrogram(y_spec, title="Spectrogram of y")
+plot_spectrogram(y_pred_spec, title="Spectrogram of y_pred")
+plot_spectrogram(x_spec, title="Spectrogram of x")

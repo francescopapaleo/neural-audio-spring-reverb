@@ -1,5 +1,4 @@
 import torch
-import scipy
 import numpy as np
 
 from model import TCN, causal_crop
@@ -9,8 +8,7 @@ from config import *
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
-print("")
-print("### Evaluation...")
+print("### Evaluation started...")
 
 # Use GPU if available
 if torch.cuda.is_available():
@@ -23,19 +21,14 @@ else:
 print("")
 print(f"Name: {model_to_evaluate}")
 
-# Expects data is a 2D array of shape (n_channels, n_samples)
-
 # Load the subset
 subset_retriever = SubsetRetriever(SUBSET)
 _, _, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
 
 # Load tensors
-x_torch = torch.tensor(x_test_concate, dtype=torch.float32)
-y_torch = torch.tensor(y_test_concate, dtype=torch.float32)
+x = torch.tensor(x_test_concate, dtype=torch.float32)
+y = torch.tensor(y_test_concate, dtype=torch.float32)
 c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
-
-x = x_torch
-y = y_torch
 
 # Instantiate the model
 model = TCN(
@@ -47,8 +40,8 @@ model = TCN(
     dilation_growth=dilation_growth, 
     n_channels=n_channels)
 
+# Load the trained model to evaluate
 load_this_model = os.path.join(MODELS, model_to_evaluate)
-
 model = torch.load(load_this_model)
 model.eval()
 
@@ -75,12 +68,13 @@ esr = error / (signal + 1e-10)
 print(f"ESR: {esr.item()}")
 
 print("")
-print("### Average Evaluation")
+print("### Evaluation by chunks...")
 
-# Split the data
+# Creating n chunks
 x_parts = torch.chunk(x_pad, n_parts)
 y_parts = torch.chunk(y, n_parts)
 
+# Mean squared error
 mse = torch.nn.MSELoss()
 total_mse = 0
 total_esr = 0

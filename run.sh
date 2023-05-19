@@ -6,7 +6,7 @@
 #SBATCH --mem=16g
 #SBATCH --time=8:00
 #SBATCH -o %N.%J.OUTPUT.out
-#SBATCH -e %N.%J.ERROR_LOGS.err
+#SBATCH -e %N.%J.ERROR.err
 
 module load CUDA/11.4.3
 
@@ -18,4 +18,4 @@ eval "$(conda shell.bash hook)"
 conda activate jupyter
 
 
-python /homedtic/fpapaleo/smc-spring-reverb/util/system_info.py
+python training.py
