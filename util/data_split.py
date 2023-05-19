@@ -13,7 +13,6 @@ with h5py.File(os.path.join(DATASET,'wet_train_subset.h5'), 'r') as f:
     # Print the list of datasets in the file
     print(list(f.keys()))
 
-
 with h5py.File(os.path.join(DATASET,'dry_val_subset.h5'), 'r') as f:
     # Print the list of datasets in the file
     print(list(f.keys()))

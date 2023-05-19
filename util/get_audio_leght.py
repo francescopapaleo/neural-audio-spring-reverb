@@ -3,6 +3,8 @@ import os
 import argparse
 import h5py
 
+# Function to get the length of all audio files in a directory
+
 def get_audio_length(file_path):
     if file_path.endswith(('.h5')):
         with h5py.File(file_path, 'r') as f:

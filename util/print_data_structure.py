@@ -8,7 +8,7 @@ def print_structure(group, indent=""):
             print(f'{indent}- Group: {key}')
             print_structure(value, indent + '  ')
         else:
-            print(f'{indent}- Dataset: {key}, Shape: {value.shape}, Dtype: {value.dtype}')
+            print(f'{indent}- Key: {key}, Shape: {value.shape}, Dtype: {value.dtype}')
             if len(value.attrs) > 0:
                 print(f'{indent}  Attributes:')
                 for attr_key, attr_value in value.attrs.items():
@@ -35,6 +35,8 @@ def main(directory_path):
                 print(f'Inspecting file: {file_name}')
                 print_structure(f)
                 print('')
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Print the structure of HDF5 files in a directory")

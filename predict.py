@@ -8,10 +8,10 @@ from config import *
 
 import torch.nn as nn
 import matplotlib.pyplot as plt
+import torchaudio
 
 print("")
-print("# Evaluating...")
-print("chunks: " + str(n_parts))
+print("# Predicting on new data")
 
 # Use GPU if available
 if torch.cuda.is_available():
@@ -47,7 +47,7 @@ model = TCN(
 
 load_this_model = os.path.join(MODELS, model_to_evaluate)
 
-model.load_state_dict(torch.load(load_this_model))
+model = torch.load(load_this_model)
 model.eval()
 
 # Receptive field
@@ -56,33 +56,24 @@ rf = model.compute_receptive_field()
 # Pad the input signal
 x_pad = torch.nn.functional.pad(x, (rf-1, 0))
 
-# Split the data
-x_parts = torch.chunk(x_pad, n_parts)
-y_parts = torch.chunk(y, n_parts)
-
-mse = torch.nn.MSELoss()
-total_mse = 0
-total_esr = 0
-
-for x_part, y_part in zip(x_parts, y_parts):
-    with torch.no_grad():
-        y_pred = model(x_part, c)
+with torch.no_grad():
+    y_pred = model(x_pad, c)
     
-    # Mean squared error
-    metric = mse(y_pred, y_part)
-    total_mse += metric.item()
+# Mean squared error
+mse = torch.nn.MSELoss()
+mse = mse(y_pred, y)
 
-    # Error to signal 
-    error = torch.sum(torch.pow(y_part - y_pred, 2))
-    signal = torch.sum(torch.pow(y_part, 2))
-    esr = error / (signal + 1e-10)
-    total_esr += esr.item()
+# Error to signal 
+error = torch.sum(torch.pow(y_pred - y_pred, 2))
+signal = torch.sum(torch.pow(y, 2))
+esr = error / (signal + 1e-10)
 
-# Average metrics over all parts
-average_mse = total_mse / n_parts
-average_esr = total_esr / n_parts
+# Save the audio
+torchaudio.save(os.path.join(AUDIO, "x.wav"), x, sample_rate)
+torchaudio.save(os.path.join(AUDIO, "y_pred.wav"), y_pred, sample_rate)
+torchaudio.save(os.path.join(AUDIO, "y.wav"), y, sample_rate)
 
 # Print results
 print(str(model_to_evaluate))
-print(f"Average MSE: {average_mse}")
-print(f"Average ESR: {average_esr}")
+print(f"Average MSE: {mse}")
+print(f"Average ESR: {esr}")

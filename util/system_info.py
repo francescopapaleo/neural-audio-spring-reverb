@@ -1,3 +1,5 @@
+#!/homedtic/fpapaleo/.conda/envs jupyter
+
 import sys
 import platform
 import pkg_resources

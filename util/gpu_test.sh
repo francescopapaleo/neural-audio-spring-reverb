@@ -18,4 +18,4 @@ eval "$(conda shell.bash hook)"
 conda activate jupyter
 
 
-python /homedtic/fpapaleo/smc-spring-reverb/util/system_info.py
+python system_info.py

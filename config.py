@@ -2,8 +2,11 @@ import os
 
 # Folders
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 DATASET = os.path.join(BASE_DIR, 'dataset')
 SUBSET = os.path.join(BASE_DIR, 'dataset_subset')
+
+AUDIO = os.path.join(BASE_DIR, 'audio')
 MODELS = os.path.join(BASE_DIR, 'models')
 RESULTS = os.path.join(BASE_DIR, 'results')
 
@@ -27,8 +30,9 @@ input_channels = 1
 output_channels = 1
 
 # Evaluation
-model_trained = "steinmetz_pretrained.pt"
-model_to_evaluate = "steinmetz_pretrained.pt"
+model_trained = "model_TCN_02.pth"
+
+model_to_evaluate = "model_TCN_01.pt"
 
 # Number of parts to split the test data into
 n_parts = 10
