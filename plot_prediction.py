@@ -5,24 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
 
-def visualize_samples(x, y, fs=sample_rate):
-    fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
-
-    # Display the waveform
-    ax[0].plot(x)
-    ax[0].set_title('Waveform')
-    ax[0].set_xlabel('Sample Index')
-    ax[0].set_ylabel('Amplitude')
-
-    # Compute and display the spectrogram
-    f, t, Sxx = spectrogram(y, fs)
-    ax[1].pcolormesh(t, f, 10 * np.log10(Sxx))
-    ax[1].set_title('Spectrogram')
-    ax[1].set_xlabel('Time [s]')
-    ax[1].set_ylabel('Frequency [Hz]')
-
-    plt.tight_layout()
-    plt.savefig
+import torchaudio.transforms as T
+import torch
 
 
 def plot_compare_waveform(y, y_pred, fs=sample_rate):
@@ -36,7 +20,7 @@ def plot_compare_waveform(y, y_pred, fs=sample_rate):
     fs : int, optional
         The sampling frequency (default to 1, i.e., samples).'''
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 10))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(y_pred, alpha=0.7, label='Prediction', color='red')
 
@@ -80,7 +64,7 @@ def plot_zoom_waveform(y, y_pred, fs=sample_rate, t_start=None, t_end=None):
     else:
         i_end = len(t)
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 10))
+    fig, ax = plt.subplots(nrows=1, ncols=1)
 
     ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
@@ -97,36 +81,6 @@ def plot_zoom_waveform(y, y_pred, fs=sample_rate, t_start=None, t_end=None):
 
     plt.show()
 
-
-def plot_compare_spectrum(y, y_pred, x, fs=sample_rate):
-    fig, axs = plt.subplots(3, 1, figsize=(10, 15))
-    epsilon = 1e-10  # add a small constant to avoid log(0)
-
-    axs[0].specgram(y, NFFT=2048, Fs=fs, noverlap=1024, cmap='hot')
-    axs[0].set_title('Spectrogram y')
-    axs[0].set_xlabel('Time [s]')
-    axs[0].set_ylabel('Frequency [Hz]')
-    
-    axs[1].specgram(y_pred, NFFT=2048, Fs=fs, noverlap=1024, cmap='hot')
-    axs[1].set_title('Spectrogram y_pred')
-    axs[1].set_xlabel('Time [s]')
-    axs[1].set_ylabel('Frequency [Hz]')
-    
-    axs[2].specgram(x+epsilon, NFFT=2048, Fs=fs, noverlap=1024, cmap='hot')
-    axs[2].set_title('Spectrogram x')
-    axs[2].set_xlabel('Time [s]')
-    axs[2].set_ylabel('Frequency [Hz]')
-
-    plt.tight_layout()
-     # Ensure RESULTS directory exists
-    Path(RESULTS).mkdir(parents=True, exist_ok=True)
-    plt.savefig(Path(RESULTS) / 'spectrogram.png')
-
-    plt.show()
-
-import torchaudio.transforms as T
-import matplotlib.pyplot as plt
-import torch
 
 def get_spectrogram(
     waveform,
@@ -145,14 +99,21 @@ def get_spectrogram(
     )
     return spectrogram(waveform)
 
-def plot_spectrogram(spec, title=None, ylabel="freq_bin", aspect="auto", xmax=None):
-    fig, axs = plt.subplots(1, 1)
-    axs.set_title(title or "Spectrogram (db)")
-    axs.set_ylabel(ylabel)
-    axs.set_xlabel("frame")
-    im = axs.imshow(torch.log10(spec[0]), origin="lower", aspect=aspect, cmap='hot')
-    if xmax:
-        axs.set_xlim((0, xmax))
-    fig.colorbar(im, ax=axs)
-    plt.show(block=False)
 
+def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'Title3'], ylabel="freq_bin", aspect="auto", xmax=None):
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5)) # 1 row, 3 columns
+
+    for idx, spec in enumerate([spec1, spec2, spec3]):
+        axs[idx].set_title(titles[idx])
+        axs[idx].set_ylabel(ylabel)
+        axs[idx].set_xlabel("frame")
+        im = axs[idx].imshow(torch.log10(spec[0]), origin="lower", aspect=aspect, cmap='hot')
+        if xmax:
+            axs[idx].set_xlim((0, xmax))
+        fig.colorbar(im, ax=axs[idx])
+
+    # Ensure RESULTS directory exists
+    Path(RESULTS).mkdir(parents=True, exist_ok=True)
+    plt.tight_layout()
+    plt.savefig(Path(RESULTS) / 'spectrogram.png')
+    plt.show()

@@ -1,14 +1,13 @@
+from config import *
+
 import torch
+import torchaudio
+
 import numpy as np
 
 from model import TCN, causal_crop
 from dataloader import SubsetRetriever
-from config import *
-from plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrum, get_spectrogram, plot_spectrogram
-
-import torch.nn as nn
-import matplotlib.pyplot as plt
-import torchaudio
+from plot_prediction import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
 
 print("")
 print("# Predicting on new data")
@@ -64,24 +63,31 @@ mse = torch.nn.MSELoss()
 mse = mse(y_pred, y)
 
 # Error to signal 
-error = torch.sum(torch.pow(y_pred - y_pred, 2))
-signal = torch.sum(torch.pow(y, 2))
-esr = error / (signal + 1e-10)
+error_mean = torch.mean((y_pred - y) ** 2)
+signal_mean = torch.mean(y ** 2)
+esr_mean = error_mean / (signal_mean + 1e-10)
+
+mse_sum = torch.nn.MSELoss(reduction='sum')
+error_sum = mse_sum(y_pred, y)
+signal_sum = mse_sum(y, torch.zeros_like(y))
+esr_sum = error_sum / (signal_sum + 1e-10)
 
 print(str(model_to_evaluate))
-print(f"Average MSE: {mse}")
-print(f"Average ESR: {esr}")
+print(f"Mean Squared Error: {mse}")
+print(f"Error-to-Signal Ratio (mean): {esr_mean}")
+print(f"Error-to-Signal Ratio (sum): {esr_sum}")
 print("")
 
 print("Saving audio files")
+print("")
 torchaudio.save(os.path.join(AUDIO, "x.wav"), x, sample_rate)
 torchaudio.save(os.path.join(AUDIO, "y_pred.wav"), y_pred, sample_rate)
 torchaudio.save(os.path.join(AUDIO, "y_.wav"), y, sample_rate)
 
 print("Plotting the results")
+print("")
 plot_compare_waveform(y[0], y_pred[0], sample_rate)
 plot_zoom_waveform(y[0], y_pred[0], sample_rate, 0.5, 0.6)
-# plot_compare_spectrum(y[0], y_pred[0], x[0], sample_rate)
 
 # Let's assume 'y', 'y_pred', and 'x' are your waveforms
 # Ensure they are in the format [channel, time], where channel is 1 for mono audio
@@ -90,6 +96,4 @@ y_pred_spec = get_spectrogram(y_pred)
 x_spec = get_spectrogram(x)
 
 # Plot the spectrograms
-plot_spectrogram(y_spec, title="Spectrogram of y")
-plot_spectrogram(y_pred_spec, title="Spectrogram of y_pred")
-plot_spectrogram(x_spec, title="Spectrogram of x")
+plot_compare_spectrogram(y_spec, y_pred_spec, x_spec, titles=["Spectrogram of y", "Spectrogram of y_pred", "Spectrogram of x"])
