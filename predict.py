@@ -78,6 +78,13 @@ print(f"Error-to-Signal Ratio (mean): {esr_mean}")
 print(f"Error-to-Signal Ratio (sum): {esr_sum}")
 print("")
 
+# Error to signal 
+error = torch.sum(torch.pow(y_pred - y, 2))
+signal = torch.sum(torch.pow(y, 2))
+esr = error / (signal + 1e-10)
+
+print(f"Error-to-Signal Ratio: {esr}")
+
 print("Saving audio files")
 print("")
 torchaudio.save(os.path.join(AUDIO, "x.wav"), x, sample_rate)

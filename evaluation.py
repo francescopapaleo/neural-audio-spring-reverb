@@ -67,6 +67,23 @@ esr = error / (signal + 1e-10)
 
 print(f"ESR: {esr.item()}")
 
+# Error to signal 
+error_mean = torch.mean((y_pred - y) ** 2)
+signal_mean = torch.mean(y ** 2)
+esr_mean = error_mean / (signal_mean + 1e-10)
+
+mse_sum = torch.nn.MSELoss(reduction='sum')
+error_sum = mse_sum(y_pred, y)
+signal_sum = mse_sum(y, torch.zeros_like(y))
+esr_sum = error_sum / (signal_sum + 1e-10)
+
+print(str(model_to_evaluate))
+print(f"Mean Squared Error: {mse}")
+print(f"Error-to-Signal Ratio (mean): {esr_mean}")
+print(f"Error-to-Signal Ratio (sum): {esr_sum}")
+print("")
+
+
 print("")
 print("### Evaluation by chunks...")
 

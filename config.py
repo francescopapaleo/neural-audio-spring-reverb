@@ -28,14 +28,15 @@ sample_rate = 16000
 input_channels = 1
 output_channels = 1
 
-# Model file name
-model_trained = "model_TCN_02.pt"
+# Trained model filename
+model_trained = "model_TCN_00.pt"
 
-# Evaluation parameters
-model_to_evaluate = "model_TCN_01.pt"
+# Evalute model
+model_to_evaluate = "model_TCN_00.pt"
+
+# Prediction
+model_for_prediction = "model_TCN_00.pt"
 
 # Number of parts to split the test data into
 n_parts = 10
 
-# Prediction
-model_for_prediction = "model_TCN_01.pt"
