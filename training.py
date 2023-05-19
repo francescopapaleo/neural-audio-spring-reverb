@@ -14,18 +14,11 @@ from dataloader import SubsetRetriever
 from model import TCN, causal_crop
 from config import *
 
-print("### Training started...")
+print("## Training started...")
 
 # Use GPU if available
-if torch.cuda.is_available():
-    device = "cuda"
-    torch.cuda.empty_cache()
-else:
-    device = "cpu"
-
-print(f"Using: {device}")
-
-# Expected: 2D array of shape (n_channels, n_samples)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
 
 # Load the subset
 subset_retriever = SubsetRetriever(SUBSET)

@@ -7,26 +7,20 @@ import numpy as np
 
 from model import TCN, causal_crop
 from dataloader import SubsetRetriever
-from plot_prediction import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
+from plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
 
 print("")
-print("# Predicting on new data")
+print("## Inference started...")
 
 # Use GPU if available
-if torch.cuda.is_available():
-    device = "cuda"
-    print("Using GPU")
-else:
-    device = "cpu"
-    print("Using CPU")
-
-# Expects data is a 2D array of shape (n_channels, n_samples)
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
 
 # Load the subset
 subset_retriever = SubsetRetriever(SUBSET)
 _, _, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
 
-# Load tensors
+# Load tensors (n_channels, n_samples)
 x_torch = torch.tensor(x_test_concate, dtype=torch.float32)
 y_torch = torch.tensor(y_test_concate, dtype=torch.float32)
 c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
@@ -104,3 +98,13 @@ x_spec = get_spectrogram(x)
 
 # Plot the spectrograms
 plot_compare_spectrogram(y_spec, y_pred_spec, x_spec, titles=["Spectrogram of y", "Spectrogram of y_pred", "Spectrogram of x"])
+
+# Generate an impulse
+impulse_duration = 1.0  # You can set this value
+impulse_sample_rate = sample_rate  # You can set this value, usually same as the audio sample rate
+impulse = generate_impulse(impulse_duration, impulse_sample_rate)
+
+# Feed the impulse to the model
+y_pred = feed_model_with_impulse(model, impulse)
+
+# Now you can proceed with the rest of your evaluation as usual, using 'y_pred' as the model's output

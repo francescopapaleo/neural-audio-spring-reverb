@@ -1,9 +1,7 @@
-#!/homedtic/fpapaleo/.conda/envs jupyter
-
 import sys
 import platform
-import pkg_resources
 import torch
+import torchaudio
 
 # System information
 print("System Information:")
@@ -18,19 +16,14 @@ print(f"Processor: {platform.processor()}")
 print("\nPython Version:")
 print(sys.version)
 
-# Installed modules
-# print("\nInstalled Modules:")
-# installed_packages = pkg_resources.working_set
-# for package in installed_packages:
-#     print(f"{package.project_name} {package.version}")
-
 # CUDA version
 print("\nCUDA Version:")
 print(torch.version.cuda)
 
 if torch.cuda.is_available():
-    device = "cuda"
     print("Using GPU")
 else:
-    device = "cpu"
     print("Using CPU")
+
+print(f'PyTorch version:{torch.__version__}')
+print(torchaudio.__version__)

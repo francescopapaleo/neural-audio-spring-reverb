@@ -1,15 +1,15 @@
 import os
-import pathlib
+from pathlib import Path
 
 # Folders
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = Path(__file__).resolve().parent
 
-DATASET = os.path.join(ROOT_DIR, 'dataset')
-SUBSET = os.path.join(ROOT_DIR, 'dataset_subset')
+DATASET = ROOT_DIR / 'dataset'
+SUBSET = ROOT_DIR / 'dataset_subset'
 
-AUDIO = os.path.join(ROOT_DIR, 'audio')
-MODELS = os.path.join(ROOT_DIR, 'models')
-RESULTS = os.path.join(ROOT_DIR, 'results')
+AUDIO = ROOT_DIR / 'audio'
+MODELS = ROOT_DIR / 'models'
+RESULTS = ROOT_DIR / 'results'
 
 # Training loop parameters
 cond_dim = 0
@@ -35,7 +35,7 @@ model_trained = "model_TCN_00.pt"
 model_to_evaluate = "model_TCN_00.pt"
 
 # Prediction
-model_for_prediction = "model_TCN_00.pt"
+model_for_prediction = "reverb_full.pt"
 
 # Number of parts to split the test data into
 n_parts = 10

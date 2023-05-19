@@ -6,18 +6,13 @@ from dataloader import SubsetRetriever
 from config import *
 
 import torch.nn as nn
-import matplotlib.pyplot as plt
 
-print("### Evaluation started...")
+print("## Evaluation started...")
 
 # Use GPU if available
-if torch.cuda.is_available():
-    device = "cuda"
-    print("Using GPU")
-else:
-    device = "cpu"
-    print("Using CPU")
-
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"Using device: {device}")
+    
 print("")
 print(f"Name: {model_to_evaluate}")
 
@@ -28,7 +23,10 @@ _, _, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concaten
 # Load tensors
 x = torch.tensor(x_test_concate, dtype=torch.float32)
 y = torch.tensor(y_test_concate, dtype=torch.float32)
+
 c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
+
+
 
 # Instantiate the model
 model = TCN(
@@ -44,6 +42,13 @@ model = TCN(
 load_this_model = os.path.join(MODELS, model_to_evaluate)
 model = torch.load(load_this_model)
 model.eval()
+
+# Move tensors to GPU
+if torch.cuda.is_available():
+    model.to(device)
+    x = x.to(device)
+    y = y.to(device)
+    c = c.to(device)
 
 # Receptive field
 rf = model.compute_receptive_field()
@@ -78,14 +83,18 @@ signal_sum = mse_sum(y, torch.zeros_like(y))
 esr_sum = error_sum / (signal_sum + 1e-10)
 
 print(str(model_to_evaluate))
-print(f"Mean Squared Error: {mse}")
 print(f"Error-to-Signal Ratio (mean): {esr_mean}")
 print(f"Error-to-Signal Ratio (sum): {esr_sum}")
 print("")
 
+# Mean absolute error
+mae = nn.L1Loss()
+mae_score = mae(y, y_pred)
+print(f"MAE: {mae_score.item()}")
+
 
 print("")
-print("### Evaluation by chunks...")
+print("## Evaluation by chunks...")
 
 # Creating n chunks
 x_parts = torch.chunk(x_pad, n_parts)

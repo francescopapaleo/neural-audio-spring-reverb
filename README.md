@@ -1,6 +1,8 @@
-# Report
+# Modeling Spring Reverb with Neural Audio Effects
 
-I created this repository and cloned it on the HPC, set up a working environment.
+Working environment for the thesis project.
+
+
 
 ## Measured the available samples from Steinmetz et al. :
 [measurement](/util/get_audio_leght.py)
