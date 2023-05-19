@@ -8,6 +8,7 @@ import numpy as np
 from model import TCN, causal_crop
 from dataloader import SubsetRetriever
 from plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
+from tools import generate_impulse, feed_model_with_impulse
 
 print("")
 print("## Inference started...")

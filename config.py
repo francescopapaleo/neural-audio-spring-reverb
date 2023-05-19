@@ -35,7 +35,7 @@ model_trained = "model_TCN_00.pt"
 model_to_evaluate = "model_TCN_00.pt"
 
 # Prediction
-model_for_prediction = "reverb_full.pt"
+model_for_prediction = "model_TCN_00.pt"
 
 # Number of parts to split the test data into
 n_parts = 10
