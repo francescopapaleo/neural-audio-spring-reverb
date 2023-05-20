@@ -39,9 +39,9 @@ model = TCN(
     dilation_growth=dilation_growth, 
     n_channels=n_channels)
 
-load_this_model = os.path.join(MODELS, model_for_prediction)
+load_this_model = os.path.join(MODELS, model_to_evaluate)
+model.load_state_dict(torch.load(load_this_model))
 
-model = torch.load(load_this_model)
 model.eval()
 
 # Receptive field

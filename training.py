@@ -1,10 +1,3 @@
-''' TCN training script
-@inproceedings{steinmetz2021steerable,
-        title={Steerable discovery of neural audio effects},
-        author={Steinmetz, Christian J. and Reiss, Joshua D.},
-        booktitle={5th Workshop on Creativity and Design at NeurIPS},
-        year={2021}}'''
-
 import torch
 import auraloss
 
@@ -121,7 +114,7 @@ y_hat /= y_hat.abs().max()
 
 # Save the model
 save_path = os.path.join(MODELS, model_trained)
-torch.save(model, save_path)
+torch.save(model.state_dict(), save_path)
 
 print(f"Saved model to {model_trained}")
 print("")

@@ -14,7 +14,7 @@ source /etc/profile.d/zz_hpcnow-arch.sh
 
 # ACTIVATE ANACONDA
 eval "$(conda shell.bash hook)"
-conda activate jupyter
+conda activate springenv
 
 
 python training.py

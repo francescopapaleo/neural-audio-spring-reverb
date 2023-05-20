@@ -27,7 +27,6 @@ y = torch.tensor(y_test_concate, dtype=torch.float32)
 c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
 
 
-
 # Instantiate the model
 model = TCN(
     n_inputs=input_channels,
@@ -40,7 +39,8 @@ model = TCN(
 
 # Load the trained model to evaluate
 load_this_model = os.path.join(MODELS, model_to_evaluate)
-model = torch.load(load_this_model)
+model.load_state_dict(torch.load(load_this_model))
+
 model.eval()
 
 # Move tensors to GPU
