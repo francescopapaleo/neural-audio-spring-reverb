@@ -1,4 +1,4 @@
-from dataloader import DataRetriever, SubsetGenerator, SubsetRetriever
+from data_load import DataRetriever, SubsetGenerator, SubsetRetriever
 from config import *
 
 # This script tests the classes in dataloader.py

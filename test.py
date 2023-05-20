@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 from model import TCN, causal_crop
-from dataloader import SubsetRetriever
+from data_load import SubsetRetriever
 from config import *
 
 import torch.nn as nn
@@ -14,10 +14,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
     
 print("")
-print(f"Name: {model_to_evaluate}")
+print(f"Name: {MODEL_FILE}")
 
 # Load the subset
-subset_retriever = SubsetRetriever(SUBSET)
+subset_retriever = SubsetRetriever(DATA_DIR)
 _, _, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
 
 # Load tensors
@@ -29,8 +29,8 @@ c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
 
 # Instantiate the model
 model = TCN(
-    n_inputs=input_channels,
-    n_outputs=output_channels,
+    n_inputs=INPUT_CH,
+    n_outputs=OUTPUT_CH,
     cond_dim=cond_dim, 
     kernel_size=kernel_size, 
     n_blocks=n_blocks, 
@@ -38,8 +38,7 @@ model = TCN(
     n_channels=n_channels)
 
 # Load the trained model to evaluate
-load_this_model = os.path.join(MODELS, model_to_evaluate)
-model.load_state_dict(torch.load(load_this_model))
+model.load_state_dict(torch.load(MODEL_FILE, map_location=device))
 
 model.eval()
 
@@ -82,7 +81,7 @@ error_sum = mse_sum(y_pred, y)
 signal_sum = mse_sum(y, torch.zeros_like(y))
 esr_sum = error_sum / (signal_sum + 1e-10)
 
-print(str(model_to_evaluate))
+print(str(MODEL_FILE))
 print(f"Error-to-Signal Ratio (mean): {esr_mean}")
 print(f"Error-to-Signal Ratio (sum): {esr_sum}")
 print("")

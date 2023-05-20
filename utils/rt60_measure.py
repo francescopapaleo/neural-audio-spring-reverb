@@ -19,6 +19,8 @@ import numpy as np
 import argparse
 import soundfile as sf
 import matplotlib.pyplot as plt
+from pathlib import Path
+from config import IMGS_DIR
 
 def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
     """
@@ -104,6 +106,9 @@ def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
         plt.ylabel('Energy (dB)')
 
         plt.legend()
+
+        plt.savefig(Path(IMGS_DIR) / 'rt_60.png')
+        plt.show()
 
     return est_rt60
 

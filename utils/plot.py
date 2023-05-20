@@ -9,7 +9,7 @@ import torchaudio.transforms as T
 import torch
 
 
-def plot_compare_waveform(y, y_pred, fs=sample_rate):
+def plot_compare_waveform(y, y_pred, fs=SAMPLE_RATE):
     '''Plot the waveform of the input, the prediction and the ground truth
     Parameters
     ----------
@@ -35,7 +35,7 @@ def plot_compare_waveform(y, y_pred, fs=sample_rate):
     plt.savefig(Path(RESULTS) / 'waveform_plot.png')
     plt.show()
 
-def plot_zoom_waveform(y, y_pred, fs=sample_rate, t_start=None, t_end=None):
+def plot_zoom_waveform(y, y_pred, fs=SAMPLE_RATE, t_start=None, t_end=None):
     '''Plot the waveform of the ground truth and the prediction
     Parameters
     ----------
@@ -116,4 +116,53 @@ def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'T
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
     plt.savefig(Path(RESULTS) / 'spectrogram.png')
+    plt.show()
+
+
+def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, file_name):
+    time_stamps = np.arange(0, duration, 1/SAMPLE_RATE)
+    fig, ax = plt.subplots(3, 1, figsize=(15,7))
+    
+    ax[0].plot(time_stamps, sweep_filt)
+    ax[0].set_xlim([0, time_stamps[-1]])
+    ax[0].set_title("Sweep Tone")
+    ax[0].set_xlabel("Time [s]")
+    ax[0].set_ylabel("Amplitude")
+    
+    ax[1].plot(time_stamps, inverse_filter)
+    ax[1].set_xlim([0, time_stamps[-1]])
+    ax[1].set_title("Inverse Filter")
+    ax[1].set_xlabel("Time [s]")
+    ax[1].set_ylabel("Amplitude")
+    
+    time_stamps = np.arange(0, len(measured)/SAMPLE_RATE, 1/SAMPLE_RATE)
+    ax[2].plot(time_stamps, measured)
+    ax[2].set_xlim([0, time_stamps[-1]])
+    ax[2].set_title("Impulse Response")
+    ax[2].set_xlabel("Time [s]")
+    ax[2].set_ylabel("Amplitude")
+    
+    Path(RESULTS).mkdir(parents=True, exist_ok=True)
+    plt.savefig(Path(RESULTS) / file_name)
+    plt.tight_layout()
+    plt.show()
+
+def plot_transfer_function(magnitude, phase, sample_rate, file_name):
+    freqs = np.linspace(0, sample_rate / 2, len(phase))
+
+    fig, ax = plt.subplots(2, 1, figsize=(15, 7))
+    ax[0].semilogx(freqs, magnitude)
+    ax[0].set_xlim([1, freqs[-1]])
+    ax[0].set_ylim([-100, 6])
+    ax[0].set_xlabel("Frequency [Hz]")
+    ax[0].set_ylabel("Magnitude [dBFS]")
+    ax[1].semilogx(freqs, phase)
+    ax[1].set_xlim([1, freqs[-1]])
+    ax[1].set_ylim([-180, 180])
+    ax[1].set_xlabel("Frequency [Hz]")
+    ax[1].set_ylabel("Phase [degrees]")
+    plt.suptitle("H(w) - Transfer Function")
+    plt.tight_layout()
+    Path(RESULTS).mkdir(parents=True, exist_ok=True)
+    plt.savefig(Path(RESULTS) / file_name)
     plt.show()

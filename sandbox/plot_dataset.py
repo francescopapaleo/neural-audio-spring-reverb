@@ -1,7 +1,7 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from dataloader import SubsetRetriever
+from data_load import SubsetRetriever
 from config import *
 
 import numpy as np
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from scipy.signal import spectrogram
 
-def visualize_and_play(x, y, fs=sample_rate):
+def visualize_and_play(x, y, fs=SAMPLE_RATE):
     fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
 
     # Display the waveform
@@ -28,7 +28,7 @@ def visualize_and_play(x, y, fs=sample_rate):
     plt.tight_layout()
 
 # Load the data
-subset_retriever = SubsetRetriever(SUBSET)
+subset_retriever = SubsetRetriever(DATA_DIR)
 x_train, y_train, x_test, y_test = subset_retriever.retrieve_data(concatenate=True)
 
 # Visualize and play a sample from each split

@@ -7,7 +7,7 @@ https://github.com/LCAV/pyroomacoustics/blob/master/pypyroomacoustics/experiment
 
 import numpy as np
 import pyroomacoustics as pra
-from rt60.rt60_measure import measure_rt60  # Import the modified version of measure_rt60
+from utils.rt60_measure import measure_rt60  # Import the modified version of measure_rt60
 
 eps = 1e-15
 

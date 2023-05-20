@@ -1,5 +1,6 @@
 import h5py
 from torch.utils.data import Dataset
+import torchaudio
 import numpy as np
 import os
 
@@ -120,3 +121,25 @@ class SubsetRetriever(Dataset):
             return x_train_concatenated, y_train_concatenated, x_val_test_concatenated, y_val_test_concatenated
         else:
             return x_train_subset, y_train_subset, x_val_test_subset, y_val_test_subset
+
+class AudioDataRetriever(Dataset):
+    def __init__(self, data_folder):
+        self.data_folder = data_folder
+
+    def retrieve_data(self):
+        audio_files = os.listdir(self.data_folder)
+        audio_data = []
+
+        for file in audio_files:
+            filepath = os.path.join(self.data_folder, file)
+            waveform, sample_rate = torchaudio.load(filepath)
+
+            # Normalize to mono (single channel)
+            if waveform.shape[0] > 1:
+                waveform = waveform.mean(dim=0, keepdim=True)
+
+            audio_data.append(waveform.numpy())
+
+        return np.array(audio_data)
+    
+    
