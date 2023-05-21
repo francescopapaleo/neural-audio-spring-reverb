@@ -12,7 +12,6 @@ DATA_DIR = ROOT_DIR / 'data'
 AUDIO_DIR = ROOT_DIR / 'audio'
 MODELS_DIR = ROOT_DIR / 'models'
 RESULTS = ROOT_DIR / 'results'
-IMGS_DIR = ROOT_DIR / 'imgs'
 
 # Model parameters
 model_params = {

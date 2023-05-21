@@ -2,6 +2,7 @@ import torch
 import auraloss
 import os
 from tqdm import tqdm
+import logging
 
 from dataload import PlateSpringDataset
 from model import TCN, causal_crop
@@ -122,7 +123,9 @@ def train_model(model_file, data_dir):
         scheduler.step()
 
         if (n + 1) % 1 == 0:
-            pbar.set_description(f" Loss: {loss.item():0.3e} | ")
+            loss_info = f"Loss at iteration {n+1}: {loss.item():0.3e}"
+            pbar.set_description(f" {loss_info} | ")
+            logging.info(loss_info)   # Log the loss
 
     y_hat /= y_hat.abs().max()
 
