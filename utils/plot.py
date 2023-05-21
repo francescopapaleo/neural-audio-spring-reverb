@@ -13,7 +13,7 @@ import torchaudio.transforms as T
 import torch
 
 
-def plot_compare_waveform(y, y_pred, fs=SAMPLE_RATE):
+def plot_compare_waveform(y, y_pred, fs):
     '''Plot the waveform of the input, the prediction and the ground truth
     Parameters
     ----------
@@ -39,7 +39,7 @@ def plot_compare_waveform(y, y_pred, fs=SAMPLE_RATE):
     plt.savefig(Path(RESULTS) / 'waveform_plot.png')
 
 
-def plot_zoom_waveform(y, y_pred, t_start=None, t_end=None, fs=SAMPLE_RATE):
+def plot_zoom_waveform(y, y_pred, fs, t_start=None, t_end=None):
     '''Plot the waveform of the ground truth and the prediction
     Parameters
     ----------
@@ -122,7 +122,7 @@ def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'T
 
 
 def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, file_name):
-    time_stamps = np.arange(0, duration, 1/SAMPLE_RATE)
+    time_stamps = np.arange(0, duration, 1/ fs)
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
     
     ax[0].plot(time_stamps, sweep_filt)
@@ -137,7 +137,7 @@ def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, fi
     ax[1].set_xlabel("Time [s]")
     ax[1].set_ylabel("Amplitude")
     
-    time_stamps = np.arange(0, len(measured)/SAMPLE_RATE, 1/SAMPLE_RATE)
+    time_stamps = np.arange(0, len(measured)/ fs, 1/ fs)
     ax[2].plot(time_stamps, measured)
     ax[2].set_xlim([0, time_stamps[-1]])
     ax[2].set_title("Impulse Response")
@@ -150,8 +150,8 @@ def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, fi
 
 
 
-def plot_transfer_function(magnitude, phase, sample_rate, file_name):
-    freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+def plot_transfer_function(magnitude, phase, fs, file_name):
+    freqs = np.linspace(0, fs / 2, len(magnitude))
     
     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
     ax[0].semilogx(freqs, magnitude)

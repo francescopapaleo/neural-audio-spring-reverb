@@ -15,6 +15,20 @@ from scipy.io import wavfile
 from dataload import PlateSpringDataset 
 from model import TCN
 from utils.plot import plot_compare_waveform, plot_zoom_waveform
+import matplotlib.pyplot as plt
+
+# Define your constants here before using them in the ArgumentParser
+model_file = '/Users/francescopapaleo/git-box/smc-spring-reverb/models/tcn_1000.pt'
+data_dir = DATA_DIR  # or provide your own default value
+results_path = RESULTS  # or provide your own default value
+batch_size = model_params["batch_size"]
+fs = fs
+
+# Initialize lists for storing metric values
+l1_loss_values = []
+stft_loss_values = []
+lufs_diff_values = []
+aggregate_loss_values = []
 
 
 def evaluate_model(model_file, data_dir, batch_size, fs):
@@ -32,9 +46,6 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
     # x_ch = batch_size
     # y_ch = batch_size
 
-    model = torch.load(model_file, map_location=dev)
-    model.eval()
-
     # Instantiate the model
     model = TCN(
         n_inputs=model_params["in_ch"],
@@ -43,7 +54,11 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
         kernel_size=model_params["kernel_size"], 
         n_blocks=model_params["n_blocks"], 
         dilation_growth=model_params["dilation_growth"], 
-        n_channels=model_params["n_channels"])
+        n_channels=model_params["n_channels"]
+        )
+    model = torch.load('/Users/francescopapaleo/git-box/smc-spring-reverb/models/tcn_3000.pt')
+    model.eval()
+
     print(f'Type of loaded model: {type(model)}')
 
     # Metrics
@@ -104,16 +119,16 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
         # Plotting the metrics over time
         time_values = range(len(l1_loss_values))
 
-    plt.figure(figsize=(12, 6))
-    plt.plot(time_values, l1_loss_values, label="L1 Loss")
-    plt.plot(time_values, stft_loss_values, label="STFT Loss")
-    plt.plot(time_values, lufs_diff_values, label="LUFS Difference")
-    plt.plot(time_values, aggregate_loss_values, label="Aggregate Loss")
-    plt.xlabel("Time")
-    plt.ylabel("Metric Value")
-    plt.title("Metrics Over Time")
-    plt.legend()
-    plt.show()
+        plt.figure(figsize=(12, 6))
+        plt.plot(time_values, l1_loss_values, label="L1 Loss")
+        plt.plot(time_values, stft_loss_values, label="STFT Loss")
+        plt.plot(time_values, lufs_diff_values, label="LUFS Difference")
+        plt.plot(time_values, aggregate_loss_values, label="Aggregate Loss")
+        plt.xlabel("Time")
+        plt.ylabel("Metric Value")
+        plt.title("Metrics Over Time")
+        plt.legend()
+        plt.show()
 
 
     output = output.view(1, -1)
@@ -142,9 +157,9 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--model_file", type=str, default=model_file)
-    parser.add_argument("--data_dir", type=str, default=data_dir)
+    parser.add_argument("--data_dir", type=str, default=DATA_DIR)
     parser.add_argument("--batch_size", type=int, default=model_params["batch_size"])
-    parser.add_argument("--sample_rate", type=int, default=fs)
+    parser.add_argument("--fs", type=int, default=fs)
     args = parser.parse_args()
 
-    evaluate_model(args.data_dir, args.batch_size, args.fs)
+    evaluate_model(args.model_file, args.data_dir, args.batch_size, args.fs)

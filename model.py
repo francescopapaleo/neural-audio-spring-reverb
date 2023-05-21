@@ -1,8 +1,9 @@
-import json
 from pathlib import Path
 from argparse import ArgumentParser
-
 import torch
+'''
+Code from the paper: https://github.com/csteinmetz1/steerable-nafx
+'''
 
 def causal_crop(x, length: int):
     if x.shape[-1] != length:
