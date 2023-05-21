@@ -1,8 +1,12 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-from dataload import PlateSpringDataset
-from config import *
+from .. import dataload
+from sandbox.config import *
 
 def visualize_and_play(x, y, fs=SAMPLE_RATE):
     fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
@@ -23,8 +27,8 @@ def visualize_and_play(x, y, fs=SAMPLE_RATE):
     plt.tight_layout()
 
 # Load the training and test datasets
-train_dataset = PlateSpringDataset(DATA_DIR, split='train')
-test_dataset = PlateSpringDataset(DATA_DIR, split='test')
+train_dataset = dataload.PlateSpringDataset(DATA_DIR, split='train')
+test_dataset = dataload.PlateSpringDataset(DATA_DIR, split='test')
 
 # Visualize and play a sample from each split
 print("Training sample:")

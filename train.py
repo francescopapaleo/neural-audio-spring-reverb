@@ -1,13 +1,21 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 import torch
 import auraloss
 import os
 from tqdm import tqdm
 import logging
+import numpy as np
 
 from dataload import PlateSpringDataset
 from model import TCN, causal_crop
-from config import *
 from argparse import ArgumentParser
+from utils.plot import plot_compare_waveform, plot_zoom_waveform
+from matplotlib import pyplot as plt
+
+loss_tracker = []
 
 def train_model(model_file, data_dir):
     print("## Training started...")
@@ -42,6 +50,8 @@ def train_model(model_file, data_dir):
 
     x_ch = x_batch.size(0)
     y_ch = y_batch.size(0)
+
+    print(f"Hyperparameters: {model_params}")
 
     # Instantiate the model
     model = TCN(
@@ -93,6 +103,8 @@ def train_model(model_file, data_dir):
         x_batch = x_batch.to(device)
         y_batch = y_batch.to(device)
         c = c.to(device)
+    
+   
 
     # Training loop
     pbar = tqdm(range(model_params["n_iters"]))
@@ -125,14 +137,21 @@ def train_model(model_file, data_dir):
         if (n + 1) % 1 == 0:
             loss_info = f"Loss at iteration {n+1}: {loss.item():0.3e}"
             pbar.set_description(f" {loss_info} | ")
-            logging.info(loss_info)   # Log the loss
-
+            loss_tracker.append(loss.item())
+    
     y_hat /= y_hat.abs().max()
+
+    # Plot the results
+    # plot_compare_waveform(y_crop, y_hat, fs=SAMPLE_RATE)
+    # plot_zoom_waveform(y_crop, y_hat, t_start=0.0, t_end=0.1, fs=SAMPLE_RATE)
+    plt.plot(np.array(loss_tracker), label='loss')
+    plt.show()
 
     # Save the model
     save_path = os.path.join(MODELS_DIR, model_file)
-    torch.save(model.state_dict(), save_path)
-
+    # torch.save(model.state_dict(), save_path)
+    torch.save(model_file, save_path)
+    
     print(f"Saved model to {model_file}")
     print("")
 
@@ -151,7 +170,7 @@ if __name__ == "__main__":
         help="Path to the data directory",
     )
     parser.add_argument(
-        "--n_parts",
+        "--n_iters",
         type=int,
         default=model_params["n_iters"],
         help="Number of parts to use",
@@ -163,6 +182,11 @@ if __name__ == "__main__":
         help="Sample rate of the audio",
     )
     args = parser.parse_args()
+
+    with open('config.json') as f:
+    config = json.load(f)
+
+seed = config['seed']
 
     train_model(args.model_file, args.data_dir)
     

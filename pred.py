@@ -1,4 +1,7 @@
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 
 import torch
 import torchaudio

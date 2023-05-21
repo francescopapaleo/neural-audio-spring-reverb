@@ -1,3 +1,7 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 """
 RT60 Measurement Routine
 ========================
@@ -16,11 +20,11 @@ https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental
 """
 
 import numpy as np
-import argparse
-import soundfile as sf
+from scipy.io import wavfile
+from argparse import ArgumentParser
 import matplotlib.pyplot as plt
 from pathlib import Path
-from config import IMGS_DIR
+from sandbox.config import RESULTS
 
 def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
     """
@@ -107,7 +111,7 @@ def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
 
         plt.legend()
 
-        plt.savefig(Path(IMGS_DIR) / 'rt_60.png')
+        plt.savefig(Path(RESULTS) / 'rt_60.png')
         plt.show()
 
     return est_rt60
@@ -122,7 +126,7 @@ def main():
 
     args = parser.parse_args()
 
-    data, file_fs = sf.read(args.input_file, always_2d=True)
+    data, file_fs = wavfile.read(args.input_file, always_2d=True)
     channel = 0  # Select the left channel, change to 1 for the right channel
     data = data[:, channel]
 

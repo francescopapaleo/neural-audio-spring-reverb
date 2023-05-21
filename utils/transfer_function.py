@@ -1,4 +1,8 @@
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+from sandbox.config import *
 
 import scipy.signal
 import scipy.fftpack

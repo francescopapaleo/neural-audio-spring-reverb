@@ -1,0 +1,30 @@
+{
+    "model_params": {
+        "cond_dim": 0,
+        "kernel_size": 9,
+        "n_blocks": 5,
+        "dilation_growth": 10,
+        "n_channels": 32,
+        "n_iters": 1000,
+        "length": 88800,
+        "lr": 0.001,
+        "batch_size": 1,
+        "c": 0.0
+    },
+    "audio_params": {
+        "SAMPLE_RATE": 16000,
+        "INPUT_CH": 1,
+        "OUTPUT_CH": 1
+    },
+    "processing_params": {
+        "gain_dB": -0.1,
+        "c0": 0.6,
+        "c1": 0,
+        "mix": 100,
+        "width": 21,
+        "max_length": 30,
+        "stereo": false,
+        "tail": true
+    },
+    "seed": 42
+}

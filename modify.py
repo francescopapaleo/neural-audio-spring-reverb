@@ -1,3 +1,8 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+
 import os
 import torch
 import torch.nn as nn
@@ -8,7 +13,7 @@ import pyloudnorm as pyln
 
 from model import TCN, causal_crop, center_crop
 from dataload import PlateSpringDataset
-from config import *
+from sandbox.config import *
 from argparse import ArgumentParser
 
 

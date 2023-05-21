@@ -1,6 +1,9 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 import h5py
-import argparse
-import os
+
 
 def print_structure(group, indent=""):
     for key, value in group.items():

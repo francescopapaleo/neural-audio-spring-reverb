@@ -8,9 +8,7 @@ ROOT_DIR = Path(__file__).resolve().parent
 # DATASET_DIR = ROOT_DIR / 'dataset'
 # DATA_DIR = '/Users/francescopapaleo/datasets/plate-spring/spring'
 DATA_DIR = ROOT_DIR / 'data'
-
 AUDIO_DIR = ROOT_DIR / 'audio'
-MODELS_DIR = ROOT_DIR / 'models'
 RESULTS = ROOT_DIR / 'results'
 
 # Model parameters
@@ -20,7 +18,7 @@ model_params = {
     "n_blocks": 5,
     "dilation_growth": 10,
     "n_channels": 32,
-    "n_iters": 50,
+    "n_iters": 1000,
     "length": 88800,
     "lr": 0.001,
     "batch_size": 1,
@@ -33,10 +31,12 @@ INPUT_CH = 1
 OUTPUT_CH = 1
 
 # Trained model filename
-MODEL_FILE = MODELS_DIR / "model_TCN_01.pt"
+MODEL_PATH = '/homedtic/fpapaleo/smc-spring-reverb/models/tcn_1000.pt'
+# MODELS_DIR = Path(ROOT_DIR / 'models')
+# MODEL_FILE = "tcn_1000.pt"
 
 # For inference
-OUTPUT_FILE = AUDIO_DIR / "processed.wav"
+OUTPUT_FILE = RESULTS / "processed.wav"
 
 # Processing parameters
 processing_params = {
