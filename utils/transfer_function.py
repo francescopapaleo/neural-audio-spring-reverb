@@ -1,4 +1,8 @@
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+from main import *
 
 import scipy.signal
 import scipy.fftpack
@@ -8,7 +12,7 @@ from pathlib import Path
 
 from inference import make_inference
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram, plot_transfer_function
-from utils.rt60_measure import measure_rt60
+from utils.rt60_compute import measure_rt60
 from utils.generator import generate_reference
 
 # Script to generate the transfer function of the pre-trained model

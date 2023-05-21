@@ -1,4 +1,8 @@
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+from main import *
 from pathlib import Path
 
 import numpy as np
@@ -35,7 +39,7 @@ def plot_compare_waveform(y, y_pred, fs=SAMPLE_RATE):
     plt.savefig(Path(RESULTS) / 'waveform_plot.png')
 
 
-def plot_zoom_waveform(y, y_pred, fs=SAMPLE_RATE, t_start=None, t_end=None):
+def plot_zoom_waveform(y, y_pred, t_start=None, t_end=None, fs=SAMPLE_RATE):
     '''Plot the waveform of the ground truth and the prediction
     Parameters
     ----------
@@ -78,8 +82,6 @@ def plot_zoom_waveform(y, y_pred, fs=SAMPLE_RATE, t_start=None, t_end=None):
     # Ensure RESULTS directory exists
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.savefig(Path(RESULTS) / 'waveform_zoom.png')
-
-
 
 
 def get_spectrogram(

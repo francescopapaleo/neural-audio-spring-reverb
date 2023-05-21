@@ -1,12 +1,21 @@
+# Train the model
+from pathlib import Path
+from argparse import ArgumentParser
+from main import model_params, DATA_DIR, MODELS_DIR, fs
 import torch
 import auraloss
 import os
 from tqdm import tqdm
 
+import numpy as np
+
 from dataload import PlateSpringDataset
 from model import TCN, causal_crop
-from config import *
 from argparse import ArgumentParser
+from utils.plot import plot_compare_waveform, plot_zoom_waveform
+from matplotlib import pyplot as plt
+
+loss_tracker = []
 
 def train_model(model_file, data_dir):
     print("## Training started...")
@@ -42,6 +51,8 @@ def train_model(model_file, data_dir):
     x_ch = x_batch.size(0)
     y_ch = y_batch.size(0)
 
+    print(f"Hyperparameters: {model_params}")
+
     # Instantiate the model
     model = TCN(
         n_inputs=x_ch,
@@ -57,7 +68,7 @@ def train_model(model_file, data_dir):
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
     print(f"Parameters: {params*1e-3:0.3f} k")
-    print(f"Receptive field: {rf} samples or {(rf/SAMPLE_RATE)*1e3:0.1f} ms")
+    print(f"Receptive field: {rf} samples or {(rf/ fs)*1e3:0.1f} ms")
 
     # Loss function
     loss_fn = auraloss.freq.MultiResolutionSTFTLoss(
@@ -92,7 +103,7 @@ def train_model(model_file, data_dir):
         x_batch = x_batch.to(device)
         y_batch = y_batch.to(device)
         c = c.to(device)
-
+    
     # Training loop
     pbar = tqdm(range(model_params["n_iters"]))
     for n in pbar:
@@ -122,14 +133,23 @@ def train_model(model_file, data_dir):
         scheduler.step()
 
         if (n + 1) % 1 == 0:
-            pbar.set_description(f" Loss: {loss.item():0.3e} | ")
-
+            loss_info = f"Loss at iteration {n+1}: {loss.item():0.3e}"
+            pbar.set_description(f" {loss_info} | ")
+            loss_tracker.append(loss.item())
+    
     y_hat /= y_hat.abs().max()
+
+    # Plot the results
+    # plot_compare_waveform(y_crop, y_hat, fs=SAMPLE_RATE)
+    # plot_zoom_waveform(y_crop, y_hat, t_start=0.0, t_end=0.1, fs=SAMPLE_RATE)
+    plt.plot(np.array(loss_tracker), label='loss')
+    plt.show()
 
     # Save the model
     save_path = os.path.join(MODELS_DIR, model_file)
-    torch.save(model.state_dict(), save_path)
-
+    # torch.save(model.state_dict(), save_path)
+    torch.save(model_file, save_path)
+    
     print(f"Saved model to {model_file}")
     print("")
 
@@ -138,8 +158,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_file",
         type=str,
-        default=MODEL_FILE,
-        help="Name of the model file",
+        default='model_file',
+        help="Name of the model file to store",
     )
     parser.add_argument(
         "--data_dir",
@@ -147,19 +167,7 @@ if __name__ == "__main__":
         default=DATA_DIR,
         help="Path to the data directory",
     )
-    parser.add_argument(
-        "--n_parts",
-        type=int,
-        default=model_params["n_iters"],
-        help="Number of parts to use",
-    )
-    parser.add_argument(
-        "--sample_rate",
-        type=int,
-        default=SAMPLE_RATE,
-        help="Sample rate of the audio",
-    )
+
     args = parser.parse_args()
 
-    train_model(args.model_file, args.data_dir)
-    
+train_model(args.model_file, args.data_dir)

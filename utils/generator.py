@@ -1,6 +1,10 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 import numpy as np
 from scipy.io.wavfile import write
-from config import *
+from main import *
 from utils.plot import plot_signals 
 from pathlib import Path
 
@@ -46,13 +50,13 @@ def generate_reference(duration: float = 5.0):
     reference_int16 = np.int16(reference / np.max(np.abs(reference)) * 32767)
 
     # Save as .wav files
-    sweep_output_path = AUDIO_DIR / "sweep.wav"
+    sweep_output_path = RESULTS / "sweep.wav"
     write(sweep_output_path, SAMPLE_RATE, sweep_int16)
     
-    inverse_output_path = AUDIO_DIR / "inverse_filter.wav"
+    inverse_output_path = RESULTS / "inverse_filter.wav"
     write(inverse_output_path, SAMPLE_RATE, inverse_int16)
 
-    reference_output_path = AUDIO_DIR / "reference.wav"
+    reference_output_path = RESULTS / "reference.wav"
     write(reference_output_path, SAMPLE_RATE, reference_int16)
 
     return sweep_int16, inverse_int16, reference_int16

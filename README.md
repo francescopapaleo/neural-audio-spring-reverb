@@ -6,12 +6,12 @@ Working environment for the thesis project.
 
 To make an inference on an audio file execute from terminal:
 ```
-python inference.py --input_file 'audio/input.wav' 
+python inference.py --input 'saxophone.wav' 
 ```
 
 To train the model execute from terminal:
 ```
-python train.py
+python train.py 
 ```
 
 To evaluate the model execute from terminal:

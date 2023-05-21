@@ -1,5 +1,9 @@
-import argparse
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+from main import model_params, processing_params, SAMPLE_RATE, INPUT_CH, OUTPUT_CH, MODEL_FILE, AUDIO_DIR
+from pathlib import Path
 
 import torch
 import torchaudio
@@ -7,17 +11,17 @@ import scipy.signal
 import scipy.fftpack
 import numpy as np
 
-from pathlib import Path
+
 
 from model import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram, plot_transfer_function
-from utils.rt60_measure import measure_rt60
+from utils.rt60_compute import measure_rt60
 from utils.generator import generate_reference
 
-def make_inference(input_file, rt60=True):
+def make_inference(input, rt60=True):
 
-    # Use GPU if available
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # Use GPU if availablepi 
+    device =  "cpu"
     print(f"Using device: {device}")
 
     # Load the model
@@ -31,7 +35,7 @@ def make_inference(input_file, rt60=True):
         n_channels=model_params["n_channels"])
 
     # Load the state dictionary
-    model.load_state_dict(torch.load(MODEL_FILE, map_location=device))
+    model = torch.load(MODEL_FILE)
     model.eval()
 
     # Define the additional processing parameters
@@ -47,17 +51,17 @@ def make_inference(input_file, rt60=True):
   
     if isinstance(input_file, str):
         # if the input is a string, we assume it's a file path
-        input_file_path = input_file
+        input_file_path = AUDIO_DIR / input_file
         x_p, sample_rate = torchaudio.load(input_file_path)
         x_p = x_p.float()
 
     # if the input is a numpy array, convert it to a tensor
-    elif isinstance(input_file, np.ndarray):
-        x_p = torch.from_numpy(input_file).unsqueeze(0)
-        sample_rate = SAMPLE_RATE
-        x_p = x_p.float()
-    else:
-        raise ValueError("Invalid input type. Expected file path or numpy array.")
+    # elif isinstance(input, np.ndarray):
+    #     x_p = torch.from_numpy(input).unsqueeze(0)
+    #     sample_rate = SAMPLE_RATE
+    #     x_p = x_p.float()
+    # else:
+    #     raise ValueError("Invalid input type. Expected file path or numpy array.")
 
 
     # Receptive field
@@ -120,10 +124,10 @@ def make_inference(input_file, rt60=True):
     y_hat /= y_hat.abs().max()
 
     # Save the output using torchaudio
-    if isinstance(input_file, np.ndarray):
+    if isinstance(input, np.ndarray):
         output_file_name = "processed.wav"  # Or whatever makes sense in your application
     else:
-        output_file_name = Path(input_file).stem + "_processed.wav"
+        output_file_name = Path(input).stem + "_processed.wav"
 
     # Measure RT60 of the output signal
     if rt60:
@@ -133,8 +137,8 @@ def make_inference(input_file, rt60=True):
     return y_hat
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run the inference script.")
-    parser.add_argument("--input_file", help="Path to the input file.")
+    parser = ArgumentParser(description="Run the inference script.")
+    parser.add_argument("--input", help="Path to the input file.")
     args = parser.parse_args()
 
-    make_inference(args.input_file)
+    make_inference(args.input)

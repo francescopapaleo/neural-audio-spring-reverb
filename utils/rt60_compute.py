@@ -1,3 +1,13 @@
+from argparse import ArgumentParser
+import json
+from pathlib import Path
+
+import numpy as np
+from scipy.io import wavfile
+import matplotlib.pyplot as plt
+
+eps = 1e-15
+
 """
 RT60 Measurement Routine
 ========================
@@ -15,14 +25,9 @@ https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental
     J. Acoust. Soc. Am., vol. 37, no. 3, pp. 409-412, Mar. 1968.
 """
 
-import numpy as np
-import argparse
-import soundfile as sf
-import matplotlib.pyplot as plt
-from pathlib import Path
-from config import RESULTS
 
-def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None, folder=RESULTS):
+
+def measure_rt60(h, fs=16000, decay_db=60, plot=False, rt60_tgt=None, folder='results'):
     """
     Analyze the RT60 of an impulse response. Optionaly plots some useful information.
 
@@ -112,19 +117,56 @@ def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None, folder=RESULTS
 
     return est_rt60
 
+
+def test_rt60(ir, fs=16000):
+    """
+    Very basic test that runs the function and checks that the value
+    returned with different sampling frequencies are correct.
+    """
+
+    t60_samples = measure_rt60(ir)
+    t60_s = measure_rt60(ir, fs)
+
+    assert abs(t60_s - t60_samples / fs) < eps
+
+    t30_samples = measure_rt60(ir, decay_db=30)
+    t30_s = measure_rt60(ir, fs, decay_db=30)
+
+    assert abs(t30_s - t30_samples / fs) < eps
+
+    print(f"RT60 (samples): {t60_samples}")
+    print(f"RT60 (seconds): {t60_s}")
+    print(f"RT30 (samples): {t30_samples}")
+    print(f"RT30 (seconds): {t30_s}")
+
+
+def test_rt60_plot(ir):
+    """
+    Simple run of the plot without any output.
+
+    Check for runtime errors only.
+    """
+
+    import matplotlib
+
+    matplotlib.use("Agg")
+
+    measure_rt60(ir, plot=True)
+    measure_rt60(ir, plot=True, rt60_tgt=0.3) 
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Measure RT60 of an impulse response from a WAV file')
-    parser.add_argument('input_file', type=str, help='Input WAV file')
+    parser = ArgumentParser(description='Compute RT60 of an impulse response directly from a WAV file')
+    parser.add_argument('--h', type=str, help='Input WAV file')
     parser.add_argument('--fs', type=float, default=None, help='Sampling frequency (default: None, use file\'s own)')
     parser.add_argument('--decay_db', type=float, default=60, help='Decay in decibels (default: 60)')
     parser.add_argument('--plot', action='store_true', help='Plot the power decay and estimated values')
     parser.add_argument('--rt60_tgt', type=float, help='Target RT60 value')
     parser.add_argument('--folder', type=str, default=None, help='Output file name and path')
     
-
     args = parser.parse_args()
 
-    data, file_fs = sf.read(args.input_file, always_2d=True)
+    data, file_fs = wavfile.read(args.input_file, always_2d=True)
     channel = 0  # Select the left channel, change to 1 for the right channel
     data = data[:, channel]
 

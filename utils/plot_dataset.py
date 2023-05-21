@@ -1,10 +1,15 @@
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
 from dataload import PlateSpringDataset
-from config import *
+
 from pathlib import Path
 from argparse import ArgumentParser
+from .. import dataload
 
 # Create the argument parser
 parser = ArgumentParser()
@@ -12,7 +17,7 @@ parser.add_argument('--sample_idx', type=int, default=0, help='The index of the 
 args = parser.parse_args()
 
 
-def visualize_data(x, y, fs=SAMPLE_RATE):
+def visualize_data(x, y, fs):
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')

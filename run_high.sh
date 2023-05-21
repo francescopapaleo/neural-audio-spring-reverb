@@ -17,4 +17,4 @@ eval "$(conda shell.bash hook)"
 conda activate springenv
 
 
-python training.py
+python train.py

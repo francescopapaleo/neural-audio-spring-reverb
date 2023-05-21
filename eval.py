@@ -1,50 +1,50 @@
-import os
-import sys
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
+from main import model_params, fs, AUDIO_DIR, DATA_DIR, RESULTS
+from argparse import ArgumentParser
+
 import numpy as np
 import torch
-import torch.nn as nn
 import auraloss
 import pyloudnorm as pyln
 
 from torch.utils.data import DataLoader
+from scipy.io import wavfile
 from dataload import PlateSpringDataset 
-from argparse import ArgumentParser
 from model import TCN
-from config import *
+from utils.plot import plot_compare_waveform, plot_zoom_waveform
 
 
-
-def evaluate_model(model_file, data_dir, batch_size, sample_rate):
+def evaluate_model(model_file, data_dir, batch_size, fs):
     print("## Test started...")
 
-    # Load the subset
-  
+    # Load the subset  
     dataset = PlateSpringDataset(data_dir, split='test')
     test_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=False)
-
     dataiter = iter(test_loader)
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Using device: {device}") 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     print(torch.__version__)
+    dev = torch.device('cpu')
+    print(f"Using device: {dev}")
 
-    x_ch = batch_size
-    y_ch = batch_size
+    # x_ch = batch_size
+    # y_ch = batch_size
+
+    model = torch.load(model_file, map_location=dev)
+    model.eval()
 
     # Instantiate the model
     model = TCN(
-        n_inputs=x_ch,
-        n_outputs=y_ch,
+        n_inputs=model_params["in_ch"],
+        n_outputs=model_params["out_ch"],
         cond_dim=model_params["cond_dim"], 
         kernel_size=model_params["kernel_size"], 
         n_blocks=model_params["n_blocks"], 
         dilation_growth=model_params["dilation_growth"], 
         n_channels=model_params["n_channels"])
-    
-    # Load the trained model to evaluate
-    model.load_state_dict(torch.load(MODEL_FILE, map_location=device))
-    model.eval()
+    print(f'Type of loaded model: {type(model)}')
 
     # Metrics
     results = {
@@ -57,9 +57,9 @@ def evaluate_model(model_file, data_dir, batch_size, sample_rate):
     mse = torch.nn.MSELoss()
     l1 = torch.nn.L1Loss()
     stft = auraloss.freq.STFTLoss()
-    meter = pyln.Meter(sample_rate)
+    meter = pyln.Meter(fs)
 
-    c = torch.tensor([0.0, 0.0], device=device).view(1, 1, -1)
+    c = torch.tensor([0.0, 0.0]).view(1, 1, -1)
 
     # Evaluation Loop
     with torch.no_grad():
@@ -67,8 +67,8 @@ def evaluate_model(model_file, data_dir, batch_size, sample_rate):
             input, target = input.float(), target.float()
             
             if torch.cuda.is_available():
-                input = input.to(device)
-                target = target.to(device)
+                input = input.to(dev)
+                target = target.to(dev)
                 
             rf = model.compute_receptive_field()
             input_pad = torch.nn.functional.pad(input, (rf-1, 0))
@@ -89,21 +89,62 @@ def evaluate_model(model_file, data_dir, batch_size, sample_rate):
             results["stft_loss"].append(stft_loss)
             results["lufs_diff"].append(lufs_diff)
             results["aggregate_loss"].append(aggregate_loss)
+
+        print(f"Average L1 loss: {np.mean(results['l1_loss'])}")
+        print(f"Average STFT loss: {np.mean(results['stft_loss'])}")
+        print(f"Average LUFS difference: {np.mean(results['lufs_diff'])}")
+        print(f"Average Aggregate Loss: {np.mean(results['aggregate_loss'])}")
         
-            # print(f"Batch {i} - L1: {l1_loss} - STFT: {stft_loss} - LUFS: {lufs_diff} - Agg: {aggregate_loss}")
+        # Store metric values over time
+        l1_loss_values.append(l1_loss)
+        stft_loss_values.append(stft_loss)
+        lufs_diff_values.append(lufs_diff)
+        aggregate_loss_values.append(aggregate_loss)
 
-    print(f"Average L1 loss: {np.mean(results['l1_loss'])}")
-    print(f"Average STFT loss: {np.mean(results['stft_loss'])}")
-    print(f"Average LUFS difference: {np.mean(results['lufs_diff'])}")
-    print(f"Average Aggregate Loss: {np.mean(results['aggregate_loss'])}")
+        # Plotting the metrics over time
+        time_values = range(len(l1_loss_values))
 
+    plt.figure(figsize=(12, 6))
+    plt.plot(time_values, l1_loss_values, label="L1 Loss")
+    plt.plot(time_values, stft_loss_values, label="STFT Loss")
+    plt.plot(time_values, lufs_diff_values, label="LUFS Difference")
+    plt.plot(time_values, aggregate_loss_values, label="Aggregate Loss")
+    plt.xlabel("Time")
+    plt.ylabel("Metric Value")
+    plt.title("Metrics Over Time")
+    plt.legend()
+    plt.show()
+
+
+    output = output.view(1, -1)
+    target = target.view(1, -1)
+    input = input.view(1, -1)
+    
+    output = output.squeeze().numpy()
+    target = target.squeeze().numpy()
+    input = input.squeeze().numpy()
+
+    # print('Saving audio files...')
+    out_path = Path(results / 'eval_output.wav')
+    wavfile.write(out_path, fs, output)
+    
+    target_path = Path(results / 'eval_target.wav')
+    wavfile.write(target_path, fs, target)
+    
+    in_path = Path(results / 'eval_input.wav')
+    wavfile.write(in_path, fs, input)
+
+    print('Saving plots...')
+    plot_compare_waveform(target, output)
+    plot_zoom_waveform(target, output, t_start=0.5, t_end=0.6)
+    
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--model_file", type=str, default=MODEL_FILE)
-    parser.add_argument("--data_dir", type=str, default=DATA_DIR)
+    parser.add_argument("--model_file", type=str, default=model_file)
+    parser.add_argument("--data_dir", type=str, default=data_dir)
     parser.add_argument("--batch_size", type=int, default=model_params["batch_size"])
-    parser.add_argument("--sample_rate", type=int, default=SAMPLE_RATE)
+    parser.add_argument("--sample_rate", type=int, default=fs)
     args = parser.parse_args()
 
-    evaluate_model(args.model_file, args.data_dir, args.batch_size, args.sample_rate)
+    evaluate_model(args.data_dir, args.batch_size, args.fs)

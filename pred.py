@@ -1,4 +1,7 @@
-from config import *
+import json
+from pathlib import Path
+from argparse import ArgumentParser
+
 
 import torch
 import torchaudio
@@ -70,9 +73,9 @@ def predict(model_file, data_dir):
     print(f"Error-to-Signal Ratio: {esr}")
 
     print("Saving audio files")
-    torchaudio.save(os.path.join(AUDIO_DIR, "x.wav"), x, SAMPLE_RATE)
-    torchaudio.save(os.path.join(AUDIO_DIR, "y_pred.wav"), y_hat, SAMPLE_RATE)
-    torchaudio.save(os.path.join(AUDIO_DIR, "y_.wav"), y, SAMPLE_RATE)
+    torchaudio.save(os.path.join(RESULTS, "x.wav"), x, SAMPLE_RATE)
+    torchaudio.save(os.path.join(RESULTS, "y_pred.wav"), y_hat, SAMPLE_RATE)
+    torchaudio.save(os.path.join(RESULTS, "y_.wav"), y, SAMPLE_RATE)
 
     print("Plotting the results")
     plot_compare_waveform(y[0], y_hat[0], SAMPLE_RATE)
