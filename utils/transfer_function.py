@@ -58,7 +58,7 @@ def tf_main(duration: float = 5.0):
     tf_measured = compute_tf(reference, measured)
     magnitude = 20 * np.log10(np.abs(tf_measured))
     phase = np.angle(tf_measured) * 180 / np.pi
-
+    
     plot_transfer_function(magnitude, phase, SAMPLE_RATE, "tf_TCN_00")
 
     return tf_measured

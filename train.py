@@ -3,11 +3,12 @@ import auraloss
 import os
 from tqdm import tqdm
 
-from data_load import SubsetRetriever
+from dataload import PlateSpringDataset
 from model import TCN, causal_crop
 from config import *
+from argparse import ArgumentParser
 
-def train_model(model_file, n_iters=n_iters, lr=lr):
+def train_model(model_file, data_dir):
     print("## Training started...")
 
     # Use GPU if available
@@ -15,30 +16,41 @@ def train_model(model_file, n_iters=n_iters, lr=lr):
     print(f"Using device: {device}")
 
     # Load the subset
-    subset_retriever = SubsetRetriever(DATA_DIR)
-    x_train_concate, y_train_concate, _, _  = subset_retriever.retrieve_data(concatenate=True)
+    train_dataset = PlateSpringDataset(data_dir, split='train')
 
+    x = train_dataset.concatenate_samples(train_dataset.dry_data)
+    y = train_dataset.concatenate_samples(train_dataset.wet_data)
+    
     # Load tensors
-    x = torch.tensor(x_train_concate, dtype=torch.float32)
-    y = torch.tensor(y_train_concate, dtype=torch.float32)
+    x = torch.tensor(x, dtype=torch.float32).unsqueeze_(0)
+    y = torch.tensor(y, dtype=torch.float32).unsqueeze_(0)
 
-    # Reshape the audio
-    x_batch = x.view(1, 1, -1)
-    y_batch = y.view(1, 1, -1)
-    c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
+    # reshape the audio
+    x_batch = x.view(1,x.shape[0],-1)
+    y_batch = y.view(1,y.shape[0],-1)
+    
+    c = torch.tensor([0.0, 0.0], device=device).view(1,x.shape[0],-1)
+    
+    print(f"Shape of x {x.shape}")
+    print(f"Shape of y {y.shape}")
+    print(f"Shape of c: {c.shape}")
+    
+    # crop length
+    x_batch = x_batch[:,0:1,:]
+    y_batch = y_batch[:,0:1,:]
 
-    _, x_ch, x_samp = x_batch.size()
-    _, y_ch, y_samp = y_batch.size()
+    x_ch = x_batch.size(0)
+    y_ch = y_batch.size(0)
 
     # Instantiate the model
     model = TCN(
-        n_inputs=INPUT_CH,
-        n_outputs=OUTPUT_CH,
-        cond_dim=cond_dim, 
-        kernel_size=kernel_size, 
-        n_blocks=n_blocks, 
-        dilation_growth=dilation_growth, 
-        n_channels=n_channels)
+        n_inputs=x_ch,
+        n_outputs=y_ch,
+        cond_dim=model_params["cond_dim"], 
+        kernel_size=model_params["kernel_size"], 
+        n_blocks=model_params["n_blocks"], 
+        dilation_growth=model_params["dilation_growth"], 
+        n_channels=model_params["n_channels"])
 
     # Receptive field and number of parameters
     rf = model.compute_receptive_field()
@@ -55,15 +67,15 @@ def train_model(model_file, n_iters=n_iters, lr=lr):
     loss_fn_l1 = torch.nn.L1Loss()
 
     # Optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr)
-    ms1 = int(n_iters * 0.8)
-    ms2 = int(n_iters * 0.95)
+    optimizer = torch.optim.Adam(model.parameters(), model_params['lr'])
+    ms1 = int(model_params['n_iters'] * 0.8)
+    ms2 = int(model_params['n_iters'] * 0.95)
     milestones = [ms1, ms2]
     print(
         "Learning rate schedule:",
-        f"1:{lr:0.2e} ->",
-        f"{ms1}:{lr*0.1:0.2e} ->",
-        f"{ms2}:{lr*0.01:0.2e}",
+        f"1:{model_params['lr']:0.2e} ->",
+        f"{ms1}:{model_params['lr']*0.1:0.2e} ->",
+        f"{ms2}:{model_params['lr']*0.01:0.2e}",
     )
 
     # Learning rate scheduler
@@ -82,14 +94,14 @@ def train_model(model_file, n_iters=n_iters, lr=lr):
         c = c.to(device)
 
     # Training loop
-    pbar = tqdm(range(n_iters))
+    pbar = tqdm(range(model_params["n_iters"]))
     for n in pbar:
         
         optimizer.zero_grad()   # zero the gradient buffers
 
         # Crop input and target data
         start_idx = rf
-        stop_idx = start_idx + length
+        stop_idx = start_idx + model_params["length"]
         x_crop = x_batch[..., start_idx - rf + 1 : stop_idx]
         y_crop = y_batch[..., start_idx : stop_idx]
 
@@ -97,7 +109,8 @@ def train_model(model_file, n_iters=n_iters, lr=lr):
         y_hat = model(x_crop, c)
 
         # Compute the loss
-        loss = loss_fn(y_hat, y_crop) # + loss_fn_l1(y_hat, y_crop)
+        loss = loss_fn(y_hat, y_crop) 
+        # loss_fn(y_hat, y_crop)
 
         # Backward pass
         loss.backward()
@@ -119,3 +132,34 @@ def train_model(model_file, n_iters=n_iters, lr=lr):
 
     print(f"Saved model to {model_file}")
     print("")
+
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--model_file",
+        type=str,
+        default=MODEL_FILE,
+        help="Name of the model file",
+    )
+    parser.add_argument(
+        "--data_dir",
+        type=str,
+        default=DATA_DIR,
+        help="Path to the data directory",
+    )
+    parser.add_argument(
+        "--n_parts",
+        type=int,
+        default=model_params["n_iters"],
+        help="Number of parts to use",
+    )
+    parser.add_argument(
+        "--sample_rate",
+        type=int,
+        default=SAMPLE_RATE,
+        help="Sample rate of the audio",
+    )
+    args = parser.parse_args()
+
+    train_model(args.model_file, args.data_dir)
+    

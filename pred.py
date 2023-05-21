@@ -3,26 +3,28 @@ from config import *
 import torch
 import torchaudio
 import numpy as np
+import os
+import matplotlib.pyplot as plt
+from argparse import ArgumentParser
 
 from model import TCN, causal_crop
-from data_load import SubsetRetriever
+from dataload import PlateSpringDataset
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
 
-def predict(model_file):
+def predict(model_file, data_dir):
     print("## Inference started...")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
 
-    subset_retriever = SubsetRetriever(DATA_DIR)
-    _, _, x_test_concate , y_test_concate  = subset_retriever.retrieve_data(concatenate=True)
+    test_dataset = PlateSpringDataset(data_dir, split='test')
 
-    x_torch = torch.tensor(x_test_concate, dtype=torch.float32)
-    y_torch = torch.tensor(y_test_concate, dtype=torch.float32)
+    x_test = test_dataset.concatenate_samples(test_dataset.dry_data)
+    y_test = test_dataset.concatenate_samples(test_dataset.wet_data)
+
+    x = torch.tensor(x_test, dtype=torch.float32)
+    y = torch.tensor(y_test, dtype=torch.float32)
     c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
-
-    x = x_torch
-    y = y_torch
 
     # Load the model
     model = TCN(
@@ -81,3 +83,12 @@ def predict(model_file):
     x_spec = get_spectrogram(x)
 
     plot_compare_spectrogram(y_spec, y_pred_spec, x_spec, titles=["Spectrogram of y", "Spectrogram of y_pred", "Spectrogram of x"])
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("--model_file", type=str,default=MODEL_FILE, help="Path to the model file")
+    parser.add_argument("--data_dir", type=str, default=DATA_DIR, help="Path to the data directory")
+    args = parser.parse_args()
+
+    predict(args.model_file, args.data_dir)

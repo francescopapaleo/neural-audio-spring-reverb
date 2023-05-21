@@ -57,3 +57,23 @@ Error-to-Signal Ratio: 1.6165621280670166
 Saving audio files
 
 Plotting the results
+
+Estimated RT60: 7.2034375
+
+## Evaluation started...
+Using device: cpu
+
+Name: /Users/francescopapaleo/git-box/smc-spring-reverb/models/model_TCN_00.pt
+Normalization: applying min-max scaling
+MSE: 0.10632546991109848
+L1: 0.2132655829191208
+STFT: 1.9838253259658813
+ESR: 1.5822157859802246
+
+## Evaluation by chunks...
+Number of chunks: 10
+Average MSE: 0.010632546991109848
+Average L1: 0.02132655829191208
+Average STFT: 0.19838253259658814
+Average ESR: 0.15822157859802247
+

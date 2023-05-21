@@ -60,7 +60,7 @@ def make_inference(input_file, rt60=True):
         raise ValueError("Invalid input type. Expected file path or numpy array.")
 
 
-    # Measure the receptive field
+    # Receptive field
     pt_model_rf = model.compute_receptive_field()
 
     # Crop input signal if needed

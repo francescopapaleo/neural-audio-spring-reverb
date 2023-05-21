@@ -1,13 +1,8 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from data_load import SubsetRetriever
-from config import *
-
 import numpy as np
 import matplotlib.pyplot as plt
-
 from scipy.signal import spectrogram
+from dataload import PlateSpringDataset
+from config import *
 
 def visualize_and_play(x, y, fs=SAMPLE_RATE):
     fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
@@ -27,18 +22,20 @@ def visualize_and_play(x, y, fs=SAMPLE_RATE):
 
     plt.tight_layout()
 
-# Load the data
-subset_retriever = SubsetRetriever(DATA_DIR)
-x_train, y_train, x_test, y_test = subset_retriever.retrieve_data(concatenate=True)
+# Load the training and test datasets
+train_dataset = PlateSpringDataset(DATA_DIR, split='train')
+test_dataset = PlateSpringDataset(DATA_DIR, split='test')
 
 # Visualize and play a sample from each split
 print("Training sample:")
-visualize_and_play(x_train[0], y_train[0])
+x_train, y_train = train_dataset[0]
+visualize_and_play(x_train, y_train)
+
 print("Test sample:")
-visualize_and_play(x_test[0], y_test[0])
+x_test, y_test = test_dataset[0]
+visualize_and_play(x_test, y_test)
 
 plt.show()
-
 
 samples_list = [1, 5, 6, 7, 11]
 
@@ -47,8 +44,7 @@ fig, axs = plt.subplots(nrows=1, ncols=len(samples_list), figsize=(20, 4))
 
 # Loop through the indices and plot the waveform for each example
 for i, sample_idx in enumerate(samples_list):
-    x = Xtrain[sample_idx, :, 0]
-    y = Ytrain_0[sample_idx, :, 0]
+    x, y = train_dataset[sample_idx]
     axs[i].plot(x)
     axs[i].plot(y)
     axs[i].set_title(f'Sample {sample_idx}')

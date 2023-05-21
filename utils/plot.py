@@ -148,8 +148,8 @@ def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, fi
     plt.show()
 
 def plot_transfer_function(magnitude, phase, sample_rate, file_name):
-    freqs = np.linspace(0, sample_rate / 2, len(phase))
-
+    freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+    
     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
     ax[0].semilogx(freqs, magnitude)
     ax[0].set_xlim([1, freqs[-1]])

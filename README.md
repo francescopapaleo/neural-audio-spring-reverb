@@ -2,14 +2,44 @@
 
 Working environment for the thesis project.
 
-To run utility scripts:
+`config.py` contains the configuration parameters for the project including the paths to the data and the currently loaded model
 
+To make an inference on an audio file execute from terminal:
+```
+python inference.py --input_file 'audio/input.wav' 
+```
+
+To train the model execute from terminal:
+```
+python train.py
+```
+
+To evaluate the model execute from terminal:
+```
+python test.py
+```
+
+
+
+
+## Execute these commands from the root folder of the project
+
+To generate the test signals (sweep tone, inverse filter and the reference):
 ```
 python -m utils.generator
-python -m utils.transfer_function
-python -m utils.rt60_measure 'input_file'   # from command line takes an audio file, otherwise np.ndarray 
 ```
 
+To compute the transfer function of a pretrained model:
+```
+python -m utils.transfer_function
+```
+
+To measure the RT60 of an audio file execute from terminal:
+```
+python -m utils.rt60_measure 'input_file'
+```
+
+Otherwise the function is automatically called when running the script `inference.py`
 
 
 ## Folder structure:
@@ -19,7 +49,7 @@ python -m utils.rt60_measure 'input_file'   # from command line takes an audio f
 |  
 ├── data/
 │
-├── experiments/            # Experiment folders
+├── experiments/            # Experiments results
 │
 ├── imgs/               
 |
@@ -39,8 +69,9 @@ python -m utils.rt60_measure 'input_file'   # from command line takes an audio f
 
 
 [Steerable-Nafx](https://github.com/csteinmetz1/steerable-nafx)
-[DeepAFx-ST](https://github.com/adobe-research/DeepAFx-ST#style-evaluation)
+[Micro-tcn](https://github.com/csteinmetz1/micro-tcn.git)
 
+[DeepAFx-ST](https://github.com/adobe-research/DeepAFx-ST#style-evaluation)
 
 [PedalNet](https://github.com/teddykoker/pedalnet)
 [PedalNetRT](https://github.com/GuitarML/PedalNetRT)

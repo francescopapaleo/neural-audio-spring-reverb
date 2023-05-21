@@ -1,9 +1,12 @@
 from pathlib import Path
 
+seed = 42
+
 # Folders
 ROOT_DIR = Path(__file__).resolve().parent
 
-DATASET_DIR = ROOT_DIR / 'dataset'
+# DATASET_DIR = ROOT_DIR / 'dataset'
+# DATA_DIR = '/Users/francescopapaleo/datasets/plate-spring/spring'
 DATA_DIR = ROOT_DIR / 'data'
 
 AUDIO_DIR = ROOT_DIR / 'audio'
@@ -20,11 +23,10 @@ model_params = {
     "n_channels": 32,
     "n_iters": 50,
     "length": 88800,
-    "lr": 0.001
+    "lr": 0.001,
+    "batch_size": 1,
+    "c": 0.0
 }
-
-# Number of parts to split the test data into
-n_parts = 10
 
 # Set sample rate
 SAMPLE_RATE = 16000
@@ -32,7 +34,7 @@ INPUT_CH = 1
 OUTPUT_CH = 1
 
 # Trained model filename
-MODEL_FILE = MODELS_DIR / "model_TCN_00.pt"
+MODEL_FILE = MODELS_DIR / "model_TCN_01.pt"
 
 # For inference
 OUTPUT_FILE = AUDIO_DIR / "processed.wav"

@@ -3,32 +3,6 @@ import platform
 import torch
 import torchaudio
 
-'''Print system information
-.
-├── README.md             # The top-level README for developers using this project
-|
-├── audio/                # Audio files
-|  
-├── data/
-│
-├── experiments/          # Experiment folders
-│
-├── models/               # Trained and serialized models
-|
-├── sandbox/              # For testing purposes
-│
-├── utils/               # Utility functions
-│   ├── generator.py
-│   ├── plot.py
-│   └── system_info.py
-│
-├── config.py             # Configuration file
-├── evaluation.py         # Evaluation script
-├── main.py               # Main script
-├── predict.py            # Prediction script
-└── training.py           # Training script
-
-'''
 
 def system_info():
     # System information
@@ -55,8 +29,6 @@ def system_info():
 
     print(f'PyTorch version:{torch.__version__}')
     print(torchaudio.__version__)
-
-
 
 
 if __name__ == "__main__":
