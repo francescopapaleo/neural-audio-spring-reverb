@@ -20,9 +20,9 @@ import argparse
 import soundfile as sf
 import matplotlib.pyplot as plt
 from pathlib import Path
-from config import IMGS_DIR
+from config import RESULTS
 
-def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
+def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None, folder=RESULTS):
     """
     Analyze the RT60 of an impulse response. Optionaly plots some useful information.
 
@@ -107,7 +107,7 @@ def measure_rt60(h, fs=1, decay_db=60, plot=False, rt60_tgt=None):
 
         plt.legend()
 
-        plt.savefig(Path(IMGS_DIR) / 'rt_60.png')
+        plt.savefig(Path(folder) / 'rt_60.png')
         plt.show()
 
     return est_rt60
@@ -119,6 +119,8 @@ def main():
     parser.add_argument('--decay_db', type=float, default=60, help='Decay in decibels (default: 60)')
     parser.add_argument('--plot', action='store_true', help='Plot the power decay and estimated values')
     parser.add_argument('--rt60_tgt', type=float, help='Target RT60 value')
+    parser.add_argument('--folder', type=str, default=None, help='Output file name and path')
+    
 
     args = parser.parse_args()
 

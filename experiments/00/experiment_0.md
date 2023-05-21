@@ -77,3 +77,16 @@ Average L1: 0.02132655829191208
 Average STFT: 0.19838253259658814
 Average ESR: 0.15822157859802247
 
+## Training started...
+Using device: cuda
+Shape before concatenation: (18, 32000, 1)
+Shape before concatenation: (18, 32000, 1)
+Shape of x torch.Size([1, 1, 576000])
+Shape of y torch.Size([1, 1, 576000])
+Shape of c: torch.Size([1, 1, 2])
+Parameters: 31.494 k
+Receptive field: 88889 samples or 5555.6 ms
+Learning rate schedule: 1:1.00e-03 -> 40:1.00e-04 -> 47:1.00e-05
+ Loss at iteration 50: 1.300e+00 | : 100%|█████████████████████████████████████████████████████████████████████████████████| 50/50 [00:01<00:00, 32.14it/s]
+Saved model to /homedtic/fpapaleo/smc-spring-reverb/models/model_TCN_01.pt
+

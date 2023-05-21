@@ -47,7 +47,7 @@ def make_inference(input_file, rt60=True):
   
     if isinstance(input_file, str):
         # if the input is a string, we assume it's a file path
-        input_file_path = AUDIO_DIR / input_file
+        input_file_path = input_file
         x_p, sample_rate = torchaudio.load(input_file_path)
         x_p = x_p.float()
 

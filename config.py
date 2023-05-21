@@ -34,7 +34,7 @@ INPUT_CH = 1
 OUTPUT_CH = 1
 
 # Trained model filename
-MODEL_FILE = MODELS_DIR / "model_TCN_01.pt"
+MODEL_FILE = MODELS_DIR / "model_TCN_00.pt"
 
 # For inference
 OUTPUT_FILE = AUDIO_DIR / "processed.wav"

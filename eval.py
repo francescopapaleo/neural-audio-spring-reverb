@@ -27,6 +27,7 @@ def evaluate_model(model_file, data_dir, batch_size, sample_rate):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}") 
     device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(torch.__version__)
 
     x_ch = batch_size
     y_ch = batch_size
@@ -56,7 +57,7 @@ def evaluate_model(model_file, data_dir, batch_size, sample_rate):
     mse = torch.nn.MSELoss()
     l1 = torch.nn.L1Loss()
     stft = auraloss.freq.STFTLoss()
-    meter = pyln.Meter(44100)
+    meter = pyln.Meter(sample_rate)
 
     c = torch.tensor([0.0, 0.0], device=device).view(1, 1, -1)
 

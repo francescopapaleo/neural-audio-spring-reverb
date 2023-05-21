@@ -3,53 +3,55 @@ import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
 from dataload import PlateSpringDataset
 from config import *
+from pathlib import Path
+from argparse import ArgumentParser
 
-def visualize_and_play(x, y, fs=SAMPLE_RATE):
-    fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(10, 10))
+# Create the argument parser
+parser = ArgumentParser()
+parser.add_argument('--sample_idx', type=int, default=0, help='The index of the sample to visualize')
+args = parser.parse_args()
 
-    # Display the waveform
-    ax[0].plot(x)
-    ax[0].set_title('Waveform')
-    ax[0].set_xlabel('Sample Index')
-    ax[0].set_ylabel('Amplitude')
 
-    # Compute and display the spectrogram
-    f, t, Sxx = spectrogram(y, fs)
-    ax[1].pcolormesh(t, f, 10 * np.log10(Sxx))
-    ax[1].set_title('Spectrogram')
-    ax[1].set_xlabel('Time [s]')
-    ax[1].set_ylabel('Frequency [Hz]')
+def visualize_data(x, y, fs=SAMPLE_RATE):
 
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
+    ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')
+    ax.plot(y, alpha=0.7, label='Prediction', color='red')
+
+    ax.set_title('Waveform')
+    ax.set_xlabel('Sample Index')
+    ax.set_ylabel('Amplitude')
+    ax.grid(True)
+    ax.legend()
     plt.tight_layout()
 
-# Load the training and test datasets
-train_dataset = PlateSpringDataset(DATA_DIR, split='train')
-test_dataset = PlateSpringDataset(DATA_DIR, split='test')
+    Path(RESULTS).mkdir(parents=True, exist_ok=True)
+    plt.savefig(Path(RESULTS) / 'dataset_wave.png')
 
-# Visualize and play a sample from each split
-print("Training sample:")
-x_train, y_train = train_dataset[0]
-visualize_and_play(x_train, y_train)
+    # Create a figure with subplots
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
 
-print("Test sample:")
-x_test, y_test = test_dataset[0]
-visualize_and_play(x_test, y_test)
+    # Plot input spectrogram
+    axs[0].imshow(10 * np.log10(x_spec), aspect='auto', origin='lower')
+    axs[0].set_title('Input Spectrogram')
+    axs[0].set_xlabel('Time')
+    axs[0].set_ylabel('Frequency')
+    axs[0].colorbar(label='dB')
 
-plt.show()
+    # Plot target spectrogram
+    axs[1].imshow(10 * np.log10(y_spec), aspect='auto', origin='lower')
+    axs[1].set_title('Target Spectrogram')
+    axs[1].set_xlabel('Time')
+    axs[1].set_ylabel('Frequency')
+    axs[1].colorbar(label='dB')
 
-samples_list = [1, 5, 6, 7, 11]
+    Path(RESULTS).mkdir(parents=True, exist_ok=True)
+    plt.savefig(Path(RESULTS) / 'dataset_spectrum.png')
 
-# Create a figure with subplots
-fig, axs = plt.subplots(nrows=1, ncols=len(samples_list), figsize=(20, 4))
+if __name__ == "__main__":
+    
+    train_dataset = PlateSpringDataset(DATA_DIR, split='train')
+    x_train, y_train = train_dataset[args.sample_idx]
+    visualize_data(x_train, y_train)
 
-# Loop through the indices and plot the waveform for each example
-for i, sample_idx in enumerate(samples_list):
-    x, y = train_dataset[sample_idx]
-    axs[i].plot(x)
-    axs[i].plot(y)
-    axs[i].set_title(f'Sample {sample_idx}')
-    axs[i].set_xlabel('Time (samples)')
-    axs[i].set_ylabel('Amplitude')
-    axs[i].legend(['Input', 'Target'])
-
-plt.show()
+    print("Plotting requested samples...")

@@ -33,7 +33,7 @@ def plot_compare_waveform(y, y_pred, fs=SAMPLE_RATE):
     # Save the figure
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.savefig(Path(RESULTS) / 'waveform_plot.png')
-    plt.show()
+
 
 def plot_zoom_waveform(y, y_pred, fs=SAMPLE_RATE, t_start=None, t_end=None):
     '''Plot the waveform of the ground truth and the prediction
@@ -79,7 +79,7 @@ def plot_zoom_waveform(y, y_pred, fs=SAMPLE_RATE, t_start=None, t_end=None):
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.savefig(Path(RESULTS) / 'waveform_zoom.png')
 
-    plt.show()
+
 
 
 def get_spectrogram(
@@ -116,7 +116,7 @@ def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'T
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
     plt.savefig(Path(RESULTS) / 'spectrogram.png')
-    plt.show()
+
 
 
 def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, file_name):
@@ -141,11 +141,12 @@ def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, fi
     ax[2].set_title("Impulse Response")
     ax[2].set_xlabel("Time [s]")
     ax[2].set_ylabel("Amplitude")
-    
+    plt.tight_layout()
+
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.savefig(Path(RESULTS) / file_name)
-    plt.tight_layout()
-    plt.show()
+
+
 
 def plot_transfer_function(magnitude, phase, sample_rate, file_name):
     freqs = np.linspace(0, sample_rate / 2, len(magnitude))
@@ -163,6 +164,6 @@ def plot_transfer_function(magnitude, phase, sample_rate, file_name):
     ax[1].set_ylabel("Phase [degrees]")
     plt.suptitle("H(w) - Transfer Function")
     plt.tight_layout()
+    
     Path(RESULTS).mkdir(parents=True, exist_ok=True)
     plt.savefig(Path(RESULTS) / file_name)
-    plt.show()
