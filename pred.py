@@ -10,7 +10,7 @@ import os
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 
-from model import TCN, causal_crop
+from tcn import TCN, causal_crop
 from dataload import PlateSpringDataset
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram
 

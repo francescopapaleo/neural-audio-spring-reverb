@@ -11,7 +11,7 @@ import numpy as np
 import auraloss
 import pyloudnorm as pyln
 
-from model import TCN, causal_crop, center_crop
+from tcn import TCN, causal_crop, center_crop
 from dataload import PlateSpringDataset
 from main import *
 from argparse import ArgumentParser

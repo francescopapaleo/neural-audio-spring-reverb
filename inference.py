@@ -13,7 +13,7 @@ import numpy as np
 
 
 
-from model import TCN, causal_crop
+from tcn import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram, plot_transfer_function
 from utils.rt60_compute import measure_rt60
 from utils.generator import generate_reference

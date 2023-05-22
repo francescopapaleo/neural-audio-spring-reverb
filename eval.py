@@ -6,17 +6,19 @@ from argparse import ArgumentParser
 
 import numpy as np
 import torch
+import torchsummary
 import auraloss
 import pyloudnorm as pyln
 
 from torch.utils.data import DataLoader
 from scipy.io import wavfile
 from dataload import PlateSpringDataset 
-from model import TCN
+from tcn import TCN
 from utils.plot import plot_compare_waveform, plot_zoom_waveform
 import matplotlib.pyplot as plt
 
 import pytorch_lightning as pl
+torch.backends.cudnn.benchmark = True
 
 pytorch_total_params = sum(p.numel() for p in model.parameters())
 
