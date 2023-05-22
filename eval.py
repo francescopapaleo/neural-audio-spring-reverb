@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from argparse import ArgumentParser
 
@@ -17,21 +16,24 @@ from model import TCN
 from utils.plot import plot_compare_waveform, plot_zoom_waveform
 import matplotlib.pyplot as plt
 
-# Define your constants here before using them in the ArgumentParser
-model_file = '/Users/francescopapaleo/git-box/smc-spring-reverb/models/tcn_1000.pt'
+import pytorch_lightning as pl
+
+pytorch_total_params = sum(p.numel() for p in model.parameters())
+
+# Define your constants here before using them in the ArgumentParse
 data_dir = DATA_DIR  # or provide your own default value
 results_path = RESULTS  # or provide your own default value
 batch_size = model_params["batch_size"]
 fs = fs
 
 # Initialize lists for storing metric values
+mse_loss_values = []
 l1_loss_values = []
 stft_loss_values = []
 lufs_diff_values = []
 aggregate_loss_values = []
 
-
-def evaluate_model(model_file, data_dir, batch_size, fs):
+def evaluate_model(filename, data_dir, batch_size, fs):
     print("## Test started...")
 
     # Load the subset  
@@ -41,6 +43,7 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
 
     print(torch.__version__)
     dev = torch.device('cpu')
+    # dev = torch.device('cuda')
     print(f"Using device: {dev}")
 
     # x_ch = batch_size
@@ -56,7 +59,8 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
         dilation_growth=model_params["dilation_growth"], 
         n_channels=model_params["n_channels"]
         )
-    model = torch.load('/Users/francescopapaleo/git-box/smc-spring-reverb/models/tcn_3000.pt')
+    # model.load_state_dict(torch.load(filename))
+    model = torch.load(filename)
     model.eval()
 
     print(f'Type of loaded model: {type(model)}')
@@ -154,12 +158,6 @@ def evaluate_model(model_file, data_dir, batch_size, fs):
     plot_zoom_waveform(target, output, t_start=0.5, t_end=0.6)
     
 
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--model_file", type=str, default=model_file)
-    parser.add_argument("--data_dir", type=str, default=DATA_DIR)
-    parser.add_argument("--batch_size", type=int, default=model_params["batch_size"])
-    parser.add_argument("--fs", type=int, default=fs)
-    args = parser.parse_args()
 
-    evaluate_model(args.model_file, args.data_dir, args.batch_size, args.fs)
+
+evaluate_model(tcn_1000.pth, 'data', 1, 16000)

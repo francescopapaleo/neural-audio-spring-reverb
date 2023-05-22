@@ -2,13 +2,13 @@ import json
 from pathlib import Path
 
 # Folders
-ROOT_DIR = Path(__file__).resolve().parent
+MAIN_DIR = Path(__file__).resolve().parent
 
-DATA_DIR = Path(ROOT_DIR / 'data')
-AUDIO_DIR = Path(ROOT_DIR / 'audio')
+DATA_DIR = Path(MAIN_DIR / 'data')
+AUDIO_DIR = Path(MAIN_DIR / 'audio')
 
-MODELS_DIR = Path(ROOT_DIR / 'models')
-RESULTS = Path(ROOT_DIR / 'results')
+MODELS_DIR = Path(MAIN_DIR / 'models')
+RESULTS = Path(MAIN_DIR / 'results')
 
 OUTPUT_FILE = Path(RESULTS / "processed.wav")
 

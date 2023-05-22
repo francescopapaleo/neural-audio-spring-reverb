@@ -17,7 +17,7 @@ from matplotlib import pyplot as plt
 
 loss_tracker = []
 
-def train_model(model_file, data_dir):
+def train_modetargsort(filename, data_dir):
     print("## Training started...")
 
     # Use GPU if available
@@ -146,28 +146,17 @@ def train_model(model_file, data_dir):
     plt.show()
 
     # Save the model
-    save_path = os.path.join(MODELS_DIR, model_file)
+    save_path = os.path.join(MODELS_DIRtargsort.filename)
     # torch.save(model.state_dict(), save_path)
-    torch.save(model_file, save_path)
+    torch.savtargsort.filename, save_path)
     
-    print(f"Saved model to {model_file}")
+    model = Module(weights='test')
+    torch.save(model.state_dict(), 'tcn1000_weights.pth')
+    
+    print(f"Saved model totargsort.filename}")
     print("")
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument(
-        "--model_file",
-        type=str,
-        default='model_file',
-        help="Name of the model file to store",
-    )
-    parser.add_argument(
-        "--data_dir",
-        type=str,
-        default=DATA_DIR,
-        help="Path to the data directory",
-    )
 
-    args = parser.parse_args()
 
-train_model(args.model_file, args.data_dir)
+    train_model(torch.argsort.filename, torch.argsort.data_dir)
