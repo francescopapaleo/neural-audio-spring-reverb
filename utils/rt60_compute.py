@@ -1,19 +1,19 @@
-from argparse import ArgumentParser
-import json
 from pathlib import Path
 
 import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 
+from config import parser
 eps = 1e-15
+args = parser.parse_args()
 
 """
 RT60 Measurement Routine
 ========================
 
 Automatically determines the reverberation time of an impulse response
-using the Schroeder method [1]_.
+using the Schroeder method [1].
 
 References
 ----------
@@ -26,8 +26,7 @@ https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental
 """
 
 
-
-def measure_rt60(h, fs=16000, decay_db=60, plot=False, rt60_tgt=None, folder='results'):
+def measure_rt60(h, sample_rate, decay_db=60, plot=False, rt60_tgt=None, folder='results'):
     """
     Analyze the RT60 of an impulse response. Optionaly plots some useful information.
 
@@ -49,8 +48,9 @@ def measure_rt60(h, fs=16000, decay_db=60, plot=False, rt60_tgt=None, folder='re
         to compare the estimated value.
     """
 
+    
     h = np.array(h)
-    fs = float(fs)
+    fs = float(sample_rate)
 
     # The power of the impulse response in dB
     power = h**2
@@ -156,14 +156,7 @@ def test_rt60_plot(ir):
 
 
 def main():
-    parser = ArgumentParser(description='Compute RT60 of an impulse response directly from a WAV file')
-    parser.add_argument('--h', type=str, help='Input WAV file')
-    parser.add_argument('--fs', type=float, default=None, help='Sampling frequency (default: None, use file\'s own)')
-    parser.add_argument('--decay_db', type=float, default=60, help='Decay in decibels (default: 60)')
-    parser.add_argument('--plot', action='store_true', help='Plot the power decay and estimated values')
-    parser.add_argument('--rt60_tgt', type=float, help='Target RT60 value')
-    parser.add_argument('--folder', type=str, default=None, help='Output file name and path')
-    
+     
     args = parser.parse_args()
 
     data, file_fs = wavfile.read(args.input_file, always_2d=True)

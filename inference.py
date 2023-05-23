@@ -1,68 +1,59 @@
-import json
-from pathlib import Path
-from argparse import ArgumentParser
-
-from main import model_params, processing_params, SAMPLE_RATE, INPUT_CH, OUTPUT_CH, MODEL_FILE, AUDIO_DIR
+import os
 from pathlib import Path
 
 import torch
 import torchaudio
-import scipy.signal
-import scipy.fftpack
-import numpy as np
+import torchsummary
+import matplotlib
+from matplotlib import pyplot as plt
 
-
-
-from tcn import TCN, causal_crop
-from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram, plot_transfer_function
 from utils.rt60_compute import measure_rt60
-from utils.generator import generate_reference
+import numpy as np
+import scipy.signal
 
-def make_inference(input, rt60=True):
+from tcn import TCN, causal_crop, model_params
+from config import parser
 
-    # Use GPU if availablepi 
-    device =  "cpu"
-    print(f"Using device: {device}")
+torch.backends.cudnn.benchmark = True
 
-    # Load the model
+def make_inference():
+    args = parser.parse_args()
+
+    models_dir = args.models_dir
+    model_file = args.load
+    load_from = Path(models_dir) / model_file
+    
+    print("loading selected model")
     model = TCN(
-        n_inputs=INPUT_CH,
-        n_outputs=OUTPUT_CH,
+        n_inputs=1,
+        n_outputs=1,
         cond_dim=model_params["cond_dim"], 
         kernel_size=model_params["kernel_size"], 
         n_blocks=model_params["n_blocks"], 
         dilation_growth=model_params["dilation_growth"], 
-        n_channels=model_params["n_channels"])
+        n_channels=model_params["n_channels"],
+    )
 
-    # Load the state dictionary
-    model = torch.load(MODEL_FILE)
-    model.eval()
+    model.load_state_dict(torch.load(load_from))
+    model = model.to(parser.parse_args().device)  # move the model to the right device
+    model.eval()  # set the model to evaluation mode
+
+    torchsummary.summary(model, [(1, 65536), (1, 2)], device=args.device)
 
     # Define the additional processing parameters
-    gain_dB = processing_params["gain_dB"]
-    c0 = processing_params["c0"]
-    c1 = processing_params["c1"]
-    mix = processing_params["mix"]
-    width = processing_params["width"]
-    max_length = processing_params["max_length"]
-    stereo = processing_params["stereo"]
-    tail = processing_params["tail"]
-    output_file = processing_params["output_file"]
-  
-    if isinstance(input_file, str):
-        # if the input is a string, we assume it's a file path
-        input_file_path = AUDIO_DIR / input_file
-        x_p, sample_rate = torchaudio.load(input_file_path)
-        x_p = x_p.float()
+    gain_dB = model_params["gain_dB"]
+    c0 = model_params["c0"]
+    c1 = model_params["c1"]
+    mix = model_params["mix"]
+    width = model_params["width"]
+    max_length = model_params["max_length"]
+    stereo = model_params["stereo"]
+    tail = model_params["tail"]
 
-    # if the input is a numpy array, convert it to a tensor
-    # elif isinstance(input, np.ndarray):
-    #     x_p = torch.from_numpy(input).unsqueeze(0)
-    #     sample_rate = SAMPLE_RATE
-    #     x_p = x_p.float()
-    # else:
-    #     raise ValueError("Invalid input type. Expected file path or numpy array.")
 
+    input_path = Path(args.audio_dir) / args.input
+    x_p, sample_rate = torchaudio.load(input_path)
+    x_p = x_p.float()
 
     # Receptive field
     pt_model_rf = model.compute_receptive_field()
@@ -124,10 +115,8 @@ def make_inference(input, rt60=True):
     y_hat /= y_hat.abs().max()
 
     # Save the output using torchaudio
-    if isinstance(input, np.ndarray):
-        output_file_name = "processed.wav"  # Or whatever makes sense in your application
-    else:
-        output_file_name = Path(input).stem + "_processed.wav"
+    output_file_name = Path(args.audio_dir).stem + "_processed.wav"
+    torchaudio.save(str(output_file_name), y_hat, sample_rate=int(sample_rate))
 
     # Measure RT60 of the output signal
     if rt60:
@@ -137,8 +126,5 @@ def make_inference(input, rt60=True):
     return y_hat
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="Run the inference script.")
-    parser.add_argument("--input", help="Path to the input file.")
-    args = parser.parse_args()
-
-    make_inference(args.input)
+    
+    make_inference()

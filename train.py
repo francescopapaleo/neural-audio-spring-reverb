@@ -9,55 +9,16 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from dataload import PlateSpringDataset
-from tcn import TCN, causal_crop
-from utils.plot import plot_compare_waveform, plot_zoom_waveform
+from tcn import TCN, causal_crop, model_params
+from plot import plot_compare_waveform, plot_zoom_waveform
 
 torch.backends.cudnn.benchmark = True
 
-model_params = {
-    "cond_dim": 0,
-    "n_blocks": 5,
-    "dilation_growth": 10,
-    "kernel_size": 6,
-    "n_channels": 32,
-    "length": 88800,
-    "lr": 0.001,
-    "batch_size": 1,
-    "c": 0.0,
-    'in_ch': 1,
-    'out_ch': 1,
-    "gain_dB": -0.1,
-    "c0": 0.6,
-    "c1": 0,
-    "mix": 100,
-    "width": 21,
-    "max_length": 30,
-    "stereo": False,
-    "tail": True
-    }
-
-parser = ArgumentParser()
-
-# add PROGRAM level args
-parser.add_argument('--main_dir', type=str, default='./')
-parser.add_argument('--data_dir', type=str, default='./data')
-parser.add_argument('--models_dir', type=str, default='./models')
-parser.add_argument('--filename', type=str, default='tcn_weights.pth')
-parser.add_argument('--device', type=str, default='cpu')
-parser.add_argument('--sample_rate', type=int, default=16000)
-parser.add_argument('--train_subset', type=str, default='train')
-parser.add_argument('--test_subset', type=str, default='test')
-parser.add_argument('--iters', type=int, default=250)
-parser.add_argument('--batch_size', type=int, default=1)
-parser.add_argument('--shuffle', type=bool, default=True)
-parser.add_argument('--model_params', type=dict, default=model_params)
-
+from config import parser
 args = parser.parse_args()
-sample_rate = args.sample_rate
-loss_tracker = []
 
 print("## Loading data...")
-train_dataset = PlateSpringDataset(args.data_dir, split=args.train_subset)
+train_dataset = PlateSpringDataset(args.data_dir, split=args.split)
 train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, 
                               batch_size=args.batch_size, 
                               shuffle=args.shuffle)
@@ -96,7 +57,9 @@ rf = model.compute_receptive_field()
 params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 print(f"Parameters: {params*1e-3:0.3f} k")
-print(f"Receptive field: {rf} samples or {(rf/ sample_rate)*1e3:0.1f} ms")
+print(f"Receptive field: {rf} samples or {(rf/ args.sr)*1e3:0.1f} ms")
+
+loss_tracker = []
 
 # Loss function
 loss_fn = auraloss.freq.MultiResolutionSTFTLoss(
@@ -131,7 +94,7 @@ x_batch = x_batch.to(device)
 y_batch = y_batch.to(device)
 c = c.to(device)
     
-torchsummary.summary(model, [(1,65536), (1,2)], device="cpu")
+torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
 
 # Training loop
 for n in range(args.iters):
@@ -167,6 +130,12 @@ for n in range(args.iters):
 # plt.plot(np.array(loss_tracker), label='loss')
 # plt.show()
 
-save_to = Path(args.models_dir) / args.filename
-torch.save(model.state_dict(), save_to, 
-           _use_new_zipfile_serialization=False)
+save_to = Path(args.models_dir) / args.save
+
+# data_to_save = {
+#     'state_dict': model.state_dict(),
+#     'model_params': model_params
+# }
+# torch.save(data_to_save, save_to, _use_new_zipfile_serialization=False)
+
+torch.save(model.state_dict(), save_to)

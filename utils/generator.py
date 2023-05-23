@@ -1,29 +1,32 @@
-import json
+# Description: Generate the reference signal for the experiment
 from pathlib import Path
 from argparse import ArgumentParser
 
 import numpy as np
 from scipy.io.wavfile import write
-from main import *
-from utils.plot import plot_signals 
-from pathlib import Path
+from plot import plot_signals 
 
-def sine(SAMPLE_RATE: int, 
+from config import parser
+
+args = parser.parse_args()
+sample_rate = args.sample_rate
+
+def sine(sample_rate: int, 
          duration: float, 
          amplitude: float, 
          frequency: float = 440.0) -> np.ndarray:
-    N = np.arange(0, duration, 1.0 / SAMPLE_RATE)
+    N = np.arange(0, duration, 1.0 / sample_rate)
     return amplitude * np.sin(2.0 * np.pi * frequency * N)
 
 
-def sweep_tone(SAMPLE_RATE: int, 
+def sweep_tone(sample_rate: int, 
                duration: float, 
                amplitude: float, 
                f0: float = 20, 
                f1: float = 20000, 
                inverse: bool = False) -> np.ndarray:
     R = np.log(f1 / f0)
-    t = np.arange(0, duration, 1.0 / SAMPLE_RATE)
+    t = np.arange(0, duration, 1.0 / sample_rate)
     output = np.sin((2.0 * np.pi * f0 * duration / R) * (np.exp(t * R / duration) - 1))
     if inverse:
         k = np.exp(t * R / duration)
@@ -35,11 +38,11 @@ def generate_reference(duration: float = 5.0):
     decibels = -18
     amplitude = 10 ** (decibels / 20)
     f0 = 5
-    f1 = SAMPLE_RATE / 2
+    f1 = sample_rate / 2
 
-    sweep = sweep_tone(SAMPLE_RATE, duration, amplitude, f0=f0, f1=f1)
+    sweep = sweep_tone(sample_rate, duration, amplitude, f0=f0, f1=f1)
     
-    inverse_filter = sweep_tone(SAMPLE_RATE, duration, amplitude, f0=f0, f1=f1, inverse=True)
+    inverse_filter = sweep_tone(sample_rate, duration, amplitude, f0=f0, f1=f1, inverse=True)
     
     N = len(sweep)
     reference = np.convolve(inverse_filter, sweep, mode='same')
@@ -50,14 +53,14 @@ def generate_reference(duration: float = 5.0):
     reference_int16 = np.int16(reference / np.max(np.abs(reference)) * 32767)
 
     # Save as .wav files
-    sweep_output_path = RESULTS / "sweep.wav"
-    write(sweep_output_path, SAMPLE_RATE, sweep_int16)
+    sweep_output_path = Path(args.results_dir) / "sweep.wav"
+    write(sweep_output_path, sample_rate, sweep_int16)
     
-    inverse_output_path = RESULTS / "inverse_filter.wav"
-    write(inverse_output_path, SAMPLE_RATE, inverse_int16)
+    inverse_output_path = Path(args.results_dir) / "inverse_filter.wav"
+    write(inverse_output_path, sample_rate, inverse_int16)
 
-    reference_output_path = RESULTS / "reference.wav"
-    write(reference_output_path, SAMPLE_RATE, reference_int16)
+    reference_output_path = Path(args.results_dir) / "reference.wav"
+    write(reference_output_path, sample_rate, reference_int16)
 
     return sweep_int16, inverse_int16, reference_int16
 
@@ -69,4 +72,4 @@ if __name__ == "__main__":
     sweep, inverse_filter, reference = generate_reference(duration)
 
     # Plot them
-    plot_signals(sweep, inverse_filter, reference, SAMPLE_RATE, duration, "reference.png")
+    plot_signals(sweep, inverse_filter, reference, sample_rate, duration, "reference.png")

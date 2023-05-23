@@ -1,21 +1,19 @@
-import json
+# Description: Computes the transfer function of the impulse response
 from pathlib import Path
-from argparse import ArgumentParser
-
-from main import *
 
 import scipy.signal
 import scipy.fftpack
 import numpy as np
 
-from pathlib import Path
-
 from inference import make_inference
-from utils.plot import plot_compare_waveform, plot_zoom_waveform, get_spectrogram, plot_compare_spectrogram, plot_transfer_function
+from plot import plot_transfer_function
 from utils.rt60_compute import measure_rt60
 from utils.generator import generate_reference
+from config import parser
 
-# Script to generate the transfer function of the pre-trained model
+args = parser.parse_args()
+sample_rate = args.sample_rate
+
 
 def fft_scipy(x: np.ndarray, fft_size: int, axis: int = -1) -> np.ndarray:
         # Pad x with zeros at the end if padding_size is positive
@@ -63,7 +61,7 @@ def tf_main(duration: float = 5.0):
     magnitude = 20 * np.log10(np.abs(tf_measured))
     phase = np.angle(tf_measured) * 180 / np.pi
     
-    plot_transfer_function(magnitude, phase, SAMPLE_RATE, "tf_TCN_00")
+    plot_transfer_function(magnitude, phase, sample_rate, "tf_TCN_00")
 
     return tf_measured
 
