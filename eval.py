@@ -20,6 +20,8 @@ torch.backends.cudnn.benchmark = True
 args = parser.parse_args()
 sample_rate = args.sr
 
+parser.add_argument('--split', type=str, default='model_best.pth.tar', help='model checkpoint to load')
+
 print("## Loading data...")
 test_dataset = PlateSpringDataset(args.data_dir, split=args.split)
 test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, 

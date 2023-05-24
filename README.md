@@ -11,7 +11,7 @@ python train.py --save MODEL_NAME --iters NUMBEE_OF_ITERATIONS
 To test the model on new data execute from terminal:
 
 ```bash
-python test.py --load MODEL_NAME 
+python test.py --load MODEL_NAME --split test
 ```
 
 To make an inference on an audio file execute from terminal:
@@ -78,8 +78,8 @@ options:
 ├── utils/                  # Utility functions
 |
 ├── config.py               # Configuration file
+├── eval.py                 # Evaluation script
 ├── inference.py            # Inference script
-├── test.py                 # Evaluation script
 ├── train.py                # Training script
 ├── README.md
 └── requirements.txt

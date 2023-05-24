@@ -15,7 +15,6 @@ args = parser.parse_args()
 torch.backends.cudnn.benchmark = True
 torch.manual_seed(args.seed)
 
-
 print("## Loading data...")
 train_dataset = PlateSpringDataset(args.data_dir, split=args.split)
 train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, 
