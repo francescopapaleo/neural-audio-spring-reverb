@@ -13,7 +13,6 @@ from tcn import TCN, causal_crop, model_params
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
 
 import pyloudnorm as pyln
-from scipy.io import wavfile
 
 torch.backends.cudnn.benchmark = True
 
@@ -51,7 +50,7 @@ model.eval()  # set the model to evaluation mode
 
 torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
 
-print("## Evaluation...")
+print("## Testing...")
 
 # Metrics
 results = {
