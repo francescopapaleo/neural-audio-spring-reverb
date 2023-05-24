@@ -94,26 +94,24 @@ def measure_rt60(h, sample_rate, decay_db=60, plot=False, rt60_tgt=None, folder=
 
         T = get_time(power_db, fs)
 
-        # plot power and energy
-        plt.plot(get_time(energy_db, fs), energy_db, label="Energy")
+        fig, ax = plt.subplots(figsize=(15, 7))
+        ax.plot(get_time(energy_db, sample_rate), energy_db, label="Energy")
 
         # now the linear fit
-        plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
-        plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
-        plt.vlines(
-            est_rt60, energy_db_min, 0, linestyles="dashed", label="Estimated RT60"
-        )
+        ax.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
+        ax.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
+        ax.vlines(est_rt60, energy_db[-1], 0, linestyles="dashed", label="Estimated RT60")
 
         if rt60_tgt is not None:
-            plt.vlines(rt60_tgt, energy_db_min, 0, label="Target RT60")
+            ax.vlines(rt60_tgt, energy_db[-1], 0, label="Target RT60")
 
-        plt.xlabel('Time (s)')
-        plt.ylabel('Energy (dB)')
+        ax.set_xlabel('Time (s)')
+        ax.set_ylabel('Energy (dB)')
 
-        plt.legend()
+        ax.legend()
 
-        plt.savefig(Path(folder) / 'rt_60.png')
-        plt.show()
+        fig.savefig(Path(folder) / 'rt60.png')
+        plt.close(fig)
 
     return est_rt60
 

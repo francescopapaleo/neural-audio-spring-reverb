@@ -52,6 +52,9 @@ Estimated Total Size (MB): 252.60
 ![Loss function plot](loss_plot.png)
 
  ## Evaluation...
+
+```python eval.py --load tcn_test_50.pth```
+
 ```
 Average L1 loss: 0.09210855513811111
 Average STFT loss: 1.705861210823059
@@ -67,8 +70,11 @@ Average Aggregate Loss: 1.7979698181152344
 
 
 ## RT60
-![](rt_60.png)
+```python -m utils.transfer_function --load tcn_test_50.pth --input inverse_filter.wav```
+
+![](rt60.png)
 
 ## Transfer Function
+
 ![](transfer_function.png)
 

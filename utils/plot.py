@@ -66,7 +66,7 @@ def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
     else:
         i_end = len(t)
 
-    fig, ax = plt.subplots(nrows=1, ncols=1)
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 7))
 
     ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
@@ -77,7 +77,8 @@ def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
     ax.grid(True)
     ax.legend()
 
-    plt.savefig(Path(args.results_dir) / 'waveform_zoom.png')
+    plt.savefig(Path(results_dir) / 'waveform_zoom.png')
+    print("Saved zoomed waveform plot to: ", Path(results_dir) / 'waveform_zoom.png')
     plt.close(fig)
     print("Saved zoomed waveform plot to: ", Path(args.results_dir) / 'waveform_zoom.png')
 
@@ -100,7 +101,7 @@ def get_spectrogram(
 
 
 def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'Title3'], ylabel="freq_bin", aspect="auto", xmax=None):
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5)) # 1 row, 3 columns
+    fig, axs = plt.subplots(1, 3, figsize=(15, 7)) # 1 row, 3 columns
 
     for idx, spec in enumerate([spec1, spec2, spec3]):
         axs[idx].set_title(titles[idx])
@@ -174,7 +175,7 @@ def plot_loss_function(loss_history, args):
         Parsed command line arguments
     '''
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 7))
 
     ax.plot(loss_history, label='Loss')
     ax.set_title('Loss function over the training iterations')
