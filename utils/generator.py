@@ -1,15 +1,14 @@
 # Description: Generate the reference signal for the experiment
 from pathlib import Path
-from argparse import ArgumentParser
 
 import numpy as np
 from scipy.io.wavfile import write
-from plot import plot_signals 
+from utils.plot import plot_signals 
 
 from config import parser
 
 args = parser.parse_args()
-sample_rate = args.sample_rate
+sample_rate = args.sr
 
 def sine(sample_rate: int, 
          duration: float, 

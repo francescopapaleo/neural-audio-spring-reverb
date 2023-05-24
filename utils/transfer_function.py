@@ -1,4 +1,5 @@
 # Description: Computes the transfer function of the impulse response
+from config import parser
 from pathlib import Path
 
 import scipy.signal
@@ -6,13 +7,12 @@ import scipy.fftpack
 import numpy as np
 
 from inference import make_inference
-from plot import plot_transfer_function
+from utils.plot import plot_transfer_function
 from utils.rt60_compute import measure_rt60
 from utils.generator import generate_reference
-from config import parser
 
 args = parser.parse_args()
-sample_rate = args.sample_rate
+sample_rate = args.sr
 
 
 def fft_scipy(x: np.ndarray, fft_size: int, axis: int = -1) -> np.ndarray:
@@ -50,7 +50,7 @@ def tf_main(duration: float = 5.0):
     
     print(type(inverse_filter))  # Check its type
 
-    y_hat = make_inference(inverse_filter, rt60=False)
+    y_hat = make_inference()
 
     print("Computing transfer function...")
 

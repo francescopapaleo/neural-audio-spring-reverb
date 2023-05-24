@@ -1,4 +1,4 @@
-import os
+from config import parser
 from pathlib import Path
 
 import torch
@@ -8,22 +8,21 @@ import auraloss
 from matplotlib import pyplot as plt
 import numpy as np
 
-from dataload import PlateSpringDataset
+from utils.dataload import PlateSpringDataset
 from tcn import TCN, causal_crop, model_params
-# from plot import plot_compare_waveform, plot_zoom_waveform
+from utils.plot import plot_compare_waveform, plot_zoom_waveform
 
 import pyloudnorm as pyln
 from scipy.io import wavfile
 
 torch.backends.cudnn.benchmark = True
 
-from config import parser
 
 args = parser.parse_args()
-sample_rate = args.sample_rate
+sample_rate = args.sr
 
 print("## Loading data...")
-test_dataset = PlateSpringDataset(args.data_dir, split=args.train_subset)
+test_dataset = PlateSpringDataset(args.data_dir, split=args.split)
 test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, 
                               batch_size=args.batch_size, 
                               shuffle=args.shuffle)
@@ -142,72 +141,52 @@ plt.title("Metrics Over Time")
 plt.legend()
 plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
 
-def plot_compare_waveform(y, y_pred):
-    '''Plot the waveform of the input, the prediction and the ground truth
-    Parameters
-    ----------
-    y : array_like
-        Ground truth signal
-    y_pred : array_like
-        The predicted signal
-    fs : int, optional
-        The sampling frequency (default to 1, i.e., samples).'''
-
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
-    ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
-    ax.plot(y_pred, alpha=0.7, label='Prediction', color='red')
-    ax.set_title('Waveform')
-    ax.set_xlabel('Sample Index')
-    ax.set_ylabel('Amplitude')
-    ax.grid(True)
-    ax.legend()
-    plt.savefig(Path(args.results_dir) / 'waveform_plot.png')
-    plt.close(fig)
-    print("Saved waveform plot to: ", Path(args.results_dir) / 'waveform_plot.png')
-
-def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
-    '''Plot the waveform of the ground truth and the prediction
-    Parameters
-    ----------
-    y : array_like
-        Ground truth signal
-    y_pred : array_like
-        The predicted signal
-    fs : int, optional
-        The sampling frequency (default to 1, i.e., samples).
-    t_start : float, optional
-        The start time of the plot (default to None).
-    t_end : float, optional
-        The end time of the plot (default to None).'''
+# def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
+    # '''Plot the waveform of the ground truth and the prediction
+    # Parameters
+    # ----------
+    # y : array_like
+    #     Ground truth signal
+    # y_pred : array_like
+    #     The predicted signal
+    # fs : int, optional
+    #     The sampling frequency (default to 1, i.e., samples).
+    # t_start : float, optional
+    #     The start time of the plot (default to None).
+    # t_end : float, optional
+    #     The end time of the plot (default to None).'''
     
-    # Create a time array
-    t = np.arange(y.shape[0]) / sample_rate
+    # # Create a time array
+    # t = np.arange(y.shape[0]) / sample_rate
 
     # Determine the indices corresponding to the start and end times
-    if t_start is not None:
-        i_start = int(t_start * sample_rate)
-    else:
-        i_start = 0
+    # if t_start is not None:
+    #     i_start = int(t_start * sample_rate)
+    # else:
+    #     i_start = 0
 
-    if t_end is not None:
-        i_end = int(t_end * sample_rate)
-    else:
-        i_end = len(t)
+    # if t_end is not None:
+    #     i_end = int(t_end * sample_rate)
+    # else:
+    #     i_end = len(t)
 
-    fig, ax = plt.subplots(nrows=1, ncols=1)
+    # fig, ax = plt.subplots(nrows=1, ncols=1)
 
-    ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
-    ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
+    # ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
+    # ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
 
-    ax.set_title('Waveform')
-    ax.set_xlabel('Time [s]')
-    ax.set_ylabel('Amplitude')
-    ax.grid(True)
-    ax.legend()
+    # ax.set_title('Waveform')
+    # ax.set_xlabel('Time [s]')
+    # ax.set_ylabel('Amplitude')
+    # ax.grid(True)
+    # ax.legend()
 
-    plt.savefig(Path(args.results_dir) / 'waveform_zoom.png')
-    plt.close(fig)
-    print("Saved zoomed waveform plot to: ", Path(args.results_dir) / 'waveform_zoom.png')
+    # plt.savefig(Path(args.results_dir) / 'waveform_zoom.png')
+    # plt.close(fig)
+    # print("Saved zoomed waveform plot to: ", Path(args.results_dir) / 'waveform_zoom.png')
 
-plot_compare_waveform(t_float, o_float)
-plot_zoom_waveform(t_float, o_float, t_start=0.5, t_end=0.6)
+t_plot = target.detach().cpu().numpy().reshape(-1)
+o_plot = output.detach().cpu().numpy().reshape(-1)
+
+plot_compare_waveform(t_plot, o_plot)
+plot_zoom_waveform(t_plot, o_plot,args.sr, t_start=0.5, t_end=0.6)

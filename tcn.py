@@ -1,4 +1,4 @@
-from pathlib import Path
+from config import parser
 import torch
 '''
 Code from the paper: https://github.com/csteinmetz1/steerable-nafx

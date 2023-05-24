@@ -1,18 +1,14 @@
-import os
+from config import parser
 from pathlib import Path
 
 import torch
 import torchaudio
 import torchsummary
-import matplotlib
-from matplotlib import pyplot as plt
 
 from utils.rt60_compute import measure_rt60
-import numpy as np
 import scipy.signal
 
 from tcn import TCN, causal_crop, model_params
-from config import parser
 
 torch.backends.cudnn.benchmark = True
 
@@ -52,14 +48,14 @@ def make_inference():
 
 
     input_path = Path(args.audio_dir) / args.input
-    x_p, sample_rate = torchaudio.load(input_path)
+    x_p, fs_x = torchaudio.load(input_path)
     x_p = x_p.float()
 
     # Receptive field
     pt_model_rf = model.compute_receptive_field()
 
     # Crop input signal if needed
-    max_samples = int(sample_rate * max_length)
+    max_samples = int(fs_x * max_length)
     x_p_crop = x_p[:, :max_samples]
     chs = x_p_crop.shape[0]
 
@@ -77,7 +73,7 @@ def make_inference():
     sos = scipy.signal.butter(
         8,
         20.0,
-        fs=sample_rate,
+        fs=fs_x,
         output="sos",
         btype="highpass"
     )
@@ -115,13 +111,12 @@ def make_inference():
     y_hat /= y_hat.abs().max()
 
     # Save the output using torchaudio
-    output_file_name = Path(args.audio_dir).stem + "_processed.wav"
-    torchaudio.save(str(output_file_name), y_hat, sample_rate=int(sample_rate))
+    output_file_name = Path(args.results_dir).stem + "_processed.wav"
+    torchaudio.save(str(output_file_name), y_hat, sample_rate=int(fs_x))
 
     # Measure RT60 of the output signal
-    if rt60:
-        rt60 = measure_rt60(y_hat[0].numpy(), fs=sample_rate, plot=True, rt60_tgt=4.0)
-        print("Estimated RT60:", rt60)
+    rt60 = measure_rt60(y_hat[0].numpy(), sample_rate=fs_x, plot=True, rt60_tgt=4.0)
+    print("Estimated RT60:", rt60)
 
     return y_hat
 

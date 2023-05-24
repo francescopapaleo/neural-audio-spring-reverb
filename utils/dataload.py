@@ -1,5 +1,6 @@
 # Description: This file contains the code for the dataset class and the subset generator class.
 from pathlib import Path
+from config import parser
 
 import h5py
 from torch.utils.data import Dataset
@@ -7,9 +8,11 @@ import torch
 import numpy as np
 import os
 
-torch.manual_seed(42)
+args = parser.parse_args()
 
-from config import parser
+# Set seed
+torch.manual_seed(args.seed)
+
 
 class PlateSpringDataset(Dataset):
     def __init__(self, root_dir, split='train'):

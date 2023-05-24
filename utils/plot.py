@@ -23,8 +23,7 @@ def plot_compare_waveform(y, y_pred):
         Ground truth signal
     y_pred : array_like
         The predicted signal
-    fs : int, optional
-        The sampling frequency (default to 1, i.e., samples).'''
+        '''
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
@@ -164,3 +163,28 @@ def plot_transfer_function(magnitude, phase, sample_rate, file_name):
     plt.savefig(Path(args.results_dir) / file_name)
     plt.close(fig)
     print("Saved transfer function plot to: ", Path(args.results_dir) / file_name)
+
+def plot_loss_function(loss_history, args):
+    '''Plot the loss function over the training iterations
+    Parameters
+    ----------
+    loss_history : list
+        List of loss values over the training iterations
+    args : Namespace
+        Parsed command line arguments
+    '''
+
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
+
+    ax.plot(loss_history, label='Loss')
+    ax.set_title('Loss function over the training iterations')
+    ax.set_xlabel('Iteration')
+    ax.set_ylabel('Loss')
+    ax.grid(True)
+    ax.legend()
+
+    loss_function_path = Path(args.results_dir) / 'loss_plot.png'
+    plt.savefig(loss_function_path)
+    plt.close(fig)
+    print("Saved loss function plot to: ", loss_function_path)
+

@@ -1,21 +1,20 @@
-import os
-from pathlib import Path
-from argparse import ArgumentParser
-
+# train.py
 import torch
 import torchsummary
 import auraloss
+from pathlib import Path
 from matplotlib import pyplot as plt
-import numpy as np
 
-from dataload import PlateSpringDataset
-from tcn import TCN, causal_crop, model_params
-from plot import plot_compare_waveform, plot_zoom_waveform
-
-torch.backends.cudnn.benchmark = True
+from utils.dataload import PlateSpringDataset
+from tcn import TCN, model_params
+from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_loss_function
 
 from config import parser
 args = parser.parse_args()
+
+torch.backends.cudnn.benchmark = True
+torch.manual_seed(args.seed)
+
 
 print("## Loading data...")
 train_dataset = PlateSpringDataset(args.data_dir, split=args.split)
@@ -98,6 +97,7 @@ torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
 
 # Training loop
 for n in range(args.iters):
+
     optimizer.zero_grad()   # zero the gradient buffers
 
     # Crop input and target data
@@ -124,18 +124,12 @@ for n in range(args.iters):
 
     y_hat /= y_hat.abs().max()
 
+
 # Plot the results
-# plot_compare_waveform(y_crop, y_hat, sample_rate)
-# plot_zoom_waveform(y_crop, y_hat, t_start=0.0, t_end=0.1, sample_rate)
-# plt.plot(np.array(loss_tracker), label='loss')
-# plt.show()
+plot_compare_waveform(y, y_hat)
+plot_zoom_waveform(y, y_hat, args.sr, t_start=0.0, t_end=2.5)
+plot_loss_function(loss_tracker, args)
 
+# Save the model
 save_to = Path(args.models_dir) / args.save
-
-# data_to_save = {
-#     'state_dict': model.state_dict(),
-#     'model_params': model_params
-# }
-# torch.save(data_to_save, save_to, _use_new_zipfile_serialization=False)
-
 torch.save(model.state_dict(), save_to)

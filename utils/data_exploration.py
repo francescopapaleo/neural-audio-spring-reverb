@@ -1,19 +1,18 @@
 # Description: This file contains the code for data exploration and visualization
+from config import parser
 from pathlib import Path
 from scipy.io import wavfile
+from torch.utils.data import Dataset
 
 import os
 import h5py
 import numpy as np
 import random
-import torch
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 h5_path = '/Users/francescopapaleo/datasets/plate-spring/spring/'
 destination = '/Users/francescopapaleo/git-box/smc-spring-reverb/data/'
 seed = 42  # You can choose any seed value
+args = parser.parse_args()
 
 random.seed(seed)
 np.random.seed(seed)
@@ -116,11 +115,11 @@ dataset.print_info()
 subset = dataset.load_random_subset(10, seed=42)
 dataset.print_subset_indexes(subset)
 
-concatenated_dry = dataset.concatenate_samples(subset_dry)
-concatenated_wet = dataset.concatenate_samples(subset_wet)
+# concatenated_dry = dataset.concatenate_samples()
+# concatenated_wet = dataset.concatenate_samples()
 
 # Verify if the dataset contains any metadata
-with h5py.File(os.path.join(H5_DATA,'dry_train.h5'), 'r') as f:
+with h5py.File(os.path.join(args.target_dir,'dry_train.h5'), 'r') as f:
     print(f['Xtrain'].attrs.keys())
     print(f['Xtrain'].attrs.values())
     values = list(f['Xtrain'].attrs.values())

@@ -1,12 +1,10 @@
-import json
-from pathlib import Path
-from argparse import ArgumentParser
+from config import parser
+args = parser.parse_args()
 
 import sys
 import platform
 import torch
 import torchaudio
-
 
 def system_info():
     # System information

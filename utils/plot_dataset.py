@@ -4,8 +4,8 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-from dataload import PlateSpringDataset
-from plot import get_spectrogram
+from utils.dataload import PlateSpringDataset
+from utils.plot import get_spectrogram
 
 
 def visualize_data(**args):
