@@ -1,7 +1,9 @@
 # train.py
+import numpy as np
 import torch
 import torchsummary
 import auraloss
+import pickle
 from pathlib import Path
 from matplotlib import pyplot as plt
 
@@ -57,14 +59,23 @@ params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 print(f"Parameters: {params*1e-3:0.3f} k")
 print(f"Receptive field: {rf} samples or {(rf/ args.sr)*1e3:0.1f} ms")
 
-loss_tracker = []
+# Initialize lists for storing losses values
+mse_loss_values = []
+l1_loss_values = []
+stft_loss_values = []
+esr_loss_values = []
+dc_loss_values = []
+snr_loss_values = []
 
-# Loss function
-loss_fn = auraloss.freq.MultiResolutionSTFTLoss(
+mse = torch.nn.MSELoss()
+l1 = torch.nn.L1Loss()
+stft = auraloss.freq.MultiResolutionSTFTLoss(
     fft_sizes=[32, 128, 512, 2048],
     win_lengths=[32, 128, 512, 2048],
     hop_sizes=[16, 64, 256, 1024])
-loss_fn_l1 = torch.nn.L1Loss()
+esr = auraloss.time.ESRLoss()
+dc = auraloss.time.DCLoss()
+snr = auraloss.time.SNRLoss()
 
 # Optimizer
 optimizer = torch.optim.Adam(model.parameters(), model_params['lr'])
@@ -104,29 +115,88 @@ for n in range(args.iters):
     stop_idx = start_idx + model_params["length"]
     x_crop = x_batch[..., start_idx - rf + 1 : stop_idx]
     y_crop = y_batch[..., start_idx : stop_idx]
+    input = x_crop
+    target = y_crop
 
     # Forward pass
-    y_hat = model(x_crop, c)
+    output = model(input, c)
 
+    mse_loss = mse(output, target)
+    l1_loss = l1(output, target)      
+    stft_loss = stft(output, target)
+    esr_loss = esr(output, target)
+    dc_loss = dc(output, target)
+    snr_loss = snr(output, target)
+    
     # Compute the loss
-    loss = loss_fn(y_hat, y_crop)
-    # loss_fn(y_hat, y_crop)
-
-    loss.backward()         # Backward pass
+    stft_loss.backward()         # Backward pass
     optimizer.step()        # Update the model parameters
     scheduler.step()        # Update the learning rate scheduler
 
     if (n + 1) % 1 == 0:
-            loss_info = f"Loss at iteration {n+1}: {loss.item():0.3e}"
+            loss_info = f"Epoch {n+1} Training Loss: {stft_loss.item():0.3e}"
             print(f" {loss_info} | ")
-            loss_tracker.append(loss.item())
+            print("")
+            print(f"MSE loss: {mse_loss.item():0.3e}")
+            print(f"L1 loss: {l1_loss.item():0.3e}")
+            print(f"STFT loss: {stft_loss.item():0.3e}")
+            print(f"ESR loss: {esr_loss.item():0.3e}")
+            print(f"DC loss: {dc_loss.item():0.3e}")
+            print(f"SNR loss: {snr_loss.item():0.3e}")
 
-    y_hat /= y_hat.abs().max()
 
+            # Store metric values over time
+            mse_loss_values.append(mse_loss.item())
+            l1_loss_values.append(l1_loss.item())
+            stft_loss_values.append(stft_loss.item())
+            esr_loss_values.append(esr_loss.item())
+            dc_loss_values.append(dc_loss.item())
+            snr_loss_values.append(snr_loss.item())
 
-# Plot the results
-plot_loss_function(loss_tracker, args)
+# Convert lists to numpy arrays for easier manipulation
+mse_loss_values = np.array(mse_loss_values)
+l1_loss_values = np.array(l1_loss_values)
+stft_loss_values = np.array(stft_loss_values)
+esr_loss_values = np.array(esr_loss_values)
+dc_loss_values = np.array(dc_loss_values)
+snr_loss_values = np.array(snr_loss_values)
+
+# Save the loss data
+with open('loss_data.pkl', 'wb') as f:
+    pickle.dump({
+        'mse_loss_values': mse_loss_values,
+        'l1_loss_values': l1_loss_values,
+        'stft_loss_values': stft_loss_values,
+        'esr_loss_values': esr_loss_values,
+        'dc_loss_values': dc_loss_values,
+        'snr_loss_values': snr_loss_values
+    }, f)
+
+print('Saving plots...')
+normalized_mse_loss = (mse_loss_values - np.min(mse_loss_values)) / (np.max(mse_loss_values) - np.min(mse_loss_values))
+normalized_l1_loss = (l1_loss_values - np.min(l1_loss_values)) / (np.max(l1_loss_values) - np.min(l1_loss_values))
+normalized_stft_loss = (stft_loss_values - np.min(stft_loss_values)) / (np.max(stft_loss_values) - np.min(stft_loss_values))
+normalized_esr_loss = (esr_loss_values - np.min(esr_loss_values)) / (np.max(esr_loss_values) - np.min(esr_loss_values))
+normalized_dc_loss = (dc_loss_values - np.min(dc_loss_values)) / (np.max(dc_loss_values) - np.min(dc_loss_values))
+normalized_snr_loss = (snr_loss_values - np.min(snr_loss_values)) / (np.max(snr_loss_values) - np.min(snr_loss_values))
+
+# Plotting the metrics over time
+time_values = np.arange(args.iters)  # Create an array of iteration numbers
+
+plt.figure(figsize=(15, 7))
+plt.plot(time_values, normalized_mse_loss, label="MSE Loss")
+plt.plot(time_values, normalized_l1_loss, label="L1 Loss")
+plt.plot(time_values, normalized_stft_loss, label="STFT Loss")
+plt.plot(time_values, normalized_esr_loss, label="ESR Loss")
+plt.plot(time_values, normalized_dc_loss, label="DC Loss")
+plt.plot(time_values, normalized_snr_loss, label="SNR Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Normalized Metric Value")
+plt.title("Training Progress: Metrics Over Epochs")
+plt.legend()
+plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
 
 # Save the model
 save_to = Path(args.models_dir) / args.save
 torch.save(model.state_dict(), save_to)
+

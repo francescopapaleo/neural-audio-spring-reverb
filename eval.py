@@ -5,6 +5,7 @@ import torch
 import torchaudio
 import torchsummary
 import auraloss
+import pickle
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -12,18 +13,13 @@ from utils.dataload import PlateSpringDataset
 from tcn import TCN, causal_crop, model_params
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
 
-import pyloudnorm as pyln
-
 torch.backends.cudnn.benchmark = True
-
 
 args = parser.parse_args()
 sample_rate = args.sr
 
-parser.add_argument('--split', type=str, default='model_best.pth.tar', help='model checkpoint to load')
-
 print("## Loading data...")
-test_dataset = PlateSpringDataset(args.data_dir, split=args.split)
+test_dataset = PlateSpringDataset(args.data_dir, split='test')
 test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, 
                               batch_size=args.batch_size, 
                               shuffle=args.shuffle)
@@ -54,25 +50,23 @@ torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
 
 print("## Testing...")
 
-# Metrics
-results = {
-"l1_loss": [],
-"stft_loss": [],
-"lufs_diff": [],
-"aggregate_loss": []
-}
-
 # Initialize lists for storing metric values
-mse_loss_values = []
-l1_loss_values = []
-stft_loss_values = []
-lufs_diff_values = []
-aggregate_loss_values = []
+mse_metric_values = []
+l1_metric_values = []
+stft_metric_values = []
+esr_metric_values = []
+dc_metric_values = []
+snr_metric_values = []
 
 mse = torch.nn.MSELoss()
 l1 = torch.nn.L1Loss()
-stft = auraloss.freq.STFTLoss()
-meter = pyln.Meter(sample_rate)
+stft = auraloss.freq.MultiResolutionSTFTLoss(
+    fft_sizes=[32, 128, 512, 2048],
+    win_lengths=[32, 128, 512, 2048],
+    hop_sizes=[16, 64, 256, 1024])
+esr = auraloss.time.ESRLoss()
+dc = auraloss.time.DCLoss()
+snr = auraloss.time.SNRLoss()
 
 # Evaluation Loop
 with torch.no_grad():
@@ -88,31 +82,56 @@ with torch.no_grad():
         output = model(input_pad)
 
         # Calculate the metrics
-        mse_loss = mse(output, target).cpu().numpy()
-        l1_loss = l1(output, target).cpu().numpy()      
-        stft_loss = stft(output, target).cpu().numpy()
-        aggregate_loss = l1_loss + stft_loss 
+        mse_metric = mse(output, target)
+        l1_metric = l1(output, target)
+        stft_metric = stft(output, target)
+        esr_metric = esr(output, target)
+        dc_metric = dc(output, target)
+        snr_metric = snr(output, target)
 
-        target_lufs = meter.integrated_loudness(target.squeeze().cpu().numpy())
-        output_lufs = meter.integrated_loudness(output.squeeze().cpu().numpy())
-        lufs_diff = np.abs(output_lufs - target_lufs)
-    
-        results["l1_loss"].append(l1_loss)
-        results["stft_loss"].append(stft_loss)
-        results["lufs_diff"].append(lufs_diff)
-        results["aggregate_loss"].append(aggregate_loss)
-        
         # Store metric values over time
-        l1_loss_values.append(l1_loss)
-        stft_loss_values.append(stft_loss)
-        lufs_diff_values.append(lufs_diff)
-        aggregate_loss_values.append(aggregate_loss)
+        mse_metric_values.append(mse_metric.item())
+        l1_metric_values.append(l1_metric.item())
+        stft_metric_values.append(stft_metric.item())
+        esr_metric_values.append(esr_metric.item())
+        dc_metric_values.append(dc_metric.item())
+        snr_metric_values.append(snr_metric.item())
 
+# Convert lists to numpy arrays
+mse_metric_values = np.array(mse_metric_values)
+l1_metric_values = np.array(l1_metric_values)
+stft_metric_values = np.array(stft_metric_values)
+esr_metric_values = np.array(esr_metric_values)
+dc_metric_values = np.array(dc_metric_values)
+snr_metric_values = np.array(snr_metric_values)
 
-print(f"Average L1 loss: {np.mean(results['l1_loss'])}")
-print(f"Average STFT loss: {np.mean(results['stft_loss'])}")
-print(f"Average LUFS difference: {np.mean(results['lufs_diff'])}")
-print(f"Average Aggregate Loss: {np.mean(results['aggregate_loss'])}")
+# Save metric data
+with open(Path(args.results_dir) / 'eval_metrics.pkl', 'wb') as f:
+    pickle.dump([
+        mse_metric_values, 
+        l1_metric_values, 
+        stft_metric_values, 
+        esr_metric_values, 
+        dc_metric_values, 
+        snr_metric_values], 
+        f)
+    
+# normalize the metrics
+mse_metric_values = (mse_metric_values - np.mean(mse_metric_values)) / np.std(mse_metric_values)
+l1_metric_values = (l1_metric_values - np.mean(l1_metric_values)) / np.std(l1_metric_values)
+stft_metric_values = (stft_metric_values - np.mean(stft_metric_values)) / np.std(stft_metric_values)
+esr_metric_values = (esr_metric_values - np.mean(esr_metric_values)) / np.std(esr_metric_values)
+dc_metric_values = (dc_metric_values - np.mean(dc_metric_values)) / np.std(dc_metric_values)
+snr_metric_values = (snr_metric_values - np.mean(snr_metric_values)) / np.std(snr_metric_values)
+
+# Print Average Metrics
+print('MSE: ', np.mean(mse_metric_values))
+print('L1: ', np.mean(l1_metric_values))
+print('STFT: ', np.mean(stft_metric_values))
+print('ESR: ', np.mean(esr_metric_values))
+print('DC: ', np.mean(dc_metric_values))
+print('SNR: ', np.mean(snr_metric_values))
+
 
 # print('Saving audio files...')
 ofile = Path(args.results_dir) / 'eval_output.wav'
@@ -128,17 +147,20 @@ torchaudio.save(tfile, t_float, sample_rate)
 torchaudio.save(ifile, i_float, sample_rate)
 
 print('Saving plots...')
+
 # Plotting the metrics over time
-time_values = range(len(l1_loss_values))
+time_values = np.arange(len(test_dataloader))
 
 plt.figure(figsize=(15, 7))
-plt.plot(time_values, l1_loss_values, label="L1 Loss")
-plt.plot(time_values, stft_loss_values, label="STFT Loss")
-plt.plot(time_values, lufs_diff_values, label="LUFS Difference")
-plt.plot(time_values, aggregate_loss_values, label="Aggregate Loss")
-plt.xlabel("Time")
-plt.ylabel("Metric Value")
-plt.title("Evaluation: Metrics Over Time (Test Set)")
+plt.plot(time_values, mse_metric_values, label="MSE")
+plt.plot(time_values, l1_metric_values, label="L1")
+plt.plot(time_values, stft_metric_values, label="STFT")
+plt.plot(time_values, esr_metric_values, label="ESR")
+plt.plot(time_values, dc_metric_values, label="DC")
+plt.plot(time_values, snr_metric_values, label="SNR")
+plt.xlabel("Sample")
+plt.ylabel("Normalized Metric Value")
+plt.title("Evaluation: Metrics Over Test Set")
 plt.legend()
 plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
 

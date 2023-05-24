@@ -1,7 +1,10 @@
 # Report
 Setting un a repository with the code and the results of the experiments for the baseline model.
 The structure of the model and the training-without validation are taken from: (https://github.com/csteinmetz1/steerable-nafx)
-```python train.py --save tcn_test_250.pth --iters 250```
+
+```
+python train.py --save tcn_250_report.pth --iters 250
+```
 
 ## Training...
 
@@ -48,21 +51,25 @@ Estimated Total Size (MB): 252.60
  Loss at iteration 250: 1.003e+00 | 
 ```
 
-![Loss function plot](loss_plot.png)
+![](train_metrics.png)
 
  ## Evaluation...
 
-```python eval.py --load tcn_test_250.pth```
+```python eval.py --load tcn_250_report.pth```
 
+![](eval_metrics.png)
+
+## Average values
 ```
-Average L1 loss: 0.0891827791929245
-Average STFT loss: 1.5806933641433716
-Average LUFS difference: 4.473876490243314
-Average Aggregate Loss: 1.6698760986328125
+MSE:  -5.66676335485757e-17
+L1:  6.1679056923619804e-18
+STFT:  -1.5419764230904951e-16
+ESR:  -1.3877787807814457e-16
+DC:  3.700743415417188e-17
+SNR:  -2.5828105086765795e-17
 ```
 
-![](eval_metrics_plot.png)
-
+## Waveform and Spectrogram
 ![](waveform_plot.png)
 
 ![](waveform_zoom.png)
@@ -71,7 +78,7 @@ Average Aggregate Loss: 1.6698760986328125
 
 
 ## RT60
-```python -m utils.transfer_function --load tcn_test_250.pth --input inverse_filter.wav```
+```python -m utils.transfer_function --load tcn_250_report.pth --input inverse_filter.wav```
 
 ![](rt60.png)
 
