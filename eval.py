@@ -10,7 +10,7 @@ import numpy as np
 
 from utils.dataload import PlateSpringDataset
 from tcn import TCN, causal_crop, model_params
-from utils.plot import plot_compare_waveform, plot_zoom_waveform
+from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
 
 import pyloudnorm as pyln
 from scipy.io import wavfile
@@ -130,63 +130,22 @@ print('Saving plots...')
 # Plotting the metrics over time
 time_values = range(len(l1_loss_values))
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(15, 7))
 plt.plot(time_values, l1_loss_values, label="L1 Loss")
 plt.plot(time_values, stft_loss_values, label="STFT Loss")
 plt.plot(time_values, lufs_diff_values, label="LUFS Difference")
 plt.plot(time_values, aggregate_loss_values, label="Aggregate Loss")
 plt.xlabel("Time")
 plt.ylabel("Metric Value")
-plt.title("Metrics Over Time")
+plt.title("Evaluation: Metrics Over Time (Test Set)")
 plt.legend()
 plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
 
-# def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
-    # '''Plot the waveform of the ground truth and the prediction
-    # Parameters
-    # ----------
-    # y : array_like
-    #     Ground truth signal
-    # y_pred : array_like
-    #     The predicted signal
-    # fs : int, optional
-    #     The sampling frequency (default to 1, i.e., samples).
-    # t_start : float, optional
-    #     The start time of the plot (default to None).
-    # t_end : float, optional
-    #     The end time of the plot (default to None).'''
-    
-    # # Create a time array
-    # t = np.arange(y.shape[0]) / sample_rate
-
-    # Determine the indices corresponding to the start and end times
-    # if t_start is not None:
-    #     i_start = int(t_start * sample_rate)
-    # else:
-    #     i_start = 0
-
-    # if t_end is not None:
-    #     i_end = int(t_end * sample_rate)
-    # else:
-    #     i_end = len(t)
-
-    # fig, ax = plt.subplots(nrows=1, ncols=1)
-
-    # ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
-    # ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
-
-    # ax.set_title('Waveform')
-    # ax.set_xlabel('Time [s]')
-    # ax.set_ylabel('Amplitude')
-    # ax.grid(True)
-    # ax.legend()
-
-    # plt.savefig(Path(args.results_dir) / 'waveform_zoom.png')
-    # plt.close(fig)
-    # print("Saved zoomed waveform plot to: ", Path(args.results_dir) / 'waveform_zoom.png')
-
-t_plot = target.detach().cpu().numpy().reshape(-1)
 o_plot = output.detach().cpu().numpy().reshape(-1)
+t_plot = target.detach().cpu().numpy().reshape(-1)
+i_plot = input.detach().cpu().numpy().reshape(-1)
+
 
 plot_compare_waveform(t_plot, o_plot)
 plot_zoom_waveform(t_plot, o_plot,args.sr, t_start=0.5, t_end=0.6)
+plot_compare_spectrogram(t_float, o_float, i_float,  titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None)

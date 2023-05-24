@@ -2,12 +2,8 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
-# matplotlib.use('MacOSX')  # Replace 'TkAgg' with an alternative backend
-
-from scipy.signal import spectrogram
-
-import torchaudio.transforms as T
 import torch
+import torchaudio.transforms as T
 
 from config import parser
 
@@ -28,7 +24,7 @@ def plot_compare_waveform(y, y_pred):
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(y_pred, alpha=0.7, label='Prediction', color='red')
-    ax.set_title('Waveform')
+    ax.set_title('Waveform Comparison (Ground Truth vs Prediction)')
     ax.set_xlabel('Sample Index')
     ax.set_ylabel('Amplitude')
     ax.grid(True)
@@ -71,7 +67,7 @@ def plot_zoom_waveform(y, y_pred, sample_rate, t_start=None, t_end=None):
     ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
 
-    ax.set_title('Waveform')
+    ax.set_title('Zoom on Waveform (Ground Truth vs Prediction)')
     ax.set_xlabel('Time [s]')
     ax.set_ylabel('Amplitude')
     ax.grid(True)
@@ -100,7 +96,29 @@ def get_spectrogram(
     return spectrogram(waveform)
 
 
-def plot_compare_spectrogram(spec1, spec2, spec3, titles=['Title1', 'Title2', 'Title3'], ylabel="freq_bin", aspect="auto", xmax=None):
+def plot_compare_spectrogram(target, output, input, titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None):
+    '''Plot the spectrogram of the input, the prediction and the ground truth
+    Parameters
+    ----------
+    target : array_like
+        Ground truth spectrogram
+    output : array_like
+        The predicted spectrogram
+    input : array_like
+        The input spectrogram
+    titles : list, optional
+        List of titles for the subplots (default to ['target', 'output', 'input']).
+    ylabel : str, optional
+        Label for the y-axis (default to 'freq_bin').
+    aspect : str, optional
+        Aspect ratio of the plot (default to 'auto').
+    xmax : int, optional
+        Maximum value for the x-axis (default to None).
+    '''
+    spec1 = get_spectrogram(torch.Tensor(target))
+    spec2 = get_spectrogram(torch.Tensor(output))
+    spec3 = get_spectrogram(torch.Tensor(input))
+
     fig, axs = plt.subplots(1, 3, figsize=(15, 7)) # 1 row, 3 columns
 
     for idx, spec in enumerate([spec1, spec2, spec3]):
@@ -141,6 +159,7 @@ def plot_signals(sweep_filt, inverse_filter, measured, SAMPLE_RATE, duration, fi
     ax[2].set_xlabel("Time [s]")
     ax[2].set_ylabel("Amplitude")
     plt.tight_layout()
+    plt.grid(True)
     plt.savefig(Path(args.results_dir) / file_name)
     plt.close(fig)
     print("Saved signal plot to: ", Path(args.results_dir) / file_name)
@@ -151,14 +170,17 @@ def plot_transfer_function(magnitude, phase, sample_rate, file_name):
     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
     ax[0].semilogx(freqs, magnitude)
     ax[0].set_xlim([1, freqs[-1]])
+    ax[0].set_title("Transfer Function")
     ax[0].set_ylim([-100, 6])
     ax[0].set_xlabel("Frequency [Hz]")
     ax[0].set_ylabel("Magnitude [dBFS]")
+    ax[0].grid(True)
     ax[1].semilogx(freqs, phase)
     ax[1].set_xlim([1, freqs[-1]])
     ax[1].set_ylim([-180, 180])
     ax[1].set_xlabel("Frequency [Hz]")
     ax[1].set_ylabel("Phase [degrees]")
+    ax[1].grid(True)
     plt.suptitle("H(w) - Transfer Function")
     plt.tight_layout()
     plt.savefig(Path(args.results_dir) / file_name)

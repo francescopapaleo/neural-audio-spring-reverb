@@ -107,6 +107,8 @@ def measure_rt60(h, sample_rate, decay_db=60, plot=False, rt60_tgt=None, folder=
 
         ax.set_xlabel('Time (s)')
         ax.set_ylabel('Energy (dB)')
+        ax.set_title('RT60 Measurement')
+        ax.grid(True)
 
         ax.legend()
 

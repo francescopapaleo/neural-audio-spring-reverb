@@ -126,8 +126,6 @@ for n in range(args.iters):
 
 
 # Plot the results
-plot_compare_waveform(y, y_hat)
-plot_zoom_waveform(y, y_hat, args.sr, t_start=0.0, t_end=2.5)
 plot_loss_function(loss_tracker, args)
 
 # Save the model
