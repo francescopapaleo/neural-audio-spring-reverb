@@ -145,7 +145,7 @@ o_plot = output.detach().cpu().numpy().reshape(-1)
 t_plot = target.detach().cpu().numpy().reshape(-1)
 i_plot = input.detach().cpu().numpy().reshape(-1)
 
-
 plot_compare_waveform(t_plot, o_plot)
 plot_zoom_waveform(t_plot, o_plot,args.sr, t_start=0.5, t_end=0.6)
 plot_compare_spectrogram(t_float, o_float, i_float,  titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None)
+
