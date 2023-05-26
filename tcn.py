@@ -8,7 +8,7 @@ model_params = {
     "cond_dim": 0,
     "n_blocks": 5,
     "dilation_growth": 10,
-    "kernel_size": 6,
+    "kernel_size": 4,
     "n_channels": 32,
     "length": 88800,
     "lr": 0.001,

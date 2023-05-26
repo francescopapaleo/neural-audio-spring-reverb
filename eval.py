@@ -9,7 +9,7 @@ import pickle
 from matplotlib import pyplot as plt
 import numpy as np
 
-from utils.dataload import PlateSpringDataset
+from utils.dataload import SpringDataset
 from tcn import TCN, causal_crop, model_params
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
 
@@ -19,14 +19,22 @@ args = parser.parse_args()
 sample_rate = args.sr
 
 print("## Loading data...")
-test_dataset = PlateSpringDataset(args.data_dir, split='test')
-test_dataloader = torch.utils.data.DataLoader(dataset=test_dataset, 
-                              batch_size=args.batch_size, 
-                              shuffle=args.shuffle)
-dataiter = iter(test_dataloader)
+test_set = SpringDataset(args.data_dir, split='test')
+dry_subset, wet_subset, indices = test_set.load_random_subset(8)
 
-x = test_dataset.concatenate_samples(test_dataset.dry_data)
-y = test_dataset.concatenate_samples(test_dataset.wet_data)
+sampler = torch.utils.data.SubsetRandomSampler(indices)
+
+test_dataloader = torch.utils.data.DataLoader(dataset=test_set, 
+                              batch_size=args.batch_size,
+                              sampler=sampler)
+
+# Iterate over the test_dataloader and print the batches
+for x, y in test_dataloader:
+    print("Batch x:")
+    print(x)
+    print("Batch y:")
+    print(y)
+    print()  # Print an empty line between batches
 
 print("## Loading model...")
 device = torch.device(args.device)

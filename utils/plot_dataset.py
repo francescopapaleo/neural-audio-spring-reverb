@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-from utils.dataload import PlateSpringDataset
+from utils.dataload import SpringDataset
 from utils.plot import get_spectrogram
 
 
@@ -48,7 +48,7 @@ def visualize_data(**args):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    dataset = PlateSpringDataset(args.data_dir, args.split)
+    dataset = SpringDataset(args.data_dir, args.split)
     x, y = dataset[args.sample_idx]
     visualize_data(x, y, **args)
 
