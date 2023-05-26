@@ -50,7 +50,7 @@ model = TCN(
     n_inputs=1,
     n_outputs=1,
     cond_dim=model_params["cond_dim"], 
-    kernel_size=model_params["kernel_size"], 
+    kernel_size=1, 
     n_blocks=model_params["n_blocks"], 
     dilation_growth=model_params["dilation_growth"], 
     n_channels=model_params["n_channels"],
@@ -85,16 +85,18 @@ global_step = 0
 
 print('Training started...')
 model.train()
+train_loss = 0.0
 for e in range(epochs):
-    train_loss = 0.0
     for input, target in trainloader:
         
-        input, target = input.to(args.device), target.to(args.device)
+        input = input.float().to(args.device)
+        target = target.float().to(args.device)
+        c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
 
         # Clear the gradients
         optimizer.zero_grad()
         # Forward Pass
-        output = model(input.float())
+        output = model(input.float(), c)
         # Find the Loss
         loss = criterion(output, target)
         # Calculate gradients 
@@ -143,10 +145,8 @@ for e in range(epochs):
         save_to = Path(args.models_dir) / args.save
         torch.save(model.state_dict(), save_to)
 
-
 # Close the TensorBoard writer
 writer.close()
-
 
 if __name__ == "__main__":
     parser.parse_args()
