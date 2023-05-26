@@ -4,26 +4,6 @@ import torch
 Code from the paper: https://github.com/csteinmetz1/steerable-nafx
 '''
 
-model_params = {
-    "cond_dim": 0,
-    "n_blocks": 5,
-    "dilation_growth": 10,
-    "kernel_size": 4,
-    "n_channels": 32,
-    "length": 88800,
-    "lr": 0.001,
-    "batch_size": 1,
-    "c": 0.0,
-    "gain_dB": -0.1,
-    "c0": 0.6,
-    "c1": 0,
-    "mix": 100,
-    "width": 21,
-    "max_length": 30,
-    "stereo": False,
-    "tail": True
-    }
-
 def causal_crop(x, length: int):
     if x.shape[-1] != length:
         stop = x.shape[-1] - 1
