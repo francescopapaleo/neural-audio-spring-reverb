@@ -63,12 +63,14 @@ def generate_reference(duration: float = 5.0):
 
     return sweep_int16, inverse_int16, reference_int16
 
-
-if __name__ == "__main__":
+def main():
     duration = 5
-    
     # Generate and save the impulse, sine wave, and sweep tone
     sweep, inverse_filter, reference = generate_reference(duration)
 
     # Plot them
     plot_signals(sweep, inverse_filter, reference, sample_rate, duration, "reference.png")
+
+
+if __name__ == "__main__":
+    main()

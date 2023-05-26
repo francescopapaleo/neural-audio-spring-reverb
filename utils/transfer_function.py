@@ -67,4 +67,3 @@ def tf_main(duration: float = 5.0):
 
 if __name__ == "__main__":
     tf_measured = tf_main(5.0)
-    # np.save("tf_TCN_00.npy", tf_measured)

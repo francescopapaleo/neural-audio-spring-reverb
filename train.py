@@ -15,7 +15,8 @@ import tempfile
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
-import torchaudio
+import torchsummary
+
 import torchaudio.transforms as T
 import torchvision
 
@@ -63,6 +64,8 @@ criterion = auraloss.freq.MultiResolutionSTFTLoss(
     win_lengths=[32, 128, 512, 2048],
     hop_sizes=[16, 64, 256, 1024]
 )
+torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
+
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
 mse = torch.nn.MSELoss()
@@ -93,18 +96,19 @@ for e in range(epochs):
         target = target.float().to(args.device)
         c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
 
-        # Clear the gradients
-        optimizer.zero_grad()
-        # Forward Pass
-        output = model(input.float(), c)
-        # Find the Loss
-        loss = criterion(output, target)
-        # Calculate gradients 
-        loss.backward()
-        # Update Weights
-        optimizer.step()
-        # Calculate Loss
-        train_loss += loss.item()
+        rf = model.compute_receptive_field()
+        input_pad = torch.nn.functional.pad(input, (rf-1, 0))
+        
+        optimizer.zero_grad()        # Clear the gradients
+       
+        output = model(input_pad.float(), c)     # Forward Pass
+        
+        loss = criterion(output, target)    # Find the Loss
+        loss.backward()          # Calculate gradients 
+        
+        optimizer.step()        # Update Weights
+    
+        train_loss += loss.item()       # Calculate Loss
     
         mse_loss = mse(output, target)
         esr_loss = esr(output, target)

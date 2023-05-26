@@ -8,14 +8,15 @@ A basic command line interface is provided to train, evaluate and test the model
 To train and save a model:
 
 ```bash
-python train.py --save MODEL_NAME --iters NUMBEE_OF_ITERATIONS
+python train.py --save tcnXXexp.pth --epochs 50 --device cpu --batch_size 32 --seed 42
 ```
 
 To test the model on new data execute from terminal:
 
 ```bash
-python test.py --load MODEL_NAME --split test
+python test.py --load tcn_250_report.pth --results_dir results/04 --device cpu --batch_size 32 --seed 42
 ```
+
 
 To make an inference on an audio file execute from terminal:
 
@@ -68,9 +69,12 @@ options:
 
 ```terminal
 .
-├── audio/                  # Audio files for input
 |  
 ├── data/                   # training and test data
+│   ├──raw/                 # raw audio files
+│   ├──processed/           # processed audio files
+│   ├──plate-spring         # dataset folder
+│   │   ├──spring/          # spring reverb subset
 │
 ├── models_trained/         # Trained models state_dict
 |
@@ -78,12 +82,12 @@ options:
 │   ├── 00/                 # experiment ## results
 │   ├── 01/                 # ...
 │
-├── utils/                  # Utility functions
+├── utils/                  # utility functions
 |
-├── config.py               # Configuration file
-├── eval.py                 # Evaluation script
-├── inference.py            # Inference script
-├── train.py                # Training script
+├── config.py               # configuration file
+├── eval.py                 # test / evaluation script
+├── inference.py            # inference script
+├── train.py                # training script
 ├── README.md
 └── requirements.txt
 

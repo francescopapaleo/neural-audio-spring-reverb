@@ -1,0 +1,103 @@
+francescopapaleo@fra-retina:~/git-box/smc-spring-reverb$ python test.py --load tcn_250_report.pth --results_dir results/02/ 
+## Loading data...
+## Loading model...
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv1d-1            [-1, 32, 65531]             224
+             PReLU-2            [-1, 32, 65531]               1
+            Conv1d-3            [-1, 32, 65536]              32
+          TCNBlock-4            [-1, 32, 65531]               0
+            Conv1d-5            [-1, 32, 65481]           6,176
+             PReLU-6            [-1, 32, 65481]               1
+            Conv1d-7            [-1, 32, 65531]           1,024
+          TCNBlock-8            [-1, 32, 65481]               0
+            Conv1d-9            [-1, 32, 64981]           6,176
+            PReLU-10            [-1, 32, 64981]               1
+           Conv1d-11            [-1, 32, 65481]           1,024
+         TCNBlock-12            [-1, 32, 64981]               0
+           Conv1d-13            [-1, 32, 59981]           6,176
+            PReLU-14            [-1, 32, 59981]               1
+           Conv1d-15            [-1, 32, 64981]           1,024
+         TCNBlock-16            [-1, 32, 59981]               0
+           Conv1d-17              [-1, 1, 9981]             193
+            PReLU-18              [-1, 1, 9981]               1
+           Conv1d-19             [-1, 1, 59981]              32
+         TCNBlock-20              [-1, 1, 9981]               0
+================================================================
+Total params: 22,086
+Trainable params: 22,086
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.50
+Forward/backward pass size (MB): 252.02
+Params size (MB): 0.08
+Estimated Total Size (MB): 252.60
+----------------------------------------------------------------
+## Initializing metrics...
+2023-05-27 00:15:41.314013: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+## Testing...
+mse: 0.0416674455627799
+l1: 0.12002399936318398
+stft: 1.5484669208526611
+esr: 1.1573618054389954
+dc: 0.0021010802302043885
+snr: 0.2640753984451294
+Plotting...
+Traceback (most recent call last):
+  File "/Users/francescopapaleo/git-box/smc-spring-reverb/test.py", line 136, in <module>
+    main()
+  File "/Users/francescopapaleo/git-box/smc-spring-reverb/test.py", line 124, in main
+    fig = plot_metrics(test_results, testloader, args)
+  File "/Users/francescopapaleo/git-box/smc-spring-reverb/utils/plot.py", line 297, in plot_metrics
+    return fig
+NameError: name 'fig' is not defined
+francescopapaleo@fra-retina:~/git-box/smc-spring-reverb$ python test.py --load tcn_250_report.pth --results_dir results/02/ 
+## Loading data...
+## Loading model...
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv1d-1            [-1, 32, 65531]             224
+             PReLU-2            [-1, 32, 65531]               1
+            Conv1d-3            [-1, 32, 65536]              32
+          TCNBlock-4            [-1, 32, 65531]               0
+            Conv1d-5            [-1, 32, 65481]           6,176
+             PReLU-6            [-1, 32, 65481]               1
+            Conv1d-7            [-1, 32, 65531]           1,024
+          TCNBlock-8            [-1, 32, 65481]               0
+            Conv1d-9            [-1, 32, 64981]           6,176
+            PReLU-10            [-1, 32, 64981]               1
+           Conv1d-11            [-1, 32, 65481]           1,024
+         TCNBlock-12            [-1, 32, 64981]               0
+           Conv1d-13            [-1, 32, 59981]           6,176
+            PReLU-14            [-1, 32, 59981]               1
+           Conv1d-15            [-1, 32, 64981]           1,024
+         TCNBlock-16            [-1, 32, 59981]               0
+           Conv1d-17              [-1, 1, 9981]             193
+            PReLU-18              [-1, 1, 9981]               1
+           Conv1d-19             [-1, 1, 59981]              32
+         TCNBlock-20              [-1, 1, 9981]               0
+================================================================
+Total params: 22,086
+Trainable params: 22,086
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.50
+Forward/backward pass size (MB): 252.02
+Params size (MB): 0.08
+Estimated Total Size (MB): 252.60
+----------------------------------------------------------------
+## Initializing metrics...
+2023-05-27 00:17:13.144868: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+## Testing...
+mse: 0.0416674455627799
+l1: 0.12002399936318398
+stft: 1.5484669208526611
+esr: 1.1573618054389954
+dc: 0.0021010802302043885
+snr: 0.2640753984451294
+Saving audio files...
+Plotting...
