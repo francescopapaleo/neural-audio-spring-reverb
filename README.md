@@ -1,6 +1,9 @@
 # Modeling Spring Reverb with Neural Audio Effects
 
-Working environment for the thesis project.
+## Assessment of different models for the task.
+
+This is the working environment for the thesis project.
+A basic command line interface is provided to train, evaluate and test the models.
 
 To train and save a model:
 

@@ -1,6 +1,5 @@
 # Local files that should be ignored
-local/
-dataset/
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
