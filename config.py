@@ -60,15 +60,9 @@ parser.add_argument('--device', type=str, default='cpu',
 parser.add_argument('--input', type=str, 
                     help="input file to process")
 
-parser.add_argument('--split', type=str, default='train',
-                    help='select test/train split of the dataset')
-
 parser.add_argument('--sample_idx', type=int, default=0, 
                     help='The index of the sample from a dataset')
 
-parser.add_argument('--epochs', type=int, default=100)
-
-parser.add_argument('--batch_size', type=int, default=1)
 
 parser.add_argument('--seed', type=int, default=42)
 

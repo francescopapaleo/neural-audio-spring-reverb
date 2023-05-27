@@ -14,19 +14,16 @@ from utils.data import SpringDataset
 from tcn import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram, plot_metrics, save_plot
 
-
+args = parser.parse_args()
 torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
 
 def main():
-    args = parser.parse_args()
+    
     sample_rate = args.sr
 
     print("## Loading data...")
-    transforms = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
-
     dataset = SpringDataset(root_dir=args.data_dir, split='test')
-    
     testloader = torch.utils.data.DataLoader(dataset, batch_size=1)
     
     print("## Loading model...")
@@ -102,9 +99,6 @@ def main():
     # Normalize
     for name, values in test_results.items():
         values = (values - np.mean(values)) / np.std(values)
-    
-    # for metric_name, values in test_results.items():
-    #     print(f'{metric_name}: {np.mean(values)}')
 
     print('Saving audio files...')
     ofile = Path(args.results_dir) / 'eval_output.wav'
@@ -122,7 +116,6 @@ def main():
     print('Plotting...')
 
     plot_metrics(test_results, args)
-    # save_plot(fig, args.results_dir, 'eval_metrics_plot.png')
 
     o_plot = output.detach().cpu().numpy().reshape(-1)
     t_plot = target.detach().cpu().numpy().reshape(-1)
