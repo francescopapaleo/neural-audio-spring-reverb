@@ -1,170 +1,134 @@
-from config import parser, model_params
-from tcn import TCN, causal_crop
-from utils.data import SpringDataset
 from pathlib import Path
-
-import numpy as np
-import soundfile as sf
-
 import torch
-from torch.utils.tensorboard import SummaryWriter
-import torchsummary
-import torchaudio.transforms as T
-import json
-import auraloss
+import pytorch_lightning as pl
 
-args = parser.parse_args()
-torch.backends.cudnn.benchmark = True
-torch.manual_seed(args.seed)
+from argparse import ArgumentParser
 
-def main():
+from tcn import TCNModel
+from utils.data import SpringDataset
 
-    print("## Loading data...")
-    dataset = SpringDataset(root_dir=args.data_dir, split='train')
-    train_size = int(0.8 * len(dataset))
-    val_size = len(dataset) - train_size
-    train, valid = torch.utils.data.random_split(dataset, [train_size, val_size])
+def train():
 
-    trainloader = torch.utils.data.DataLoader(train, batch_size=args.batch_size)
-    validloader = torch.utils.data.DataLoader(valid, batch_size=args.batch_size)
+    torch.backends.cudnn.benchmark = True
 
-    print("## Instantiating model...")
-    device = torch.device(args.device)
-    model = TCN(
-        n_inputs=1,
-        n_outputs=1,
-        cond_dim=model_params["cond_dim"], 
-        kernel_size=1, 
-        n_blocks=model_params["n_blocks"], 
-        dilation_growth=model_params["dilation_growth"], 
-        n_channels=model_params["n_channels"],
-        )
-    model = model.to(args.device)  # move the model to the right device
+    train_configs = [
+        {"name" : "TCN",
+        "nparams" : 2,
+        "nblocks" : 5,
+        "dilation_growth" : 10,
+        "kernel_size" : 1,
+        "causal" : False,
+        "train_fraction" : 1.0,
+        "train_loss" : "esr",
+        "batch_size" : 8,
+        "max_epochs" : 100,
+        "lr" : 0.01,
+        "cond_dim": 1,
+        "nchannels": 32,
+        "length": 88800,
+        "mix": 100,
+        "width": 21,
+        "stereo": False,
+        "tail": True,
+        "channel_width": 32,
+        "channel_growth": 1,
+        "batch_norm": False
+        },
+    ]
 
-    print("## Initializing Loss Functions...")
-    
-    stft = auraloss.freq.MultiResolutionSTFTLoss(
-        fft_sizes=[32, 128, 512, 2048],
-        win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024],
-        sample_rate=args.sr)
-    
-    mse = auraloss.time.MSELoss()
-    dc = auraloss.time.DCLoss()
-    esr = auraloss.time.ESRLoss()
-    snr = auraloss.time.SNRLoss()
-    
-    training_results = {
-    "stft": [],
-    "mse": [],
-    "dc": [],
-    "esr": [],
-    "snr": []
-    }
+    n_configs = len(train_configs)
 
-    validation_results = {
-    "stft": [],
-    "mse": [],
-    "dc": [],
-    "esr": [],
-    "snr": []
-    }
 
-    criterion = stft + dc
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    for idx, tconf in enumerate(train_configs):
 
-    min_valid_loss = np.inf
-    torchsummary.summary(model, [(1,65536), (1,2)], device=args.device)
+        parser = ArgumentParser()
+        # add PROGRAM level args
+        parser.add_argument('--model_type', type=str, default='tcn', help='tcn or lstm')
+        parser.add_argument('--root_dir', type=str, default='./data/plate-spring/spring')
+        parser.add_argument('--preload', action="store_true")
+        parser.add_argument('--sample_rate', type=int, default=16000)
+        parser.add_argument('--shuffle', type=bool, default=True)
+        parser.add_argument('--train_fraction', type=float, default=1.0)
+        parser.add_argument('--batch_size', type=int, default=32)
+        parser.add_argument('--num_workers', type=int, default=8)
 
-    model = model.float()
-
-    from torch.utils.tensorboard import SummaryWriter
-    writer = SummaryWriter()
-
-    global_step = 0
-
-    print('Training started...')
-    model.train()
-    train_loss = 0.0
-    for e in range(args.epochs):
-        for input, target in trainloader:
-            
-            input = input.float().to(args.device)
-            target = target.float().to(args.device)
-            c = torch.tensor([0.0, 0.0], device=device).view(1,1,-1)
-
-            rf = model.compute_receptive_field()
-            input_pad = torch.nn.functional.pad(input, (rf-1, 0))
-            
-            optimizer.zero_grad()        # Clear the gradients
+        args = parser.parse_args()
+        print(args)
         
-            output = model(input_pad.float(), c)     # Forward Pass
-            
-            loss = criterion(output, target)    # Find the Loss
-            loss.backward()                     # Calculate gradients 
-            
-            optimizer.step()        # Update Weights
+        if "max_epochs" in tconf:
+            args.max_epochs = tconf["max_epochs"]
+        else:
+            args.max_epochs = 60
+
+        print(f"* Training config {idx+1}/{n_configs}")
+        print(tconf)
         
-            train_loss += loss.item()       # Calculate Loss
+        pl.seed_everything(42)
+
+        print(f"* Training config {idx+1}/{n_configs}")
+
+        specifier =  f"{idx+1}-{tconf['name']}"
+        specifier += "__causal" if tconf['causal'] else "__noncausal"
+        specifier += f"__{tconf['nblocks']}-{tconf['dilation_growth']}-{tconf['kernel_size']}"
+        specifier += f"__fraction-{tconf['train_fraction']}-bs{tconf['batch_size']}"
         
-            mse_loss = mse(output, target)
-            esr_loss = esr(output, target)
-            snr_loss = snr(output, target)
+        if "train_loss" in tconf:
+            args.train_loss = tconf["train_loss"]
+            specifier += f"__loss-{tconf['train_loss']}"
 
-            # Log the training loss
-            writer.add_scalar('Loss/Train', loss.item(), global_step)
-            writer.add_scalar('Loss/MSE', mse_loss.item(), global_step)
-            writer.add_scalar('Loss/ESR', esr_loss.item(), global_step)
-            writer.add_scalar('Loss/SNR', snr_loss.item(), global_step)
-
-            # Getting the weights of the first layer of the model
-            weights = next(model.parameters()).cpu().data
-            writer.add_histogram('Weights', weights, global_step)
-            global_step += 1
+        args.default_root_dir = Path("logs", specifier)
+        print(args.default_root_dir)
         
-        print('Validation Loop')
-        valid_loss = 0.0
-        model.eval()
-        for input, target in validloader:
+        # create logger
+        csv_logger = pl.loggers.CSVLogger(args.default_root_dir, name=specifier)
+        tb_logger = pl.loggers.TensorBoardLogger(args.default_root_dir, name=specifier)
 
-            input, target = input.to(args.device), target.to(args.device)
-            
-            # Forward Pass
-            output = model(input.float(), c)
-            # Find the Loss
-            loss = criterion(output, target)
-            # Calculate Loss
-            valid_loss += loss.item()
-
-            # Log the validation loss
-            writer.add_scalar('Loss/Train', loss.item(), global_step)
-            writer.add_scalar('Loss/MSE', mse_loss.item(), global_step)
-            writer.add_scalar('Loss/ESR', esr_loss.item(), global_step)
-            writer.add_scalar('Loss/SNR', snr_loss.item(), global_step)
-
-        # Print and log the training loss
-        print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(trainloader)} \t\t Validation Loss: {valid_loss / len(validloader)}')
+        print(args.max_epochs)
+        # create trainer
+        trainer = pl.Trainer(detect_anomaly=True,
+                             max_epochs=args.max_epochs,
+                            default_root_dir=args.default_root_dir,
+                            log_every_n_steps=1,
+                            logger = [csv_logger, tb_logger], 
+                            check_val_every_n_epoch=1,
+                            accelerator="auto")
         
-        if min_valid_loss > valid_loss:
-            print(f'Validation loss decreased ({min_valid_loss:.6f} --> {valid_loss:.6f}).  Saving model ...''')
-            min_valid_loss = valid_loss
-            
-            save_to = Path(args.models_dir) / args.save
-            torch.save(model.state_dict(), save_to)
+        trainer.logger._log_graph = True
+        trainer.logger._default_hp_metric = True
 
-    # Close the TensorBoard writer
-    writer.close()
+        print(f"* Training config {idx+1}/{n_configs}")
 
-def new_func():
-    args = parser.parse_args()
-    return args
+        print("## Loading data...")
+        dataset = SpringDataset(root_dir=args.root_dir, split='train')
+        train_size = int(0.8 * len(dataset))
+        val_size = len(dataset) - train_size
+        train, valid = torch.utils.data.random_split(dataset, [train_size, val_size])
 
+        train_dataloader = torch.utils.data.DataLoader(train, batch_size=args.batch_size, num_workers=args.num_workers )
+        val_dataloader = torch.utils.data.DataLoader(valid, batch_size=args.batch_size, num_workers=args.num_workers)
 
+        print("## Creating model...")
+        dict_args = vars(args)
+        dict_args["nparams"] = 2
+
+        # if tconf["model_type"] == 'tcn':
+        dict_args["nblocks"] = tconf["nblocks"]
+        dict_args["dilation_growth"] = tconf["dilation_growth"]
+        dict_args["kernel_size"] = tconf["kernel_size"]
+        dict_args["causal"] = tconf["causal"]
+        if "channel_width" in tconf:
+            dict_args["channel_width"] = tconf["channel_width"]
+        if "channel_growth" in tconf:
+            dict_args["channel_growth"] = tconf["channel_growth"]
+        model = TCNModel(**dict_args)
+        model = model.float()
+        
+        print("## Summary") 
+
+        print("## Training")
+        trainer.fit(model, train_dataloader, val_dataloader)
+        # automatically restores model, epoch, step, LR schedulers, etc...
+        # trainer.fit(model, ckpt_path="some/path/to/my_checkpoint.ckpt")
 
 if __name__ == "__main__":
-
-    parser.add_argument('--epochs', type=int, default=100)
-    parser.add_argument('--batch_size', type=int, default=1)
-
-    main()
-    
+    train()
