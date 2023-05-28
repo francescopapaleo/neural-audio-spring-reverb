@@ -34,8 +34,8 @@ class SpringDataset(torch.utils.data.Dataset):
              h5py.File(self.wet_file, 'r') as f_wet:
             dry_key = list(f_dry.keys())[0] 
             wet_key = list(f_wet.keys())[0] 
-            self.dry_data = f_dry[dry_key][:]
-            self.wet_data = f_wet[wet_key][:]
+            self.dry_data = f_dry[dry_key][:].astype(np.float32)
+            self.wet_data = f_wet[wet_key][:].astype(np.float32)
 
     def print_info(self):
         print(f"Dry File: {self.dry_file}")

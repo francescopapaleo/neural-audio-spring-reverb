@@ -14,6 +14,7 @@ from torchsummary import summary
 import torchaudio.transforms as T
 import auraloss
 
+    torch.backends.cudnn.benchmark = True
 
 def main():
     print(f'Torch version: {torch.__version__}')
