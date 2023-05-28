@@ -6,10 +6,6 @@ import torch
 import torchaudio.transforms as T
 import librosa
 
-from config import parser
-
-args = parser.parse_args()
-
 def plot_compare_waveform(y, y_pred):
     '''Plot the waveform of the input and the predicted signal.
     Parameters
@@ -33,7 +29,7 @@ def plot_compare_waveform(y, y_pred):
     print("Saved waveform plot to: ", Path(args.results_dir) / 'waveform_plot.png')
 
 
-def plot_zoom_waveform(y, y_pred, sr, t_start=None, t_end=None, results_dir=args.results_dir):
+def plot_zoom_waveform(y, y_pred, sr, t_start=None, t_end=None, results_dir='./results'):
     '''Plot the waveform of the ground truth and the prediction
     Parameters
     ----------

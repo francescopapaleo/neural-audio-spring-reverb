@@ -1,10 +1,6 @@
 # config.py
 
-from argparse import ArgumentParser
-
 from pathlib import Path
-
-parser = ArgumentParser()
 
 model_params = {
     "cond_dim": 0,
@@ -14,7 +10,7 @@ model_params = {
     "n_channels": 32,
     "length": 88800,
     "lr": 0.001,
-    "batch_size": 1,
+    "batch_size": 16,
     "c": 0.0,
     "gain_dB": -0.1,
     "c0": 0.6,
@@ -27,11 +23,7 @@ model_params = {
     }
 
 # PROGRAM level args
-parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', 
-                    help='default dataset folder')
 
-parser.add_argument('--models_dir', type=str, default='./models', 
-                    help='folder to store state_dict after training and load for eval or inference')
 
 parser.add_argument('--results_dir', type=str, default='./results', 
                     help='folder to store results/processed files')
@@ -62,8 +54,5 @@ parser.add_argument('--input', type=str,
 
 parser.add_argument('--sample_idx', type=int, default=0, 
                     help='The index of the sample from a dataset')
-
-
-parser.add_argument('--seed', type=int, default=42)
 
 

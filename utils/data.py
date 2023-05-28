@@ -1,16 +1,8 @@
 # Description: This file contains the code for the dataset class and the subset generator class.
 from pathlib import Path
-from config import parser
-
 import h5py
 import torch
 import numpy as np
-
-args = parser.parse_args()
-
-# Set seed
-torch.manual_seed(args.seed)
-np.random.seed(args.seed)
 
 class SpringDataset(torch.utils.data.Dataset):
     def __init__(self, root_dir, split=None):
@@ -68,20 +60,5 @@ class SpringDataset(torch.utils.data.Dataset):
         print(f"Index: {index}")
         print(f"Index data: {self.index[index]}")
 
-    def load_random_subset(self, size, seed=None):
-        """Loads a random subset of the dataset."""
-        if seed is not None:
-            np.random.seed(seed)
-            torch.manual_seed(seed)
-        
-        indices = np.random.choice(len(self.dry_data), size=size, replace=False)
-        dry_subset = self.dry_data[indices]
-        wet_subset = self.wet_data[indices]
-        
-        return dry_subset, wet_subset, indices
-        
-    def concatenate_samples(self, data):
-        print(f"Shape before concatenation: {data.shape}")
-        concatenated_data = np.concatenate(data, axis=0)
-        reshape_data = concatenated_data.reshape(1, -1)      
-        return reshape_data
+
+

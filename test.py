@@ -1,4 +1,3 @@
-from config import parser, model_params
 from pathlib import Path
 
 import torch
@@ -14,9 +13,6 @@ from utils.data import SpringDataset
 from tcn import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram, plot_metrics, save_plot
 
-args = parser.parse_args()
-torch.backends.cudnn.benchmark = True
-torch.manual_seed(42)
 
 def main():
     

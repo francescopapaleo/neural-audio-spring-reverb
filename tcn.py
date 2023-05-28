@@ -1,7 +1,6 @@
-from config import parser
 import torch
 '''
-Code from the paper: https://github.com/csteinmetz1/steerable-nafx
+Code from : https://github.com/csteinmetz1/steerable-nafx (with some light modifications)
 '''
 
 def causal_crop(x, length: int):
@@ -14,11 +13,11 @@ def causal_crop(x, length: int):
 class FiLM(torch.nn.Module):
     def __init__(
         self,
-        cond_dim,  # dim of conditioning input
-        num_features,  # dim of the conv channel
-        batch_norm=True,
+        cond_dim,       # dim of conditioning input
+        num_features,   # dim of the conv channel
+        batch_norm=False,
     ):
-        super().__init__()
+        super(FiLM).__init__()
         self.num_features = num_features
         self.batch_norm = batch_norm
         if batch_norm:
@@ -34,7 +33,7 @@ class FiLM(torch.nn.Module):
 
         if self.batch_norm:
             x = self.bn(x)  # apply BatchNorm without affine
-        x = (x * g) + b  # then apply conditional affine
+        x = (x * g) + b     # then apply conditional affine
 
         return x
 
@@ -46,7 +45,7 @@ class TCNBlock(torch.nn.Module):
         out_channels, 
         kernel_size, 
         dilation=dilation, 
-        padding=0, #((kernel_size-1)//2)*dilation,
+        padding= ((kernel_size-1)//2)*dilation,     # uncommented this line
         bias=True)
     if cond_dim > 0:
       self.film = FiLM(cond_dim, out_channels, batch_norm=False)
@@ -68,7 +67,14 @@ class TCNBlock(torch.nn.Module):
     return x
 
 class TCN(torch.nn.Module):
-  def __init__(self, n_inputs=1, n_outputs=1, n_blocks=10, kernel_size=13, n_channels=64, dilation_growth=4, cond_dim=0):
+  def __init__(self, 
+               n_inputs, 
+               n_outputs, 
+               n_blocks, 
+               kernel_size, 
+               n_channels, 
+               dilation_growth, 
+               cond_dim):
     super().__init__()
     self.kernel_size = kernel_size
     self.n_channels = n_channels
