@@ -1,8 +1,9 @@
 import torch
+from utils.utils import center_crop, causal_crop
+from argparse import ArgumentParser
 '''
 Code from : https://github.com/csteinmetz1/steerable-nafx (with some light modifications)
 '''
-
 
 class FiLM(torch.nn.Module):
     def __init__(
@@ -73,35 +74,36 @@ class TCN(torch.nn.Module):
                n_blocks, 
                kernel_size, 
                n_channels, 
-               dilation_growth, 
-               cond_dim):
+               dilation_growth,
+               hparams,
+               **kwargs):
     super().__init__()
     self.kernel_size = kernel_size
     self.n_channels = n_channels
     self.dilation_growth = dilation_growth
     self.n_blocks = n_blocks
     self.stack_size = n_blocks
+    self.hparams = hparams              # added this line
+    self.blocks = torch.nn.ModuleList()
+    for n in range(n_blocks):
+        in_ch = out_ch if n > 0 else n_inputs
+        
+        if self.hparams.channel_growth > 1:
+            out_ch = in_ch * self.hparams.channel_growth 
+        else:
+            out_ch = self.hparams.channel_width
 
-        self.blocks = torch.nn.ModuleList()
-        for n in range(nblocks):
-            in_ch = out_ch if n > 0 else ninputs
-            
-            if self.hparams.channel_growth > 1:
-                out_ch = in_ch * self.hparams.channel_growth 
-            else:
-                out_ch = self.hparams.channel_width
+        dilation = self.hparams.dilation_growth ** (n % self.hparams.stack_size)
+        self.blocks.append(TCNBlock(in_ch, 
+                                    out_ch, 
+                                    kernel_size=self.hparams.kernel_size, 
+                                    dilation=dilation,
+                                    padding="same" if self.hparams.causal else "valid",
+                                    causal=self.hparams.causal,
+                                    grouped=self.hparams.grouped,
+                                    conditional=True if self.hparams.nparams > 0 else False))
 
-            dilation = self.hparams.dilation_growth ** (n % self.hparams.stack_size)
-            self.blocks.append(TCNBlock(in_ch, 
-                                        out_ch, 
-                                        kernel_size=self.hparams.kernel_size, 
-                                        dilation=dilation,
-                                        padding="same" if self.hparams.causal else "valid",
-                                        causal=self.hparams.causal,
-                                        grouped=self.hparams.grouped,
-                                        conditional=True if self.hparams.nparams > 0 else False))
-
-        self.output = torch.nn.Conv1d(out_ch, noutputs, kernel_size=1)
+    self.output = torch.nn.Conv1d(out_ch, n_outputs, kernel_size=1)
 
     def forward(self, x, p=None):
         # if parameters present, 
