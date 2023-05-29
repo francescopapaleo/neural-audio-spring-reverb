@@ -21,9 +21,9 @@ torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
 torch.cuda.empty_cache()
 
-l = logging.INFO
-logging.basicConfig(level=l, format="%(levelname)s : %(message)s")
-info = logging.info
+logging.basicConfig(filename='logs/mylogfile.log', 
+                    level=logging.INFO, format="%(asctime)s: %(levelname)s: %(message)s")
+info = logging.getLogger().info
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', help='dataset')
@@ -42,9 +42,12 @@ def main():
     args = parser.parse_args()
     epochs = args.epochs
     batch_size = args.batch_size
+    sr = 16000
+    lenght = 3200
 
-    print(f'Torch version: {torch.__version__}'), print(f'Cuda available: {torch.cuda.is_available()}')
-
+    print(f'Torch version: {torch.__version__}    '), print(f'Cuda available: {torch.cuda.is_available()}')
+    print(f'Sample Rate: {sr}'), print(f'Lenght: {lenght}')
+    print("-------------------------------------------------------------------------")
     if torch.cuda.is_available() is False:
         torch.set_default_dtype(torch.float32)  
         torch.set_default_tensor_type(torch.FloatTensor) 
@@ -54,10 +57,10 @@ def main():
         pass
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-
+    
     writer = SummaryWriter('logs/tcn_{}'.format(timestamp))
     register_event_handler(TensorboardEventHandler(writer))
-
+    
     dataset = SpringDataset(root_dir=args.data_dir, split='train')
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
@@ -65,8 +68,6 @@ def main():
 
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False)
-
-    lenght = 3200
 
     model = TCN(
         n_inputs=1, 
@@ -78,90 +79,99 @@ def main():
         cond_dim=0,
     )
     model.to(args.device)
+
     rf = model.compute_receptive_field()
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-           
+    print(f"Parameters: {params*1e-3:0.3f} k")
+    print(f"Receptive field: {rf} samples or {(rf / sr)*1e3:0.1f} ms")       
+    
     criterion = torch.nn.MSELoss().to(args.device)   
 
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)   # optimizer
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20, 30, 40, 50], gamma=0.1, verbose=True)
+    
+    global_step = 0                     # initialize global_step
+    train_loss = 0.0                    # initialize train_loss 
+    valid_loss = 0.0                    # initialize valid_loss
+    min_valid_loss = np.inf             # initialize min_valid_loss
+    
+    ############################### Training Loop #################################
+    model.train()
 
-    # Profiling
-    with profiler.profile(use_cuda=True, use_kineto=True, record_shapes=True) as prof:
-        global_step = 0                     # initialize global_step
-        train_loss = 0.0                    # initialize train_loss 
-        valid_loss = 0.0                    # initialize valid_loss
-        min_valid_loss = np.inf             # initialize min_valid_loss
+    for e in (range(epochs)):      # iterate over epochs
         
-        ############################### Training Loop #################################
-        model.train()
+        for batch_idx, (input, target) in tqdm(enumerate(train_loader), total=len(train_loader), leave=False):
+            # print(f"step:{step}", end='\r')
+            optimizer.zero_grad()               # clear gradients
 
-        for e in (range(epochs)):      # iterate over epochs
+            c = torch.tensor([0.0, 0.0]).view(1,1,-1)
+
+            input = input.to(args.device)           # move everything to device
+            target = target.to(args.device)
+            c = c.to(args.device)
             
-            for batch_idx, (input, target) in tqdm(enumerate(train_loader), total=len(train_loader), leave=False):
-                # print(f"step:{step}", end='\r')
-                optimizer.zero_grad()               # clear gradients
-
-                c = torch.tensor([0.0, 0.0]).view(1,1,-1)
-
-                input = input.to(args.device)           # move everything to device
-                target = target.to(args.device)
-                c = c.to(args.device)
-                
-                input_pad = torch.nn.functional.pad(input, (rf-1, 0))
-                
-                start_idx = rf
-                stop_idx = start_idx + target.shape[-1]
-                input_crop = input_pad[:,:,start_idx:stop_idx]
-                target_crop = target[:,:,start_idx:stop_idx]
-                               
-                output = model(input_crop, c)            # forward pass
-                
-                loss = criterion(output, target_crop)        # compute loss
-                loss.backward()                         # compute gradients
-                optimizer.step()                        # update weights
-
-                train_loss += loss.item()
-
-            print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)}')
-            writer.add_scalar('train_loss', train_loss, global_step=e)
-            writer.flush()       
-
-            #################################### Validation Loop #########################################
-
-            model.eval()                  
-
-            for step, (input, target) in enumerate(valid_loader):          # iterate over batches
-                print(f"Validation step:{step}", end='\r')
+            input_pad = torch.nn.functional.pad(input, (rf-1, 0))
             
-                c = torch.tensor([0.0, 0.0]).view(1,1,-1)
+            start_idx = rf
+            stop_idx = start_idx + lenght
+            input_crop = input_pad[:,:,start_idx:stop_idx]
+            target_crop = target[:,:,start_idx:stop_idx]
+                            
+            try:
+                with torch.no_grad():
+                    with torch.cuda.amp.autocast():
+                        with profiler.profile(use_cuda=True, use_kineto=True, record_shapes=True) as prof:
+                
+                            output = model(input_crop, c)  # forward pass
+                            loss = criterion(output, target_crop)  # compute loss
+                        loss.backward()  # compute gradients
+                optimizer.step()  # update weights
 
-                input = input.to(args.device)
-                target = target.to(args.device)
-                c = c.to(args.device)
+                prof.export_chrome_trace(f"logs/prof.pt.trace{format(timestamp)}.json")
+            except Exception as e:
+                print("Could not write trace file: ", e)
 
-                output = model(input, c)
-                loss = criterion(output, target)
-                valid_loss += loss.item() * input.size(0)
+            train_loss += loss.item()
 
-            valid_loss /= len(valid_loader)
-            print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss}')
-            writer.add_scalar('valid_loss', valid_loss, global_step=e)
-            global_step += 1
+        print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)}')
+        writer.add_scalar('train_loss', train_loss, global_step=e)
+        writer.flush()       
 
-            if min_valid_loss > valid_loss:
-                print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) \t Saving model ...')
-                min_valid_loss = valid_loss
+        #################################### Validation Loop #########################################
 
-                save_to = f'checkpoints/tcn{format(timestamp)}.pth'
-                torch.save(model.state_dict(), save_to)         
+        model.eval()                  
 
-            scheduler.step()            # update learning rate
-            writer.flush()
+        for step, (input, target) in enumerate(valid_loader):          # iterate over batches
+            print(f"Validation step:{step}", end='\r')
+        
+            c = torch.tensor([0.0, 0.0]).view(1,1,-1)
 
-        prof.export_chrome_trace(f"logs/prof.pt.trace{format(timestamp)}.json") 
-        writer.add_graph(model, input_to_model=input, verbose=True)
-        writer.close()
+            input = input.to(args.device)
+            target = target.to(args.device)
+            c = c.to(args.device)
+
+            output = model(input, c)
+            loss = criterion(output, target)
+            valid_loss += loss.item() * input.size(0)
+
+        valid_loss /= len(valid_loader)
+        print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss}')
+        writer.add_scalar('valid_loss', valid_loss, global_step=e)
+        global_step += 1
+
+        if min_valid_loss > valid_loss:
+            print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) \t Saving model ...')
+            min_valid_loss = valid_loss
+
+            save_to = f'checkpoints/tcn{format(timestamp)}.pth'
+            torch.save(model.state_dict(), save_to)         
+
+        scheduler.step()            # update learning rate
+        writer.flush()
+
+    print('Finished Training')
+    writer.add_graph(model, input_to_model=input, verbose=True)
+    writer.close()
 
 if __name__ == "__main__":    
     main()

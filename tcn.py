@@ -19,7 +19,7 @@ class FiLM(torch.nn.Module):
         self,
         cond_dim,  # dim of conditioning input
         num_features,  # dim of the conv channel
-        batch_norm=True,
+        batch_norm=False,
     ):
         super().__init__()
         self.num_features = num_features
