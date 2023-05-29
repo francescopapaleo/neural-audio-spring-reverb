@@ -10,7 +10,7 @@ import auraloss
 from utils.rt60_compute import measure_rt60
 import scipy.signal
 
-from bck_tcn import TCN, causal_crop, model_params
+from sandbox.utcn import TCN, causal_crop, model_params
 
 torch.backends.cudnn.benchmark = True
 
