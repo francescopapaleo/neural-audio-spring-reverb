@@ -1,6 +1,6 @@
 # python train.py --batch_size 4 --epochs 10 --device cpu
 import argparse
-from tcn_bare import TCN
+from tcn import TCN
 from utils.data import SpringDataset
 from pathlib import Path
 from datetime import datetime
@@ -18,6 +18,8 @@ import torchaudio.transforms as T
 import auraloss
 
 torch.backends.cudnn.benchmark = True
+torch.manual_seed(42)
+torch.cuda.empty_cache()
 
 l = logging.INFO
 logging.basicConfig(level=l, format="%(levelname)s : %(message)s")
@@ -26,7 +28,7 @@ info = logging.info
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', help='dataset')
 parser.add_argument('--models_dir', type=str, default='./models', help='state dict')
-parser.add_argument('--batch_size', type= int, default=4)
+parser.add_argument('--batch_size', type= int, default=2)
 parser.add_argument('--epochs', type= int, default=10)
 parser.add_argument('--device', type=str, default='cuda:0')
 
@@ -56,8 +58,8 @@ def main():
     val_size = len(dataset) - train_size
     train, valid = torch.utils.data.random_split(dataset, [train_size, val_size])
 
-    train_loader = torch.utils.data.DataLoader(train, batch_size, shuffle=True)
-    valid_loader = torch.utils.data.DataLoader(valid, batch_size, shuffle=False)
+    train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True)
+    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False)
 
     hparams = {"channel_growth": 1,
                 "kernel_size": 3,
@@ -71,8 +73,8 @@ def main():
     model = TCN(nparams=1,
         n_inputs=1, 
         n_outputs=1, 
-        n_blocks=1,
-        kernel_size=3,
+        n_blocks=10,
+        kernel_size=9,
         dilation_growth=2,
         channel_growth=2,
         channel_width=32,
@@ -82,35 +84,34 @@ def main():
         n_channels=2,
     )
     model.to(args.device)
+               
+    criterion = torch.nn.MSELoss().to(args.device)   
 
-    stft = auraloss.freq.MultiResolutionSTFTLoss(
-        fft_sizes=[32, 128, 512, 2048],
-        win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024],
-        sample_rate=16000)
-    criterion = torch.nn.MSELoss().to(args.device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)   # optimizer
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10, 20, 30, 40, 50], gamma=0.1, verbose=True)
     
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+    min_valid_loss = np.inf                 # initialize min_valid_loss 
 
-    min_valid_loss = np.inf
-
+    # Profiling
     with profiler.profile(use_cuda=True, use_kineto=True, record_shapes=True) as prof:
-        
-        
-        model.train()                   
-        for e in tqdm(range(epochs), unit='epoch', total=epochs):
-            print(f'Epoch {e+1}/{epochs} \t\t Training')
+
+        ################################## Training Loop ###########################################
+
+        model.train()
+
+        for e in tqdm(range(epochs), unit='epoch', total=epochs, position=0, leave=True):      # iterate over epochs
             train_loss = 0.0
 
-            for step, (input, target) in enumerate(train_loader):
-                print("step:{}".format(step))
+            for step, (input, target) in enumerate(train_loader):       # iterate over batches
+                print(f"step:{step}", end='\r')
+
                 c = torch.ones_like(input)
 
-                input = input.to(args.device)
+                input = input.to(args.device)           # move everything to device
                 target = target.to(args.device)
                 c = c.to(args.device)
                 
-                output = model(input, c)    # forward pass
+                output = model(input, c)                # forward pass
                 
                 # Padding to match the output and target shapes
                 output = F.pad(output, (0, target.size(2) - output.size(2)))  
@@ -119,47 +120,47 @@ def main():
                 optimizer.zero_grad()            # clear gradients
                 loss.backward()             # compute gradients
                 optimizer.step()            # update weights
-                
+
                 train_loss += loss.item()
+
             print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)}')
-            writer.add_scalar('train_loss', train_loss, global_step=e)     
+            writer.add_scalar('train_loss', train_loss, global_step=e)
             writer.flush()       
 
+            #################################### Validation Loop #########################################
 
-    #################################### Validation Loop #########################################
+            model.eval()                  
+            valid_loss = 0.0
 
-    model.eval()                  
-    valid_loss = 0.0
-    for step, (input, target) in tqdm(enumerate(valid_loader), unit='step', total=int(len(valid_loader))):
-        print(f'Epoch {e+1}/{epochs} \t\t Validation')
-        c = torch.ones_like(input)
+            for step, (input, target) in enumerate(valid_loader):          # iterate over batches
+                print(f"Validation step:{step}", end='\r')
+                
+                c = torch.ones_like(input)
 
-        input = input.to(args.device)
-        target = target.to(args.device)
-        c = c.to(args.device)
-        
-        output = model(input, c)
-        
-        loss = criterion(output, target)
-        valid_loss = loss.item() * input.size(0)
+                input = input.to(args.device)
+                target = target.to(args.device)
+                c = c.to(args.device)
+                
+                output = model(input, c)
+                loss = criterion(output, target)
+                valid_loss += loss.item() * input.size(0)
 
-    print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss / len(valid_loader)}')
-    writer.add_scalar('valid_loss', valid_loss, global_step=e)
+            valid_loss /= len(valid_loader)
+            print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss}')
+            writer.add_scalar('valid_loss', valid_loss, global_step=e)
 
-    if min_valid_loss > valid_loss:
-        print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) \t Saving The Model')
-        min_valid_loss = valid_loss
-        writer.flush()
-        save_to = f'runs/tcn.pth{format(timestamp)}'
-        torch.save(model.state_dict(), save_to)         
+            if min_valid_loss > valid_loss:
+                print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) \t Saving The Model')
+                min_valid_loss = valid_loss
 
-    writer.add_graph(model, input_to_model=input, verbose=True)
-    writer.close()
-    try:
-        os.mkdir("result")
-    except Exception:
-        pass
-    prof.export_chrome_trace("./runs/worker0.pt.trace.json") 
+                save_to = f'runs/tcn.pth{format(timestamp)}'
+                torch.save(model.state_dict(), save_to)         
+
+            scheduler.step()            # update learning rate
+            writer.flush()
+
+        writer.add_graph(model, input_to_model=input, verbose=True)
+        writer.close()
 
 if __name__ == "__main__":    
     main()

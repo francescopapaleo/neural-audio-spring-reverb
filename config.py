@@ -45,10 +45,6 @@ parser.add_argument('--save', type=str, default='model.pt',
 parser.add_argument('--load', type=str, 
                     help='load weights and biases from')
 
-
-parser.add_argument('--device', type=str, default='cpu', 
-                    help='set the device for training and inference')
-
 parser.add_argument('--input', type=str, 
                     help="input file to process")
 

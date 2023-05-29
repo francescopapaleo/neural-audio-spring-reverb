@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 from utils.data import SpringDataset
-from tcn import TCN, causal_crop
+from bck_tcn import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram, plot_metrics, save_plot
 
 
