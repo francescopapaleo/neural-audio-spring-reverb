@@ -1,5 +1,6 @@
 # Local files that should be ignored
 .DS_Store
+data/plate-spring/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

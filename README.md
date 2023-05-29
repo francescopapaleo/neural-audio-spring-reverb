@@ -5,16 +5,24 @@
 This is the working environment for the thesis project.
 A basic command line interface is provided to train, evaluate and test the models.
 
-To train and save a model:
+To train:
 
 ```bash
-python train.py --save tcnXXexp.pth --epochs 50 --device cpu --batch_size 32 --seed 42
+python train.py --batch_size 4 --epochs 1 --device cuda:0
+
+or
+
+python train.py --batch_size 4 --epochs 1 --device cpu
+
 ```
+
+
+## The following scripts are still work in progress::
 
 To test the model on new data execute from terminal:
 
 ```bash
-python test.py --load tcn_250_report.pth --results_dir results/04 --device cpu --batch_size 32 --seed 42
+python test.py
 ```
 
 

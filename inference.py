@@ -1,16 +1,13 @@
-from config import parser
 from pathlib import Path
-
 import torch
 import torchaudio
 import torchsummary
-import torchvision
+import argparse
 import auraloss
-
-from utils.rt60_compute import measure_rt60
 import scipy.signal
 
-from tcn import TCN, causal_crop, model_params
+from utils.rt60_compute import measure_rt60
+from tcn import TCN, causal_crop
 
 torch.backends.cudnn.benchmark = True
 
