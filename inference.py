@@ -6,7 +6,7 @@ import argparse
 import auraloss
 import scipy.signal
 
-from utils.rt60_compute import measure_rt60
+from utils.rt60 import measure_rt60
 from tcn import TCN, causal_crop
 
 torch.backends.cudnn.benchmark = True

@@ -1,18 +1,17 @@
-# TCN implementation from the baseline
+'''
+TCN model from: 
+https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
+
+@inproceedings{steinmetz2021steerable,
+    title={Steerable discovery of neural audio effects},
+    author={Steinmetz, Christian J. and Reiss, Joshua D.},
+    booktitle={5th Workshop on Creativity and Design at NeurIPS},
+    year={2021}}'''
+
 
 import torch
+from utils.utils import causal_crop, center_crop
 
-def causal_crop(x, length: int):
-    if x.shape[-1] != length:
-        stop = x.shape[-1] - 1
-        start = stop - length
-        x = x[..., start:stop]
-    return x
-
-def center_crop(x: torch.Tensor, shape: int) -> torch.Tensor:
-    start = (x.size(-1)-shape)//2
-    stop  = start + shape
-    return x[...,start:stop]
 
 class FiLM(torch.nn.Module):
     def __init__(

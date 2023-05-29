@@ -9,7 +9,7 @@ import pickle
 from matplotlib import pyplot as plt
 import numpy as np
 
-from utils.data import SpringDataset
+from data import SpringDataset
 from sandbox.utcn import TCN, causal_crop
 from utils.plot import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram, plot_metrics, save_plot
 

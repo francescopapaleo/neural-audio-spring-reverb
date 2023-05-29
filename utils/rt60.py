@@ -4,7 +4,7 @@ import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 
-from config import parser
+
 eps = 1e-15
 args = parser.parse_args()
 

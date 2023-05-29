@@ -1,4 +1,10 @@
-# Base class for pytorch lightning
+'''
+#-----------------------------------------------------------------------#
+                    Base class for pytorch lightning
+                                WARNING
+                        !!! Work in progress !!!
+#-----------------------------------------------------------------------#
+'''
 
 import torch
 import auraloss

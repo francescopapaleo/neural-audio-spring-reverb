@@ -1,7 +1,7 @@
 # python train.py --batch_size 4 --epochs 1 --device cuda:0
 import argparse
 from tcn import TCN
-from utils.data import SpringDataset
+from data import SpringDataset
 from pathlib import Path
 from datetime import datetime
 import logging

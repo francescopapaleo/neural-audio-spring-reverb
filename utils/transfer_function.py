@@ -8,7 +8,7 @@ import numpy as np
 
 from inference import make_inference
 from utils.plot import plot_transfer_function
-from utils.rt60_compute import measure_rt60
+from utils.rt60 import measure_rt60
 from utils.generator import generate_reference
 
 args = parser.parse_args()

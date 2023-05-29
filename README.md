@@ -8,12 +8,13 @@ A basic command line interface is provided to train, evaluate and test the model
 To train:
 
 ```bash
-python train.py --batch_size 4 --epochs 1 --device cuda:0
-
-or
-
-python train.py --batch_size 4 --epochs 1 --device cpu
-
+python train.py \
+--data_dir ./data/plate-spring/spring/ \
+--checkpoints ./checkpoints/ \
+--batch_size 16 \   
+--epochs 50 \
+--device cuda:0
+--crop 3200
 ```
 
 
