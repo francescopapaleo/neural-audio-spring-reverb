@@ -1,4 +1,4 @@
-# baseline TCN
+# baseline TCN: https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
 
 import torch
 
@@ -110,5 +110,5 @@ class TCN(torch.nn.Module):
     rf = self.kernel_size
     for n in range(1, self.n_blocks):
         dilation = self.dilation_growth ** (n % self.stack_size)
-        rf = rf + ((self.kernel_size - 1) * dilation)
+        rf = rf + ((self.kernel_size - 1) * dilation) 
     return rf

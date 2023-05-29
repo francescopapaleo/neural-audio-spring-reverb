@@ -19,7 +19,7 @@ class FiLM(torch.nn.Module):
         self,
         cond_dim,  # dim of conditioning input
         num_features,  # dim of the conv channel
-        batch_norm=False,
+        batch_norm=True,
     ):
         super().__init__()
         self.num_features = num_features
@@ -49,7 +49,7 @@ class TCNBlock(torch.nn.Module):
             out_channels, 
             kernel_size, 
             dilation=dilation, 
-            padding = ((kernel_size-1)//2) * dilation,      # uncommented
+            padding = ((kernel_size-1)//2) * dilation,  # was 0
             bias=True)
         if cond_dim > 0:
             self.film = FiLM(cond_dim, out_channels, batch_norm=False)
