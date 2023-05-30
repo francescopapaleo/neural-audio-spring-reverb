@@ -22,7 +22,7 @@ torch.cuda.empty_cache()
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', help='dataset')
-parser.add_argument('--n_epochs', type=int, default=50)
+parser.add_argument('--n_epochs', type=int, default=25)
 parser.add_argument('--batch_size', type=int, default=4)
 parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 parser.add_argument('--crop', type=int, default=3200)
