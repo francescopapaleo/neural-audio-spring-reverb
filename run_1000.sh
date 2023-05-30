@@ -5,9 +5,9 @@
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
-#SBATCH --time=8:00:00
-#SBATCH -o /homedtic/fpapaleo/smc-spring-reverb/logs/%N.%J.OUT.out
-#SBATCH -e /homedtic/fpapaleo/smc-spring-rever/logs/%N.%J.ERR.err
+#SBATCH --time=6:00:00
+#SBATCH -o %N.%J.OUT.out
+#SBATCH -e %N.%J.ERR.err
 
 source /etc/profile.d/lmod.sh
 

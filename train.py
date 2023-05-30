@@ -15,17 +15,17 @@ import time
 from torch.utils.tensorboard import SummaryWriter
 from torch.monitor import TensorboardEventHandler, register_event_handler
 
-torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.benchmark = False
 torch.manual_seed(42)
 torch.cuda.empty_cache()
     
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', help='dataset')
-parser.add_argument('--n_epochs', type=int, default=10)
-parser.add_argument('--batch_size', type=int, default=32)
+parser.add_argument('--n_epochs', type=int, default=50)
+parser.add_argument('--batch_size', type=int, default=4)
 parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-parser.add_argument('--crop', type=int, default=3201)
+parser.add_argument('--crop', type=int, default=3200)
 
 args = parser.parse_args()
 
@@ -185,7 +185,7 @@ def training():
 
             if min_valid_loss > valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) Saving model ...')
-                save_to = f'runs/tcn_{n_epochs}_{batch_size}_{timestamp}/tcn_ckpt_{epoch}.pth'
+                save_to = f'runs/tcn_{n_epochs}_{batch_size}_{timestamp}/tcn_ckpt_{n_epochs}.pth'
                 torch.save(model.state_dict(), save_to)
                
                 min_valid_loss = valid_loss    
