@@ -16,6 +16,13 @@ class SpringDataset(torch.utils.data.Dataset):
         self.wet_file = [f for f in self.file_list if 'wet' in f.stem and self.split in f.stem][0]
         self.dry_data = None
         self.wet_data = None
+
+        # Check if the files are not empty
+        if self.dry_file.stat().st_size == 0 or self.wet_file.stat().st_size == 0:
+            raise ValueError("Data files are empty. Please check the data integrity.")
+        print(f"Found {len(self.file_list)} files in {self.root_dir}")
+        print(f"Using {self.dry_file.name} and {self.wet_file.name} for {self.split} split.")
+
         self.load_data()
         self.index = {i: (self.dry_file.name, self.wet_file.name, i) for i in range(len(self.dry_data))}
         
@@ -24,9 +31,10 @@ class SpringDataset(torch.utils.data.Dataset):
         return len(self.index)
     
     def __getitem__(self, index):
-        # Should return a tuple of numpy arrays (x, y )
+        # Returns a tuple of numpy arrays
         x, y = self.dry_data[index], self.wet_data[index]
-        x, y = x.reshape(1, -1), y.reshape(1, -1)    
+        x, y = x.reshape(1, -1), y.reshape(1, -1)
+
         return x, y
     
     def load_data(self):

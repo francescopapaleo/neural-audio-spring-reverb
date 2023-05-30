@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
 #SBATCH --time=99:00:00
-#SBATCH -o %N.%J.OUT.out
-#SBATCH -e %N.%J.ERR.err
+#SBATCH -o /homedtic/fpapaleo/smc-spring-reverb/logs/%N.%J.OUT.out
+#SBATCH -e /homedtic/fpapaleo/smc-spring-rever/logs/%N.%J.ERR.err
 
 source /etc/profile.d/lmod.sh
 
@@ -17,4 +17,4 @@ module load Anaconda3/2020.02
 
 source activate envtorch
 
-python train.py --batch_size 64 --epochs 2500 --device cuda:0 --crop 3200
+python train.py  --n_epochs 2500 --batch_size 4 --device cuda:0 --crop 3200
