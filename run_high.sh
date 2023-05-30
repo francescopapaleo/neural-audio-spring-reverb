@@ -2,19 +2,19 @@
 #SBATCH -J TCN
 #SBATCH -p high
 #SBATCH -N 1
-#SBATCH --gres=gpu:tesla:1
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
-#SBATCH --time=10:00:00
+#SBATCH --time=99:00:00
 #SBATCH -o %N.%J.OUT.out
 #SBATCH -e %N.%J.ERR.err
 
 source /etc/profile.d/lmod.sh
+
 source /etc/profile.d/zz_hpcnow-arch.sh
 
-# ACTIVATE ANACONDA
-eval "$(conda shell.bash hook)"
-conda activate springenv
+module load Anaconda3/2020.02
 
+source activate envtorch
 
-python train.py
+python train.py --batch_size 64 --epochs 2500 --device cuda:0 --crop 3200

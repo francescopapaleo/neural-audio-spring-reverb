@@ -16,7 +16,7 @@ import auraloss
 torch.backends.cudnn.benchmark = True
 torch.manual_seed(42)
 torch.cuda.empty_cache()
-
+    
 parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='./data/plate-spring/spring/', help='dataset')
 parser.add_argument('--checkpoints', type=str, default='./checkpoints', help='state dict')
@@ -45,11 +45,6 @@ def training():
     print(f'Sample Rate: {sample_rate} Hz ------  Crop Lenght: {crop_len} samples')
     print("-------------------------------------------------------------------------")
     
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    
-    writer = SummaryWriter('logs/tcn_{}'.format(timestamp))
-    register_event_handler(TensorboardEventHandler(writer))
-    
     dataset = SpringDataset(root_dir=args.data_dir, split='train')
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
@@ -57,6 +52,11 @@ def training():
 
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=4, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=4, shuffle=False, drop_last=True)
+
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    writer = SummaryWriter(f'runs/tcn_{epochs}_{timestamp}')
+
+    register_event_handler(TensorboardEventHandler(writer))
 
     model = TCN(
         n_inputs=1, 
@@ -89,14 +89,14 @@ def training():
 
     ############################### Training Loop #################################
     
-    running_loss = 0.0              # initialize running_loss
     min_valid_loss = np.inf             # initialize min_valid_loss
     
    
     for e in (range(epochs)):      # iterate over epochs
         model.train()
         print(f"Epoch: {e+1} / {epochs}", end='\r')
-        train_loss = 0.0           # initialize train_loss 
+        train_loss = 0.0
+        valid_loss = 0.0
 
         p_bar = tqdm(enumerate(train_loader), total=len(train_loader),leave=False,
                     bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}{postfix}]',
@@ -128,15 +128,14 @@ def training():
             optimizer.step()  # update weights
 
             train_loss += loss.item()
-            writer.add_scalar('Batch Loss', loss.item(), global_step=batch_idx+1 + e*len(train_loader))
+            writer.add_scalar('Batch Loss', loss.item(), global_step = batch_idx+1 + e*len(train_loader))
             writer.flush()
 
         print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)}')
-        writer.add_scalar('Training Loss', train_loss, global_step=e)
+        writer.add_scalar('Training Loss', train_loss / len(train_loader), global_step = e)
         writer.flush()    
 
         #################################### Validation Loop #########################################
-        valid_loss = 0.0                                               # initialize valid_loss
         model.eval()
         with torch.no_grad():                
             for step, (input, target) in enumerate(valid_loader):
@@ -160,15 +159,14 @@ def training():
                 
                 valid_loss += loss.item()
         
-            valid_loss /= len(valid_loader)
-            print(f'Epoch {e+1} \t\t Training Loss: {train_loss / len(train_loader)} \t\t Validation Loss: {valid_loss}')
-            writer.add_scalar('valid_loss', valid_loss, global_step=e)
+            print(f'Epoch {e+1} \t\t Validation Loss: {valid_loss}')
+            writer.add_scalar('valid_loss', valid_loss / len(valid_loader), global_step=e)
 
             if min_valid_loss > valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{valid_loss:.6f}) \t Saving model ...')
                 min_valid_loss = valid_loss
 
-                save_to = 'checkpoints/tcn{}.pth'.format(timestamp)
+                save_to = f'checkpoints/tcn{timestamp}.pth'
                 torch.save(model.state_dict(), save_to)         
                 writer.flush()
         
