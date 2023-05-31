@@ -10,7 +10,19 @@ https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
 
 
 import torch
-from utils.utils import causal_crop, center_crop
+
+def center_crop(x, length: int):
+        start = (x.shape[-1]-length)//2
+        stop  = start + length
+        return x[...,start:stop]
+
+
+def causal_crop(x, length: int):
+    if x.shape[-1] != length:
+        stop = x.shape[-1] - 1
+        start = stop - length
+        x = x[..., start:stop]
+    return x
 
 
 class FiLM(torch.nn.Module):
@@ -113,7 +125,7 @@ class TCN(torch.nn.Module):
         for block in self.blocks:
             x = block(x, c)
         return x
-
+    
     def compute_receptive_field(self):
         """ Compute the receptive field in samples."""
         rf = self.kernel_size
@@ -121,4 +133,3 @@ class TCN(torch.nn.Module):
             dilation = self.dilation_growth ** (n % self.stack_size)
             rf = rf + ((self.kernel_size - 1) * dilation)
         return rf
-
