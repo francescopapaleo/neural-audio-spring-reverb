@@ -2,10 +2,11 @@
 from pathlib import Path
 import h5py
 import torch
+import torchaudio.transforms as T
 import numpy as np
 
 class SpringDataset(torch.utils.data.Dataset):
-    def __init__(self, root_dir, split=None):
+    def __init__(self, root_dir, split=None, transform=None):
         super(SpringDataset, self).__init__()
         self.root_dir = Path(root_dir)
         self.split = split
@@ -26,6 +27,10 @@ class SpringDataset(torch.utils.data.Dataset):
         self.load_data()
         self.index = {i: (self.dry_file.name, self.wet_file.name, i) for i in range(len(self.dry_data))}
         
+        self.transform = transform
+
+
+
     def __len__(self):
         # The length should be the number of items in the data
         return len(self.index)
@@ -34,6 +39,13 @@ class SpringDataset(torch.utils.data.Dataset):
         # Returns a tuple of numpy arrays
         x, y = self.dry_data[index], self.wet_data[index]
         x, y = x.reshape(1, -1), y.reshape(1, -1)
+
+        # Convert numpy arrays to tensors
+        x, y = torch.from_numpy(x), torch.from_numpy(y)
+
+        if self.transform:
+            x = self.transform(x)
+            y = self.transform(y)
 
         return x, y
     

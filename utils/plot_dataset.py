@@ -1,15 +1,14 @@
-from config import parser
+from argparse import ArgumentParser
 from pathlib import Path
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-from utils.dataload import SpringDataset
+from data import SpringDataset
 from utils.plot import get_spectrogram
 
 
 def visualize_data(**args):
-    args = parser.parse_args()
+    
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')
@@ -46,9 +45,11 @@ def visualize_data(**args):
     plt.savefig(Path(args.results_dir) / 'dataset_spectrum.png')
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
     args = parser.parse_args()
-
+    
     dataset = SpringDataset(args.data_dir, args.split)
+    
     x, y = dataset[args.sample_idx]
     visualize_data(x, y, **args)
 
