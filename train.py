@@ -20,7 +20,6 @@ torch.manual_seed(42)
 # torch.backends.cudnn.deterministic = True         # for reproducibility ?
 # torch.backends.cudnn.benchmark = True             # for speed ?
     
-
 def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
 
     print("Initializing Training Process..", end='\n\n')
