@@ -1,0 +1,41 @@
+/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/optim/lr_scheduler.py:418: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  warnings.warn("To get the last learning rate computed by the scheduler, "
+/homedtic/fpapaleo/smc-spring-reverb/utils/utils.py:11: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  if x.shape[-1] != length:
+Traceback (most recent call last):
+  File "/homedtic/fpapaleo/smc-spring-reverb/train.py", line 207, in <module>
+    training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
+  File "/homedtic/fpapaleo/smc-spring-reverb/train.py", line 170, in training
+    writer.add_graph(model, input_to_model=input, verbose=False)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/writer.py", line 736, in add_graph
+    self._get_file_writer().add_graph(graph(model, input_to_model, verbose, use_strict_trace))
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/_pytorch_graph.py", line 297, in graph
+    raise e
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/_pytorch_graph.py", line 291, in graph
+    trace = torch.jit.trace(model, args, strict=use_strict_trace)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/jit/_trace.py", line 741, in trace
+    return trace_module(
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/jit/_trace.py", line 958, in trace_module
+    module._c._create_method_from_trace(
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1098, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/homedtic/fpapaleo/smc-spring-reverb/tcn.py", line 114, in forward
+    x = block(x, c)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1098, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/homedtic/fpapaleo/smc-spring-reverb/tcn.py", line 67, in forward
+    x_res = causal_crop(self.res(x_in), x.shape[-1])
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1098, in _slow_forward
+    result = self.forward(*input, **kwargs)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/conv.py", line 302, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/nn/modules/conv.py", line 298, in _conv_forward
+    return F.conv1d(input, weight, bias, self.stride,
+RuntimeError: CUDA out of memory. Tried to allocate 1000.00 MiB (GPU 0; 14.76 GiB total capacity; 13.71 GiB already allocated; 109.75 MiB free; 13.75 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+/var/spool/slurmd/job342802/slurm_script: line 22: 3509274 Segmentation fault      (core dumped) python train.py --device cuda:0

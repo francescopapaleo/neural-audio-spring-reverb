@@ -1,0 +1,15 @@
+/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/optim/lr_scheduler.py:418: UserWarning: To get the last learning rate computed by the scheduler, please use `get_last_lr()`.
+  warnings.warn("To get the last learning rate computed by the scheduler, "
+Traceback (most recent call last):
+  File "/homedtic/fpapaleo/smc-spring-reverb/train.py", line 207, in <module>
+    training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
+  File "/homedtic/fpapaleo/smc-spring-reverb/train.py", line 168, in training
+    writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/writer.py", line 441, in add_histogram
+    histogram(tag, values, bins, max_bins=max_bins), global_step, walltime)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/summary.py", line 320, in histogram
+    hist = make_histogram(values.astype(float), bins, max_bins)
+  File "/homedtic/fpapaleo/.conda/envs/envtorch/lib/python3.9/site-packages/torch/utils/tensorboard/summary.py", line 344, in make_histogram
+    cum_counts = np.cumsum(np.greater(counts, 0, dtype=np.int32))
+TypeError: No loop matching the specified signature and casting was found for ufunc greater
+/var/spool/slurmd/job342779/slurm_script: line 22: 3504307 Segmentation fault      (core dumped) python train.py --device cuda:0

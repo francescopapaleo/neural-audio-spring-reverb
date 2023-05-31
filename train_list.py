@@ -17,9 +17,8 @@ torch.cuda.empty_cache()
 torch.manual_seed(42)
 
 # I have a doubt on these two settings, I don't know if they are necessary
-# torch.backends.cudnn.deterministic = True         # for reproducibility ?
-# torch.backends.cudnn.benchmark = True             # for speed ?
-    
+torch.backends.cudnn.deterministic = True         # for reproducibility ?
+torch.backends.cudnn.benchmark = True             # for speed ?
 
 def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
 
@@ -47,7 +46,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         'n_inputs': 1,
         'n_outputs': 1,
         'n_blocks': 8,
-        'kernel_size': 9,
+        'kernel_size': 11,
         'n_channels': 64,
         'dilation_growth': 4,
         'cond_dim': 0,
@@ -155,7 +154,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
 
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                save_to = f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'
+                save_to = f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_ckpt_{epoch}.pth'
                 torch.save(model.state_dict(), save_to)
                 min_valid_loss = avg_valid_loss
     
@@ -165,7 +164,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
         print(f'Epoch {epoch +1} \t\t Validation Loss: {avg_valid_loss:.6f}, \t\t Training Loss: {avg_train_loss:.6f}', end='\r')
         # for name, param in model.named_parameters():
-        #     writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
+        #      writer.add_histogram(name, param.clone().cpu().data.numpy(), epoch)
         
     writer.add_graph(model, input_to_model=input, verbose=False)
     writer.flush()
@@ -186,15 +185,22 @@ if __name__ == "__main__":
     parser.add_argument('--sample_rate', type=int, default=16000)
 
     args = parser.parse_args()
+
+
+    lr_list = [0.1, 0.01, 0.001]
+    bs_list = [8, 16, 32]
+    ep_list = [50, 100, 250]
     
     data_dir = args.data_dir
     crop = args.crop
     device = args.device
     sample_rate = args.sample_rate
-    n_epochs = args.n_epochs
-    batch_size = args.batch_size
-    lr = args.lr
 
-    print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
+    # Loop over all combinations
+    for lr in lr_list:
+        for batch_size in bs_list:
+            for n_epochs in ep_list:
+                
+                print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
 
-    training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
+                training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)

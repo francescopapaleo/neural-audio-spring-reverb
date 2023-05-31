@@ -1,0 +1,15 @@
+Training with lr=0.1, batch_size=64, n_epochs=50
+Initializing Training Process..
+
+Torch version: 1.11.0 ------ Selected Device: cuda:0
+Sample Rate: 16000 Hz ------  Crop Lenght:3200 samples
+
+Found 4 files in ../plate-spring/spring
+Using dry_train.h5 and wet_train.h5 for train split.
+Parameters: 395.339 k
+Receptive field: 3495251 samples or 218453.2 ms
+
+Training Loop
+
+Validation Loss Decreased(inf--->6318878549.333333) Saving model ...
+Epoch 1 		 Validation Loss: 6318878549.333333, 		 Training Loss: 62095698841.486343
