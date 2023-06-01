@@ -200,9 +200,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    lr_list = [0.1, 0.01, 0.001]
-    bs_list = [8, 16, 32]
-    ep_list = [50, 100, 250]
+    lr_list = [0.1, 0.01]
+    bs_list = [8, 16]
+    ep_list = [50, 100]
     
     data_dir = args.data_dir
     crop = args.crop
