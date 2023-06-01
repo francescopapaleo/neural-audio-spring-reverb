@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -J TCN
-#SBATCH -p medium
+#SBATCH -p high
 #SBATCH -N 1
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
-#SBATCH --time=7:00:00
+#SBATCH --time=20:00:00
 #SBATCH -o %N.%J.OUT.out
 #SBATCH -e %N.%J.ERR.err
 
