@@ -9,10 +9,7 @@ import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
 torch.cuda.empty_cache()
-torch.manual_seed(42)
-
-torch.backends.cudnn.deterministic = True         # for reproducibility ?
-torch.backends.cudnn.benchmark = True             # for speed ?
+torch.manual_seed(42)            
     
 def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
 
@@ -70,8 +67,6 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     criterion = auraloss.freq.STFTLoss().to(device)                 # loss function       
     esr = auraloss.time.ESRLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)         # optimizer
-    
-    metrics = {'metrics/esr_train': None, 'metrics/esr_valid': None}
 
     ms1 = int(n_epochs * 0.8)
     ms2 = int(n_epochs * 0.95)
@@ -130,8 +125,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         avg_train_loss = train_loss / len(train_loader)
         avg_train_metric = train_metric / len(train_loader)
 
-        writer.add_scalar('Training/STFT', avg_train_loss, global_step = global_step)
-        writer.add_scalar('Training/ESR', avg_train_metric, global_step = global_step)
+        writer.add_scalar('training/stft', avg_train_loss, global_step = global_step)
+        writer.add_scalar('training/esr', avg_train_metric, global_step = global_step)
 
         model.eval()
         with torch.no_grad():
@@ -162,9 +157,9 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             avg_valid_loss = valid_loss / len(valid_loader)    
             avg_valid_metric = valid_metric / len(valid_loader)
 
-            writer.add_scalar('Validation/STFT', avg_valid_loss, global_step = global_step_valid)
-            writer.add_scalar('Validation/MSE', avg_valid_metric, global_step = global_step_valid)
-
+            writer.add_scalar('validation/stft', avg_valid_loss, global_step = global_step_valid)
+            writer.add_scalar('validation/esr', avg_valid_metric, global_step = global_step_valid)
+            
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
                 save_to = f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'
@@ -177,8 +172,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
         print(f'Epoch {epoch +1} \t\t Validation Loss: {avg_valid_loss:.6f}, \t\t Training Loss: {avg_train_loss:.6f}', end='\r')
 
-    metrics = {'metrics/esr_train': avg_train_metric, 'metrics/esr_valid': avg_valid_metric}     
-    writer.add_hparams(hparams, metrics)
+
+    writer.add_hparams(hparams)
     writer.add_graph(model, input_to_model=input, verbose=False)
     writer.flush()
     writer.close()
@@ -200,9 +195,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    lr_list = [0.1, 0.01]
-    bs_list = [8, 16]
-    ep_list = [50, 100]
+    lr_list = [0.01]
+    bs_list = [8, 16,]
+    ep_list = [50]
     
     data_dir = args.data_dir
     crop = args.crop
