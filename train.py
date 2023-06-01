@@ -11,7 +11,6 @@ from torch.utils.tensorboard import SummaryWriter
 torch.cuda.empty_cache()
 torch.manual_seed(42)
 
-# I have a doubt on these two settings, I don't know if they are necessary
 torch.backends.cudnn.deterministic = True         # for reproducibility ?
 torch.backends.cudnn.benchmark = True             # for speed ?
     
@@ -32,10 +31,12 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
-    hparams_dict = {                                    # hyperparameters
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    writer = SummaryWriter(log_dir=f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
-        'l_rate': 0.01,
+        'l_rate': lr,
         'sched_gamma': 0.1,
         'n_inputs': 1,
         'n_outputs': 1,
@@ -44,21 +45,16 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         'n_channels': 64,
         'dilation_growth': 2,
         'cond_dim': 0,
-    }
-
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')            # timestamp for tensorboard
-    writer = SummaryWriter(f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/')           # tensorboard writer
-    writer.add_hparams(hparams_dict, {})                            # Log hyperparameters to TensorBoard
-    writer.flush()
+        })                     
     
     model = TCN(                                                    # instantiate model     
-        n_inputs = hparams_dict['n_inputs'], 
-        n_outputs = hparams_dict['n_outputs'], 
-        n_blocks = hparams_dict['n_blocks'],
-        kernel_size = hparams_dict['kernel_size'],
-        n_channels = hparams_dict['n_channels'], 
-        dilation_growth = hparams_dict['dilation_growth'],
-        cond_dim = hparams_dict['cond_dim'],
+        n_inputs = hparams['n_inputs'], 
+        n_outputs = hparams['n_outputs'], 
+        n_blocks = hparams['n_blocks'],
+        kernel_size = hparams['kernel_size'],
+        n_channels = hparams['n_channels'], 
+        dilation_growth = hparams['dilation_growth'],
+        cond_dim = hparams['cond_dim'],
     ).to(device)
 
     model_summary = str(model).replace( '\n', '<br/>').replace(' ', '&nbsp;')
@@ -72,9 +68,11 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')       
     
     criterion = auraloss.freq.STFTLoss().to(device)                 # loss function       
-    metric = auraloss.time.ESRLoss().to(device)
+    esr = auraloss.time.ESRLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)         # optimizer
     
+    metrics = {'metrics/esr_train': None, 'metrics/esr_valid': None}
+
     ms1 = int(n_epochs * 0.8)
     ms2 = int(n_epochs * 0.95)
     milestones = [ms1, ms2]
@@ -91,13 +89,17 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     min_valid_loss = np.inf
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           # dummy condition tensor
 
-    for epoch in range(n_epochs):
+    for epoch in range(n_epochs):    
         train_loss = 0.0
         valid_loss = 0.0
         train_metric = 0.0
         valid_metric = 0.0
-        model.train()
+        avg_train_loss = 0.0
+        avg_valid_loss = 0.0
+        avg_train_metric = 0.0
+        avg_valid_metric = 0.0
         
+        model.train()
         for batch_idx, (input, target) in enumerate(train_loader):
             global_step = (epoch * len(train_loader)) + batch_idx
             optimizer.zero_grad()
@@ -117,19 +119,20 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             output = model(input_crop, c)                   # forward pass
 
             loss = criterion(output, target_crop)              # compute loss
-            runn_metric = metric(output, target_crop)
+            metric = esr(output, target_crop)
 
             loss.backward()                                 # compute gradients
             optimizer.step()                                # update weights
             
             train_loss += loss.item()
-            train_metric += runn_metric.item()
+            train_metric += metric.item()
 
         avg_train_loss = train_loss / len(train_loader)
         avg_train_metric = train_metric / len(train_loader)
 
         writer.add_scalar('Training/STFT', avg_train_loss, global_step = global_step)
         writer.add_scalar('Training/ESR', avg_train_metric, global_step = global_step)
+
         model.eval()
         with torch.no_grad():
             
@@ -151,20 +154,20 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
                 output = model(input_crop, c)               # forward pass
 
                 loss = criterion(output, target_crop)       # compute loss
-                runn_metric = metric(output, target_crop)
+                metric = esr(output, target_crop)
 
                 valid_loss += loss.item()                   # accumulate loss
-                valid_metric += runn_metric.item()
+                valid_metric += metric.item()
 
             avg_valid_loss = valid_loss / len(valid_loader)    
             avg_valid_metric = valid_metric / len(valid_loader)
 
-            writer.add_scalar('Validation/STFT', avg_train_loss, global_step = global_step_valid)
+            writer.add_scalar('Validation/STFT', avg_valid_loss, global_step = global_step_valid)
             writer.add_scalar('Validation/MSE', avg_valid_metric, global_step = global_step_valid)
-            
+
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                save_to = f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'
+                save_to = f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'
                 torch.save(model.state_dict(), save_to)
                 min_valid_loss = avg_valid_loss
             
@@ -174,6 +177,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
         print(f'Epoch {epoch +1} \t\t Validation Loss: {avg_valid_loss:.6f}, \t\t Training Loss: {avg_train_loss:.6f}', end='\r')
 
+    metrics = {'metrics/esr_train': avg_train_metric, 'metrics/esr_valid': avg_valid_metric}     
+    writer.add_hparams(hparams, metrics)
     writer.add_graph(model, input_to_model=input, verbose=False)
     writer.flush()
     writer.close()
@@ -185,7 +190,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
-    parser.add_argument('--n_epochs', type=int, default=50)
+    parser.add_argument('--n_epochs', type=int, default=5)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
