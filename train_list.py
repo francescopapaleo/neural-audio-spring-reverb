@@ -42,13 +42,14 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         'n_blocks': 10,
         'kernel_size': 15,
         'n_channels': 64,
-        'dilation_growth': 3,
+        'dilation_growth': 2,
         'cond_dim': 0,
     }
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')            # timestamp for tensorboard
     writer = SummaryWriter(f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/')           # tensorboard writer
-    writer.add_hparams(hparams_dict, {})                            # Log hyperparameters to TensorBoard
+    writer.a(hparams_dict, {})                            # Log hyperparameters to TensorBoard
+    writer.flush()
 
     model = TCN(                                                    # instantiate model     
         n_inputs = hparams_dict['n_inputs'], 
@@ -125,11 +126,10 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             train_metric += runn_metric.item()
 
         avg_train_loss = train_loss / len(train_loader)
-        avg_train_metric = avg_train_metric / len(train_loader)
+        avg_train_metric = train_metric / len(train_loader)
 
-        writer.add_scalar('Train/STFT', avg_train_loss, global_step = global_step)
-        writer.add_scalar('Train/ESR', avg_train_metric, global_step = global_step)
-        
+        writer.add_scalar('Training/STFT', avg_train_loss, global_step = global_step)
+        writer.add_scalar('Training/ESR', avg_train_metric, global_step = global_step)
         model.eval()
         with torch.no_grad():
             
@@ -158,8 +158,10 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
 
             avg_valid_loss = valid_loss / len(valid_loader)    
             avg_valid_metric = valid_metric / len(valid_loader)
-            writer.add_scalar('Valid/STFT', avg_train_loss, global_step = global_step_valid)
-            writer.add_scalar('Valid/MSE', avg_valid_metric, global_step = global_step_valid)
+
+            writer.add_scalar('Validation/STFT', avg_train_loss, global_step = global_step_valid)
+            writer.add_scalar('Validation/MSE', avg_valid_metric, global_step = global_step_valid)
+            
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
                 save_to = f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'

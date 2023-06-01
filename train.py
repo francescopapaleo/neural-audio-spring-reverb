@@ -49,7 +49,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')            # timestamp for tensorboard
     writer = SummaryWriter(f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/')           # tensorboard writer
     writer.add_hparams(hparams_dict, {})                            # Log hyperparameters to TensorBoard
-
+    writer.flush()
+    
     model = TCN(                                                    # instantiate model     
         n_inputs = hparams_dict['n_inputs'], 
         n_outputs = hparams_dict['n_outputs'], 
@@ -127,8 +128,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         avg_train_loss = train_loss / len(train_loader)
         avg_train_metric = train_metric / len(train_loader)
 
-        writer.add_scalar('Train/STFT', avg_train_loss, global_step = global_step)
-        writer.add_scalar('Train/ESR', avg_train_metric, global_step = global_step)
+        writer.add_scalar('Training/STFT', avg_train_loss, global_step = global_step)
+        writer.add_scalar('Training/ESR', avg_train_metric, global_step = global_step)
         model.eval()
         with torch.no_grad():
             
@@ -158,8 +159,9 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             avg_valid_loss = valid_loss / len(valid_loader)    
             avg_valid_metric = valid_metric / len(valid_loader)
 
-            writer.add_scalar('Valid/STFT', avg_train_loss, global_step = global_step_valid)
-            writer.add_scalar('Valid/MSE', avg_valid_metric, global_step = global_step_valid)
+            writer.add_scalar('Validation/STFT', avg_train_loss, global_step = global_step_valid)
+            writer.add_scalar('Validation/MSE', avg_valid_metric, global_step = global_step_valid)
+            
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
                 save_to = f'runs/tcn/{n_epochs}_{batch_size}_{lr}_{timestamp}/tcn_{n_epochs}_best.pth'
@@ -183,8 +185,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
-    parser.add_argument('--n_epochs', type=int, default=10)
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--n_epochs', type=int, default=50)
+    parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     parser.add_argument('--crop', type=int, default=3200)
