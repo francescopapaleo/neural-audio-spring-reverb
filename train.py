@@ -94,6 +94,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         avg_train_loss = 0.0
         avg_train_metric = 0.0
         
+        
         model.train()
         for batch_idx, (input, target) in enumerate(train_loader):
             global_step = (epoch * len(train_loader)) + batch_idx
@@ -103,13 +104,18 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             target = target.to(device)
             c = c.to(device)
             
-            start_idx = rf                                  # crop input and target
-            stop_idx = start_idx + crop
-            if stop_idx > input.shape[-1]:
-                stop_idx = input.shape[-1]
-                start_idx = stop_idx - crop
-            input_crop = input[:, :, start_idx:stop_idx]
-            target_crop = target[:, :, start_idx:stop_idx]     
+            # start_idx = rf                                  # crop input and target
+            # stop_idx = start_idx + crop
+            # if stop_idx > input.shape[-1]:
+            #     stop_idx = input.shape[-1]
+            #     start_idx = stop_idx - crop
+            # input_crop = input[:, :, start_idx:stop_idx]
+            # target_crop = target[:, :, start_idx:stop_idx]     
+
+            input_pad = torch.nn.functional.pad(input, (rf-1, 0))
+            target_pad = torch.nn.functional.pad(target, (rf-1, 0))
+            input_crop = input_pad
+            target_crop = target_pad
 
             output = model(input_crop, c)                   # forward pass
 
@@ -128,52 +134,58 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         writer.add_scalar('training/stft', avg_train_loss, global_step = global_step)
         writer.add_scalar('training/esr', avg_train_metric, global_step = global_step)
 
-        if epoch % 5 == 0:
-            model.eval()
-            valid_loss = 0.0
-            avg_valid_loss = 0.0
-            valid_metric = 0.0
-            avg_valid_metric = 0.0
+        model.eval()
+        valid_loss = 0.0
+        avg_valid_loss = 0.0
+        valid_metric = 0.0
+        avg_valid_metric = 0.0
             
-            with torch.no_grad():
-                for step, (input, target) in enumerate(valid_loader):
-                    global_step_valid = (epoch * len(valid_loader)) + step
+        with torch.no_grad():
+            for step, (input, target) in enumerate(valid_loader):
 
-                    input = input.to(device)                    # move input and target to device
-                    target = target.to(device)
-                    c = c.to(device)
+                input = input.to(device)                    # move input and target to device
+                target = target.to(device)
+                c = c.to(device)
 
-                    start_idx = rf                              # crop input and target
-                    stop_idx = start_idx + crop
-                    if stop_idx > input.shape[-1]:
-                        stop_idx = input.shape[-1]
-                        start_idx = stop_idx - crop
-                    input_crop = input[:, :, start_idx:stop_idx]
-                    target_crop = target[:, :, start_idx:stop_idx]     
+                # start_idx = rf                             
+                # stop_idx = start_idx + crop
+                # if stop_idx > input.shape[-1]:
+                #     stop_idx = input.shape[-1]
+                #     start_idx = stop_idx - crop
+                # input_crop = input[:, :, start_idx:stop_idx]
+                # target_crop = target[:, :, start_idx:stop_idx]     
 
-                    output = model(input_crop, c)               # forward pass
+                input_pad = torch.nn.functional.pad(input, (rf-1, 0))
+                target_pad = torch.nn.functional.pad(target, (rf-1, 0))
+                input_crop = input_pad
+                target_crop = target_pad
 
-                    loss = criterion(output, target_crop)       # compute loss
-                    metric = esr(output, target_crop)
+                output = model(input_crop, c)               # forward pass
 
-                    valid_loss += loss.item()                   # accumulate loss
-                    valid_metric += metric.item()
+                loss = criterion(output, target_crop)       # compute loss
+                metric = esr(output, target_crop)
 
-                avg_valid_loss = valid_loss / len(valid_loader)    
-                avg_valid_metric = valid_metric / len(valid_loader)
+                valid_loss += loss.item()                   # accumulate loss
+                valid_metric += metric.item()
 
-                writer.add_scalar('validation/stft', avg_valid_loss, global_step = global_step_valid)
-                writer.add_scalar('validation/esr', avg_valid_metric, global_step = global_step_valid)
-                
-                if min_valid_loss > avg_valid_loss:
-                    print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                    save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
-                    torch.save(model.state_dict(), save_to)
-                    min_valid_loss = avg_valid_loss
-                
-                scheduler.step()
-                current_lr = scheduler.get_last_lr()[0]
-                writer.add_scalar('Learning Rate', current_lr, epoch)       # log learning rate to tensorboard
+            avg_valid_loss = valid_loss / len(valid_loader)    
+            avg_valid_metric = valid_metric / len(valid_loader)
+
+            writer.add_scalar('validation/stft', avg_valid_loss, global_step = global_step)
+            writer.add_scalar('validation/esr', avg_valid_metric, global_step = global_step)
+            
+            if min_valid_loss > avg_valid_loss:
+                print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
+                save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+                torch.save({
+                    'model_state_dict': model.state_dict(),
+                    'hparams': hparams
+                }, save_to)
+                min_valid_loss = avg_valid_loss
+            
+            scheduler.step()
+            current_lr = scheduler.get_last_lr()[0]
+            writer.add_scalar('Learning Rate', current_lr, epoch)       # log learning rate to tensorboard
         
         metrics['training/esr'].append(avg_train_metric)
         metrics['validation/esr'].append(avg_valid_metric) 
@@ -210,9 +222,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    lr_list = [0.01, 0.001]
-    bs_list = [8, 16]
-    ep_list = [25, 50]
+    # lr_list = [0.01, 0.001]
+    # bs_list = [8, 16]
+    # ep_list = [25, 50]
+
+    lr_list = [0.01]
+    bs_list = [8]
+    ep_list = [25, 50, 100, 250]
     
     data_dir = args.data_dir
     crop = args.crop
