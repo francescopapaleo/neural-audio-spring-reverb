@@ -94,7 +94,6 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         avg_train_loss = 0.0
         avg_train_metric = 0.0
         
-        
         model.train()
         for batch_idx, (input, target) in enumerate(train_loader):
             global_step = (epoch * len(train_loader)) + batch_idx
@@ -185,7 +184,8 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
             scheduler.step()
             current_lr = scheduler.get_last_lr()[0]
-            writer.add_scalar('Learning Rate', current_lr, epoch)       # log learning rate to tensorboard
+            print("Epoch: {}, Learning Rate: {}".format(epoch, scheduler.get_last_lr()[0]))
+            writer.add_scalar('Learning Rate', current_lr, epoch)
         
         metrics['training/esr'].append(avg_train_metric)
         metrics['validation/esr'].append(avg_valid_metric) 

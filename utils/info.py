@@ -1,10 +1,13 @@
-from config import parser
-args = parser.parse_args()
+from argparse import ArgumentParser
 
 import sys
 import platform
 import torch
 import torchaudio
+
+parser = ArgumentParser()
+args = parser.parse_args()
+
 
 def system_info():
     # System information
@@ -30,7 +33,7 @@ def system_info():
         print("Using CPU")
 
     print(f'PyTorch version:{torch.__version__}')
-    print(torchaudio.__version__)
+    print(f'TorchAudio:{torchaudio.__version__}')
 
 
 if __name__ == "__main__":
