@@ -5,7 +5,7 @@ import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-from tcn import TCN
+from models.TCN import TCNBase
 from data import SpringDataset
 from datetime import datetime
 from argparse import ArgumentParser
@@ -46,7 +46,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         'cond_dim': 0,
         })                     
     
-    model = TCN(                                                    # instantiate model     
+    model = TCNBase(                                                    # instantiate model     
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
