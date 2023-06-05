@@ -1,4 +1,4 @@
-# test.py
+# test.py: Testing the model on the test set
 
 import torch
 import auraloss
@@ -7,7 +7,7 @@ from data import SpringDataset
 from argparse import ArgumentParser
 from pathlib import Path
 
-from tcn import TCN
+from models.TCN import TCNBase
 
 def testing(args):
 
@@ -22,7 +22,7 @@ def testing(args):
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
     # load from checkpoint                                                                            
-    load_from = Path('./checkpoints') / args.load                                   
+    load_from = Path('./checkpoints') / (args.load + '.pt')                                   
     try:
         checkpoint = torch.load(load_from, map_location=device)
         hparams = checkpoint['hparams']
@@ -31,7 +31,7 @@ def testing(args):
         return
     
     # instantiate model 
-    model = TCN(                                                        
+    model = TCNBase(                                                        
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
@@ -74,9 +74,7 @@ def testing(args):
     
     print("## Testing...")
     
-    model = model.to(device)
     model.eval()
-    
     with torch.no_grad():
         for step, (input, target) in enumerate(test_loader):
             global_step = step + 1
@@ -128,9 +126,10 @@ if __name__ == "__main__":
     parser.add_argument('--sample_rate', type=int, default=16000)
 
     parser.add_argument('--load', type=str, default=None, help='checkpoint to load')
-
     args = parser.parse_args()
 
-    testing(args)
+    for file in Path('./checkpoints').glob('tcn_*'):
+        args.load = file.stem
+        testing(args)
 
     

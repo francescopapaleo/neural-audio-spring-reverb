@@ -1,10 +1,11 @@
 from pathlib import Path
-
+from argparse import ArgumentParser
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 import torchaudio.transforms as T
 import librosa
+
 
 def plot_compare_waveform(y, y_pred):
     '''Plot the waveform of the input and the predicted signal.
@@ -339,4 +340,6 @@ def save_plot(plt, path, filename):
     plt.savefig(Path(path) / filename)
 
 if __name__ == '__main__':
+    
+    parser = ArgumentParser()
     args = parser.parse_args()

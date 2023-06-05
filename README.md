@@ -1,13 +1,14 @@
 # Modeling Spring Reverb with Neural Audio Effects
 
-## Assessment of different models for the task.
+## *Assessment of different models for the task*
 
-This is the working environment for the thesis project.
-A basic command line interface is provided to train, evaluate and test the models.
+This is the working repository for the thesis project.
+A basic command line interface is provided to train, test and evaluate the models.
+A transfer function and RT60 measurement script is also provided.
 
-To train:
+### To train
 
-```bash
+```terminal
 python train.py \
 --data_dir ./data/plate-spring/spring/ \
 --checkpoints ./checkpoints/ \
@@ -17,87 +18,88 @@ python train.py \
 --crop 3200
 ```
 
-
-## The following scripts are still work in progress::
+### The following scripts are still work in progress
 
 To test the model on new data execute from terminal:
 
-```bash
+```terminal
 python test.py
 ```
 
+it will automatically load all the checkpoints in `./checkpoints/` and test them on the test set.
 
-To make an inference on an audio file execute from terminal:
+### To make an inference on an audio file execute from terminal
 
-```bash
+```terminal
 python inference.py --load MODEL_NAME --input 'saxophone.wav'
 python inference.py --load MODEL_NAME --input 'saxophone.wav' --output 'saxophone_out.wav'
 ```
 
-To generate/compute the transfer function or measure the RT60:
-**Execute these commands from the root folder of the project**
+### To generate/compute the transfer function or measure the RT60
 
-```bash
+Execute these commands from the root folder of the project
+
+```terminal
 python -m utils.generator 
 python -m utils.transfer_function --load MODEL_NAME --input inverse_filter.wav
 python -m utils.rt60_measure --input 'saxophone.wav'
 ```
 
-## Command Line Arguments
+### Command Line Arguments
 
 ```terminal
 options:
-  -h, --help            show this help message and exit
-  --root_dir ROOT_DIR   main folder
-  --data_dir DATA_DIR   default dataset folder
-  --models_dir MODELS_DIR 
-                        folder to store state_dict after training and load for eval or inference
-  --results_dir RESULTS_DIR
-                        folder to store results/processed files
-  --audio_dir AUDIO_DIR
-                        folder for raw audio
-  --target_dir TARGET_DIR
-                        set target folder for a specific function
-  --target_file TARGET_FILE
-                        set target file for a specific function
-  --sr SR               sampling rate frequency, default: 16KHz
-  --save SAVE           save weights and biases as
-  --load LOAD           load weights and biases from
-  --device DEVICE       set the device
-  --input INPUT         input file to process
-  --split SPLIT         select test/train split of the dataset
-  --sample_idx SAMPLE_IDX
-                        The index of the sample from a dataset
-  --iters ITERS
-  --batch_size BATCH_SIZE
-  --shuffle SHUFFLE
-  --seed SEED
+options:
+  -h, --help                  show this help message and exit
+  --data_dir DATA_DIR         dataset
+  --n_epochs N_EPOCHS         number of epochs of training
+  --batch_size BATCH_SIZE     size of the batches
+  --lr LR                     learning rate
+  --device DEVICE             device to use
+  --crop CROP                 crop size
+  --sample_rate SAMPLE_RATE   sample rate
+   --load LOAD                checkpoint to load
  ```
 
-## Folder structure
+### Tensorboard
+
+```terminal
+tensorboard dev upload --logdir ./runs --name "01 training" --description "trianing with 25 epochs"
+```
+
+```terminal
+tensorboard dev upload --logdir ./results --name "01 testing" --description "testing trained models"
+```
+
+### Folder structure
 
 ```terminal
 .
+|
+├── checkpoints/            # model checkpoints
 |  
 ├── data/                   # training and test data
 │   ├──raw/                 # raw audio files
 │   ├──processed/           # processed audio files
-│   ├──plate-spring         # dataset folder
-│   │   ├──spring/          # spring reverb subset
 │
-├── models_trained/         # Trained models state_dict
+├── logs/                   # HPC logs
 |
-├── results/
-│   ├── 00/                 # experiment ## results
-│   ├── 01/                 # ...
+├── models/                 # model classes
+|
+├── results/                # test results
+|
+├── runs/                   # tensorboard logs
 │
 ├── utils/                  # utility functions
+│   ├── generator.py        # generate audio files
+│   ├── rt60.py             # measure rt60
+│   ├── tf.py               # compute transfer function
 |
-├── config.py               # configuration file
-├── eval.py                 # test / evaluation script
+├── data.py                 # test / evaluation script
 ├── inference.py            # inference script
+├── test.py                 # test / evaluation script
 ├── train.py                # training script
-├── README.md
+
 └── requirements.txt
 
 ```

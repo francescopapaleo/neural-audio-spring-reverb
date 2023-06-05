@@ -1,4 +1,5 @@
-# Description: This file contains the code for the dataset class and the subset generator class.
+# data.py: The code for the dataset class
+
 from pathlib import Path
 import h5py
 import torch

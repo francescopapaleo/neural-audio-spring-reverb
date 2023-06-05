@@ -1,12 +1,11 @@
 # Description: Generate the reference signal for the experiment
 from pathlib import Path
-
+from argparse import ArgumentParser
 import numpy as np
 from scipy.io.wavfile import write
 from utils.plot import plot_signals 
 
-from config import parser
-
+parser = ArgumentParser()
 args = parser.parse_args()
 sample_rate = args.sr
 

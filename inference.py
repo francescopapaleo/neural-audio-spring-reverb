@@ -1,47 +1,72 @@
+# inference.py: The code for the inference script
+
 from pathlib import Path
 import torch
 import torchaudio
-import argparse
+from argparse import ArgumentParser
 import auraloss
 import scipy.signal
 
 from utils.rt60 import measure_rt60
-from tcn import TCN, causal_crop
+from utils.tf import compute_tf 
+from models.TCN import TCNBase, causal_crop
 
 def make_inference(args):
 
-    from torch.utils.tensorboard import SummaryWriter
-    writer = SummaryWriter()
+    # parse default arguments
+    data_dir = args.data_dir
+    device = args.device
+    sample_rate = args.sample_rate
+    lr = args.lr
 
-    if device is None: 
+    # set device                                                                                
+    if device is None:                                                              
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    # Normalize
-    for name, values in test_results.items():
-        values = (values - np.mean(values)) / np.std(values)
+    # load from checkpoint                                                                            
+    load_from = Path('./checkpoints') / (args.load + '.pt')                                   
+    try:
+        checkpoint = torch.load(load_from, map_location=device)
+        hparams = checkpoint['hparams']
+    except Exception as e:
+        print(f"Failed to load model state: {e}")
+        return
+    
+    # instantiate model 
+    model = TCNBase(                                                        
+        n_inputs = hparams['n_inputs'], 
+        n_outputs = hparams['n_outputs'], 
+        n_blocks = hparams['n_blocks'],
+        kernel_size = hparams['kernel_size'],
+        n_channels = hparams['n_channels'], 
+        dilation_growth = hparams['dilation_growth'],
+        cond_dim = hparams['cond_dim'],
+    ).to(device)
 
-    print('Saving audio files...')
-    ofile = Path(args.results_dir) / 'eval_output.wav'
-    o_float = output.view(1,-1).cpu().float()
-    torchaudio.save(ofile, o_float, sample_rate)
-    # Define the additional processing parameters
-    gain_dB = model_params["gain_dB"]
-    c0 = model_params["c0"]
-    c1 = model_params["c1"]
-    mix = model_params["mix"]
-    width = model_params["width"]
-    max_length = model_params["max_length"]
-    stereo = model_params["stereo"]
-    tail = model_params["tail"]
+    try:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    except Exception as e:
+        print(f"Failed to load model state: {e}")
+        return
 
+    # inference-specific arguments
+    input_path = args.input_path
+    max_length = args.max_length
+    stereo = args.stereo
+    tail = args.tail
+    width = args.width
+    c0 = args.c0
+    c1 = args.c1
+    gain_dB = args.gain_dB
+    mix = args.mix
 
-    input_path = Path(args.audio_dir) / args.input
+    # Load the audio
     x_p, fs_x = torchaudio.load(input_path)
     x_p = x_p.float()
 
     # Receptive field
     pt_model_rf = model.compute_receptive_field()
-
+    
     # Crop input signal if needed
     max_samples = int(fs_x * max_length)
     x_p_crop = x_p[:, :max_samples]
@@ -110,4 +135,27 @@ def make_inference(args):
 
 if __name__ == "__main__":
     
-    make_inference()
+    parser = ArgumentParser()
+    
+    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
+    parser.add_argument('--n_epochs', type=int, default=25)
+    parser.add_argument('--batch_size', type=int, default=8)
+    parser.add_argument('--lr', type=float, default=0.01)
+    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    parser.add_argument('--crop', type=int, default=3200)
+    parser.add_argument('--sample_rate', type=int, default=16000)
+    parser.add_argument('--load', type=str, default=None, help='checkpoint to load')
+    
+    # Specific inference arguments
+    parser.add_argument('--input_path', type=str, required=True, help='path to input audio file')
+    parser.add_argument('--max_length', type=int, required=True, help='maximum length of the input audio')
+    parser.add_argument('--stereo', type=bool, default=False, help='flag to indicate if the audio is stereo or mono')
+    parser.add_argument('--tail', type=bool, default=False, help='flag to indicate if tail padding is required')
+    parser.add_argument('--width', type=float, required=True, help='width parameter for the model')
+    parser.add_argument('--c0', type=float, required=True, help='c0 parameter for the model')
+    parser.add_argument('--c1', type=float, required=True, help='c1 parameter for the model')
+    parser.add_argument('--gain_dB', type=float, required=True, help='gain in dB for the model')
+    parser.add_argument('--mix', type=float, required=True, help='mix parameter for the model')
+    args = parser.parse_args()
+
+    make_inference(args)

@@ -1,6 +1,5 @@
 # Description: Computes the transfer function of the impulse response
-from pathlib import Path
-
+from argparse import ArgumentParser
 import scipy.signal
 import scipy.fftpack
 import numpy as np
@@ -10,6 +9,7 @@ from utils.plot import plot_transfer_function
 from utils.rt60 import measure_rt60
 from utils.generator import generate_reference
 
+parser = ArgumentParser()
 args = parser.parse_args()
 sample_rate = args.sr
 

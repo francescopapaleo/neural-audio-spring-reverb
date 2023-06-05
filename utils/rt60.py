@@ -1,11 +1,12 @@
 from pathlib import Path
-
+from argparse import ArgumentParser
 import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 
 
 eps = 1e-15
+parser = ArgumentParser()
 args = parser.parse_args()
 
 """
