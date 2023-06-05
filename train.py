@@ -31,7 +31,9 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    run_id = f"tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}"
+    writer = SummaryWriter(log_dir=f'runs/{run_id}')    
+    
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
@@ -175,7 +177,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+                save_to = f'checkpoints/{run_id}.pt'  # Include run_id in the save path
                 torch.save({
                     'model_state_dict': model.state_dict(),
                     'hparams': hparams
@@ -221,11 +223,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-
-    # lr_list = [0.01, 0.001]
-    # bs_list = [8, 16]
-    # ep_list = [25, 50]
-
     lr_list = [0.01, 0.001]
     bs_list = [16]
     ep_list = [25]
@@ -239,7 +236,7 @@ if __name__ == "__main__":
     for lr in lr_list:
         for batch_size in bs_list:
             for n_epochs in ep_list:
-                
-                print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
+                run_id = f"lr={lr}_batch_size={batch_size}_n_epochs={n_epochs}"
+                print(f"Training with {run_id}")
 
                 training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
