@@ -1,11 +1,11 @@
-# train.py: The code for the training loop
+# train.py
 
 import torch
 import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-from models.TCN import TCNBase
+from tcn import TCN
 from data import SpringDataset
 from datetime import datetime
 from argparse import ArgumentParser
@@ -31,9 +31,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    run_id = f"tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}"
-    writer = SummaryWriter(log_dir=f'runs/{run_id}')    
-    
+    writer = SummaryWriter(log_dir=f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
@@ -48,7 +46,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
         'cond_dim': 0,
         })                     
     
-    model = TCNBase(                                                    # instantiate model     
+    model = TCN(                                                    # instantiate model     
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
@@ -104,6 +102,14 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             input = input.to(device)                   # move input and target to device
             target = target.to(device)
             c = c.to(device)
+            
+            # start_idx = rf                                  # crop input and target
+            # stop_idx = start_idx + crop
+            # if stop_idx > input.shape[-1]:
+            #     stop_idx = input.shape[-1]
+            #     start_idx = stop_idx - crop
+            # input_crop = input[:, :, start_idx:stop_idx]
+            # target_crop = target[:, :, start_idx:stop_idx]     
 
             input_pad = torch.nn.functional.pad(input, (rf-1, 0))
             target_pad = torch.nn.functional.pad(target, (rf-1, 0))
@@ -140,6 +146,14 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
                 target = target.to(device)
                 c = c.to(device)
 
+                # start_idx = rf                             
+                # stop_idx = start_idx + crop
+                # if stop_idx > input.shape[-1]:
+                #     stop_idx = input.shape[-1]
+                #     start_idx = stop_idx - crop
+                # input_crop = input[:, :, start_idx:stop_idx]
+                # target_crop = target[:, :, start_idx:stop_idx]     
+
                 input_pad = torch.nn.functional.pad(input, (rf-1, 0))
                 target_pad = torch.nn.functional.pad(target, (rf-1, 0))
                 input_crop = input_pad
@@ -161,7 +175,7 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                save_to = f'checkpoints/{run_id}.pt'  # Include run_id in the save path
+                save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
                 torch.save({
                     'model_state_dict': model.state_dict(),
                     'hparams': hparams
@@ -207,9 +221,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    lr_list = [0.001]
-    bs_list = [8, 16, 32]
-    ep_list = [25, 50, 100]
+
+    # lr_list = [0.01, 0.001]
+    # bs_list = [8, 16]
+    # ep_list = [25, 50]
+
+    lr_list = [0.01, 0.001]
+    bs_list = [16]
+    ep_list = [25]
     
     data_dir = args.data_dir
     crop = args.crop
@@ -220,7 +239,7 @@ if __name__ == "__main__":
     for lr in lr_list:
         for batch_size in bs_list:
             for n_epochs in ep_list:
-                run_id = f"lr={lr}_batch_size={batch_size}_n_epochs={n_epochs}"
-                print(f"Training with {run_id}")
+                
+                print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
 
                 training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
