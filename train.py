@@ -226,9 +226,9 @@ if __name__ == "__main__":
     # bs_list = [8, 16]
     # ep_list = [25, 50]
 
-    lr_list = [0.01]
-    bs_list = [8]
-    ep_list = [25, 50, 100, 250]
+    lr_list = [0.01, 0.001]
+    bs_list = [16]
+    ep_list = [25]
     
     data_dir = args.data_dir
     crop = args.crop

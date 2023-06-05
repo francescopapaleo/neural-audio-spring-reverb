@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -J TCN
-#SBATCH -p high
+#SBATCH -p short
 #SBATCH -N 1
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16g
-#SBATCH --time=20:00:00
+#SBATCH --time=2:00:00
 #SBATCH -o %N.%J.OUT.out
 #SBATCH -e %N.%J.ERR.err
 
@@ -19,4 +19,4 @@ eval "$(conda shell.bash hook)"
 
 source activate envtorch
 
-python train_list.py  --device cuda:0
+python train.py  --device cuda:0

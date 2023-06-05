@@ -1,3 +1,0 @@
-/homedtic/fpapaleo/smc-spring-reverb/tcn.py:21: TracerWarning: Converting a tensor to a Python boolean might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
-  if x.shape[-1] != length:
-slurmstepd: error: *** JOB 344330 ON node031 CANCELLED AT 2023-06-01T02:13:30 DUE TO TIME LIMIT ***
