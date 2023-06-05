@@ -102,14 +102,6 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
             input = input.to(device)                   # move input and target to device
             target = target.to(device)
             c = c.to(device)
-            
-            # start_idx = rf                                  # crop input and target
-            # stop_idx = start_idx + crop
-            # if stop_idx > input.shape[-1]:
-            #     stop_idx = input.shape[-1]
-            #     start_idx = stop_idx - crop
-            # input_crop = input[:, :, start_idx:stop_idx]
-            # target_crop = target[:, :, start_idx:stop_idx]     
 
             input_pad = torch.nn.functional.pad(input, (rf-1, 0))
             target_pad = torch.nn.functional.pad(target, (rf-1, 0))
@@ -145,14 +137,6 @@ def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
                 input = input.to(device)                    # move input and target to device
                 target = target.to(device)
                 c = c.to(device)
-
-                # start_idx = rf                             
-                # stop_idx = start_idx + crop
-                # if stop_idx > input.shape[-1]:
-                #     stop_idx = input.shape[-1]
-                #     start_idx = stop_idx - crop
-                # input_crop = input[:, :, start_idx:stop_idx]
-                # target_crop = target[:, :, start_idx:stop_idx]     
 
                 input_pad = torch.nn.functional.pad(input, (rf-1, 0))
                 target_pad = torch.nn.functional.pad(target, (rf-1, 0))
@@ -221,14 +205,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-
-    # lr_list = [0.01, 0.001]
-    # bs_list = [8, 16]
-    # ep_list = [25, 50]
-
-    lr_list = [0.01, 0.001]
+    lr_list = [0.001]
     bs_list = [16]
-    ep_list = [25]
+    ep_list = [25, 50]
     
     data_dir = args.data_dir
     crop = args.crop
