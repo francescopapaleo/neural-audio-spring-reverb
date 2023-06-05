@@ -1,5 +1,4 @@
 # Description: Computes the transfer function of the impulse response
-from config import parser
 from pathlib import Path
 
 import scipy.signal

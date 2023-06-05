@@ -2,25 +2,27 @@
 
 import torch
 import auraloss
-import numpy as np
 from datetime import datetime
-from tcn import TCN
 from data import SpringDataset
 from argparse import ArgumentParser
 from pathlib import Path
 
-from torch.utils.tensorboard import SummaryWriter
+from tcn import TCN
 
 def testing(args):
+
+    # parse arguments
     data_dir = args.data_dir
     device = args.device
     sample_rate = args.sample_rate
     lr = args.lr
-    
-    if device is None: 
+
+    # set device                                                                                
+    if device is None:                                                              
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    load_from = Path('./checkpoints') / args.load
+    # load from checkpoint                                                                            
+    load_from = Path('./checkpoints') / args.load                                   
     try:
         checkpoint = torch.load(load_from, map_location=device)
         hparams = checkpoint['hparams']
@@ -28,7 +30,8 @@ def testing(args):
         print(f"Failed to load model state: {e}")
         return
     
-    model = TCN(                                                    # instantiate model     
+    # instantiate model 
+    model = TCN(                                                        
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
@@ -47,58 +50,71 @@ def testing(args):
         print(f"Failed to load model state: {e}")
         return
     
+    # load test dataset
     dataset = SpringDataset(root_dir=data_dir, split='test')
     test_loader = torch.utils.data.DataLoader(dataset, batch_size, num_workers=0, drop_last=True)
 
+    # initialize tensorboard writer
+    from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     writer = SummaryWriter(log_dir=f'results/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
+
     print("## Initializing metrics...")
     l1 = torch.nn.L1Loss()
     esr = auraloss.time.ESRLoss()
     dc = auraloss.time.DCLoss()
     snr = auraloss.time.SNRLoss()
-
+    
+    criterions = [l1, esr, dc, snr]
     test_results = {"l1": [], "esr": [], "dc": [], "snr": []}
 
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1)           # dummy condition tensor
-    model = model.to(device)                           # move model to device
+    # dummy condition tensor    
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
     
     print("## Testing...")
+    
+    model = model.to(device)
     model.eval()
+    
     with torch.no_grad():
         for step, (input, target) in enumerate(test_loader):
             global_step = step + 1
 
-            input = input.to(device)                    # move input and target to device
+            # move input and target to device
+            input = input.to(device)                    
             target = target.to(device)
             c = c.to(device)
 
+            # pad input and target to match receptive field
             rf = model.compute_receptive_field()
             input_pad = torch.nn.functional.pad(input, (rf-1, 0))
             target_pad = torch.nn.functional.pad(target, (rf-1, 0))
             
+            # forward pass
             output = model(input_pad, c)
-            output_trimmed = output[:,:,:target_pad.size(2)]
+            output_trim = output[:,:,:target_pad.size(2)]
 
-            # Calculate the metrics AND COMPUTE MEANS, RECORD JUST ONE SCORE PER METRIC 
-            test_results['l1'].append(l1(output_trimmed, target))
-            test_results['esr'].append(esr(output_trimmed, target))
-            test_results['dc'].append(dc(output_trimmed, target))
-            test_results['snr'].append(snr(output_trimmed, target))
-    
+            # Compute metrics means for current batch
+            for metric, name in zip(criterions, test_results.keys()):
+                batch_score = metric(output_trim, target_pad).item()
+                test_results[name].append(batch_score)
+                
+                # Write metrics to tensorboard
+                writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
-    # Log metrics to TensorBoard
-    writer.add_scalar('test/l1', test_results['l1'][-1].item(), global_step)
-    writer.add_scalar('test/esr', test_results['esr'][-1].item(), global_step)
-    writer.add_scalar('test/dc', test_results['dc'][-1].item(), global_step)
-    writer.add_scalar('test/snr', test_results['snr'][-1].item(), global_step)
+    print("## Computing global metrics...")
+    # compute global metrics means
+    for name in test_results.keys():
+        global_score = sum(test_results[name]) / len(test_results[name])
+        writer.add_scalar(f'test/global_{name}', global_score, global_step)
 
     print("## Saving results...")
     # Flush and close the writer
     writer.flush()
     writer.close()
-  
+
+
 if __name__ == "__main__":
 
     parser = ArgumentParser()
