@@ -68,7 +68,7 @@ options:
 ## Tensorboard
 
 ```terminal
-tensorboard dev upload --logdir ./runs --name "01 training" --description "training with batch size=8, lr=0.001"
+tensorboard dev upload --logdir ./runs --name "01 training" --description "training with batch size=16, lr=0.001"
 ```
 
 ```terminal
