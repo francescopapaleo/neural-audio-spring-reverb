@@ -6,7 +6,9 @@ This is the working repository for the thesis project.
 A basic command line interface is provided to train, test and evaluate the models.
 A transfer function and RT60 measurement script is also provided.
 
-### To train
+## Train
+
+From the repository root use the following CLI command to train the model: 
 
 ```terminal
 python train.py \
@@ -18,9 +20,9 @@ python train.py \
 --crop 3200
 ```
 
-### The following scripts are still work in progress
+## Test
 
-To test the model on new data execute from terminal:
+To test the model on the test set, use the following command:
 
 ```terminal
 python test.py
@@ -28,16 +30,18 @@ python test.py
 
 it will automatically load all the checkpoints in `./checkpoints/` and test them on the test set.
 
-### To make an inference on an audio file execute from terminal
+## Inference
+
+To run inference on a single audio file, use the following command:
 
 ```terminal
 python inference.py --load MODEL_NAME --input 'saxophone.wav'
 python inference.py --load MODEL_NAME --input 'saxophone.wav' --output 'saxophone_out.wav'
 ```
 
-### To generate/compute the transfer function or measure the RT60
+## Transfer Function and RT60
 
-Execute these commands from the root folder of the project
+Execute these commands from the root folder of the project:
 
 ```terminal
 python -m utils.generator 
@@ -45,7 +49,7 @@ python -m utils.transfer_function --load MODEL_NAME --input inverse_filter.wav
 python -m utils.rt60_measure --input 'saxophone.wav'
 ```
 
-### Command Line Arguments
+## Command Line Arguments
 
 ```terminal
 options:
@@ -61,7 +65,7 @@ options:
    --load LOAD                checkpoint to load
  ```
 
-### Tensorboard
+## Tensorboard
 
 ```terminal
 tensorboard dev upload --logdir ./runs --name "01 training" --description "trianing with 25 epochs"
@@ -71,7 +75,7 @@ tensorboard dev upload --logdir ./runs --name "01 training" --description "trian
 tensorboard dev upload --logdir ./results --name "01 testing" --description "testing trained models"
 ```
 
-### Folder structure
+## Folder structure
 
 ```terminal
 .
