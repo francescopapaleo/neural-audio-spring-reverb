@@ -207,7 +207,7 @@ if __name__ == "__main__":
 
     lr_list = [0.001]
     bs_list = [16]
-    ep_list = [25, 50]
+    ep_list = [100, 250]
     
     data_dir = args.data_dir
     crop = args.crop
