@@ -7,6 +7,24 @@ import torchaudio.transforms as T
 import numpy as np
 
 class SpringDataset(torch.utils.data.Dataset):
+    """
+    SpringDataset is a PyTorch Dataset for loading spring reverb dataset files.
+
+    Attributes:
+    -----------
+        root_dir (pathlib.Path): The root directory where the data files are located.
+        split (str, optional): The data split to use (i.e. 'train', 'test', or 'validation'). 
+            If not provided, all data in the root directory will be used.
+        transform (callable, optional): Optional transform to apply to the data samples.
+
+    Methods:
+    --------
+        __len__(): Returns the length of the dataset.
+        __getitem__(index: int): Returns the data at a given index.
+        load_data(): Loads data from the files specified in the root directory.
+        print_info(): Prints information about the loaded data files and their contents.
+        print_index_info(index: int): Prints information about a specific index in the data.
+    """
     def __init__(self, root_dir, split=None, transform=None):
         super(SpringDataset, self).__init__()
         self.root_dir = Path(root_dir)

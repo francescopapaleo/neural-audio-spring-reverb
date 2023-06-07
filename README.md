@@ -8,7 +8,7 @@ A transfer function and RT60 measurement script is also provided.
 
 ## Train
 
-From the repository root use the following CLI command to train the model: 
+From the repository root use the following CLI command to train the model:
 
 ```terminal
 python train.py \
@@ -35,8 +35,10 @@ it will automatically load all the checkpoints in `./checkpoints/` and test them
 To run inference on a single audio file, use the following command:
 
 ```terminal
-python inference.py --load MODEL_NAME --input 'saxophone.wav'
-python inference.py --load MODEL_NAME --input 'saxophone.wav' --output 'saxophone_out.wav'
+python inference.py --load tcn_25_16_0.001_20230605_184451.pt \
+--input ./data/processed/inverse_filter.wav \
+--max_length 8
+
 ```
 
 ## Transfer Function and RT60

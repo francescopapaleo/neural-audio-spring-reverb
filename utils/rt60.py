@@ -1,54 +1,40 @@
 from pathlib import Path
 from argparse import ArgumentParser
 import numpy as np
-from scipy.io import wavfile
+import soundfile as sf
 import matplotlib.pyplot as plt
 
-
 eps = 1e-15
-parser = ArgumentParser()
-args = parser.parse_args()
 
-"""
-RT60 Measurement Routine
-========================
+def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True):
+    '''Automatically determines the reverberation time of an impulse response
+    using the Schroeder method [1].
 
-Automatically determines the reverberation time of an impulse response
-using the Schroeder method [1].
-
-References
-----------
-Modified version of the source code from pyroomacoustics:
-https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental/rt60.py
-
-
-.. [1] M. R. Schroeder, "New Method of Measuring Reverberation Time,"
-    J. Acoust. Soc. Am., vol. 37, no. 3, pp. 409-412, Mar. 1968.
-"""
-
-
-def measure_rt60(h, sample_rate, decay_db=60, plot=False, rt60_tgt=None, folder='results'):
-    """
-    Analyze the RT60 of an impulse response. Optionaly plots some useful information.
-
-    Parameters
+    References
     ----------
-    h: array_like
-        The impulse response.
-    fs: float or int, optional
-        The sampling frequency of h (default to 1, i.e., samples).
-    decay_db: float or int, optional
-        The decay in decibels for which we actually estimate the time. Although
-        we would like to estimate the RT60, it might not be practical. Instead,
-        we measure the RT20 or RT30 and extrapolate to RT60.
-    plot: bool, optional
-        If set to ``True``, the power decay and different estimated values will
-        be plotted (default False).
-    rt60_tgt: float
-        This parameter can be used to indicate a target RT60 to which we want
-        to compare the estimated value.
-    """
+    Modified version of the source code from pyroomacoustics:
+    https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental/rt60.py
 
+
+    .. [1] M. R. Schroeder, "New Method of Measuring Reverberation Time,"
+        J. Acoust. Soc. Am., vol. 37, no. 3, pp. 409-412, Mar. 1968.
+
+    Arguments
+    ----------
+    h (array_like): The impulse response.
+    sample_rate (float or int): The sampling frequency of h.
+    decay_db (float or int, optional): The decay in decibels for which we estimate the time. 
+        Defaults to 60 dB. This value is used to estimate the time taken for the sound energy to decay by this amount. 
+        Often in practice we measure the RT20 or RT30 and extrapolate to RT60.
+    rt60_tgt (float, optional): This parameter can be used to indicate a target RT60 to which we want to compare the estimated value.
+        Defaults to None.
+    plot (bool, optional): If set to ``True``, the power decay and different estimated values will
+        be plotted and saved as a png file. Defaults to True.
+    
+    Returns
+    -------
+    float: The estimated RT60 value in seconds.
+    '''
     
     h = np.array(h)
     fs = float(sample_rate)
@@ -90,87 +76,53 @@ def measure_rt60(h, sample_rate, decay_db=60, plot=False, rt60_tgt=None, folder=
 
         # time vector
         def get_time(x, fs):
-            time_array = np.arange(x.shape[0]) / fs
-            return time_array - time_array[i_5db]
+            return np.arange(x.shape[0]) / fs - i_5db / fs
 
         T = get_time(power_db, fs)
 
-        fig, ax = plt.subplots(figsize=(15, 7))
-        ax.plot(get_time(energy_db, sample_rate), energy_db, label="Energy")
+        # plot power and energy
+        plt.subplots(figsize=(10, 5))
+        plt.plot(get_time(energy_db, fs), energy_db, label="Energy")
 
         # now the linear fit
-        ax.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
-        ax.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
-        ax.vlines(est_rt60, energy_db[-1], 0, linestyles="dashed", label="Estimated RT60")
+        plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
+        plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
+        plt.vlines(
+            est_rt60, energy_db_min, 0, linestyles="dashed", label="Estimated RT60"
+        )
 
         if rt60_tgt is not None:
-            ax.vlines(rt60_tgt, energy_db[-1], 0, label="Target RT60")
+            plt.vlines(rt60_tgt, energy_db_min, 0, label="Target RT60")
 
-        ax.set_xlabel('Time (s)')
-        ax.set_ylabel('Energy (dB)')
-        ax.set_title('RT60 Measurement')
-        ax.grid(True)
+        plt.legend()
+        plt.grid(True)
+        plt.xlabel("Time [s]")
+        plt.ylabel("Energy [dB]")
+        plt.title("RT60 Measurement")
 
-        ax.legend()
+        # Extract the filename without extension and append 'rt60.png'
+        input_filename = Path(args.input).stem
+        output_filename = f"{input_filename}_rt60.png"
 
-        fig.savefig(Path(folder) / 'rt60.png')
-        plt.close(fig)
+        plt.savefig(Path('./data/plots') / output_filename)
 
     return est_rt60
 
 
-def test_rt60(ir, fs=16000):
-    """
-    Very basic test that runs the function and checks that the value
-    returned with different sampling frequencies are correct.
-    """
+def main(args):
 
-    t60_samples = measure_rt60(ir)
-    t60_s = measure_rt60(ir, fs)
+    x, fs = sf.read(args.input)
 
-    assert abs(t60_s - t60_samples / fs) < eps
-
-    t30_samples = measure_rt60(ir, decay_db=30)
-    t30_s = measure_rt60(ir, fs, decay_db=30)
-
-    assert abs(t30_s - t30_samples / fs) < eps
-
-    print(f"RT60 (samples): {t60_samples}")
-    print(f"RT60 (seconds): {t60_s}")
-    print(f"RT30 (samples): {t30_samples}")
-    print(f"RT30 (seconds): {t30_s}")
-
-
-def test_rt60_plot(ir):
-    """
-    Simple run of the plot without any output.
-
-    Check for runtime errors only.
-    """
-
-    import matplotlib
-
-    matplotlib.use("Agg")
-
-    measure_rt60(ir, plot=True)
-    measure_rt60(ir, plot=True, rt60_tgt=0.3) 
-
-
-def main():
-     
-    args = parser.parse_args()
-
-    data, file_fs = wavfile.read(args.input_file, always_2d=True)
-    channel = 0  # Select the left channel, change to 1 for the right channel
-    data = data[:, channel]
-
-    fs = args.fs if args.fs is not None else file_fs
-    rt60 = measure_rt60(data, fs=fs, decay_db=args.decay_db, plot=args.plot, rt60_tgt=args.rt60_tgt)
-
-    if args.plot:
-        plt.show()
-
-    print(f"The RT60 is {rt60 * 1000:.0f} ms")
+    est_rt60 = measure_rt60(x, fs, decay_db=60, rt60_tgt=None)
+    print(f"The RT60 is {est_rt60 * 1000:.0f} ms")
+    
 
 if __name__ == "__main__":
-    main()
+    parser = ArgumentParser()
+    
+    parser.add_argument('--input', type=str, required=True, help='path to input audio file')
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate')
+    
+    args = parser.parse_args()
+
+    main(args)

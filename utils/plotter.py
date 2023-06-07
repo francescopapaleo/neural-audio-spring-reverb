@@ -234,51 +234,6 @@ def plot_specgram(signals, sr, time_window,
     plt.savefig('./imgs/'+ filename +'.png')
     plt.show()
 
-def plot_sweep_inverse_measured(sweep_filt, inverse_filter, 
-                                 measured, duration, file_name):
-    '''Plot the sweep tone, the inverse filter and the measured impulse response
-        Parameters
-        ----------
-        sweep_filt : array_like
-        The sweep tone
-        inverse_filter : array_like
-        The inverse filter
-        measured : array_like
-        The measured impulse response
-        sr : int
-        The sampling frequency
-        duration : float
-        The duration of the sweep tone  
-        file_name : str
-        The name of the file to save the plot to
-        '''
-    time_stamps = np.arange(0, duration, 1/ args.sr)
-    fig, ax = plt.subplots(3, 1, figsize=(15,7))
-    
-    ax[0].plot(time_stamps, sweep_filt)
-    ax[0].set_xlim([0, time_stamps[-1]])
-    ax[0].set_title("Sweep Tone")
-    ax[0].set_xlabel("Time [s]")
-    ax[0].set_ylabel("Amplitude")
-    
-    ax[1].plot(time_stamps, inverse_filter)
-    ax[1].set_xlim([0, time_stamps[-1]])
-    ax[1].set_title("Inverse Filter")
-    ax[1].set_xlabel("Time [s]")
-    ax[1].set_ylabel("Amplitude")
-    
-    time_stamps = np.arange(0, len(measured)/ args.sr, 1/ args.sr)
-    ax[2].plot(time_stamps, measured)
-    ax[2].set_xlim([0, time_stamps[-1]])
-    ax[2].set_title("Impulse Response")
-    ax[2].set_xlabel("Time [s]")
-    ax[2].set_ylabel("Amplitude")
-    plt.tight_layout()
-    plt.grid(True)
-    plt.savefig(Path(args.results_dir) / file_name)
-    plt.close(fig)
-    print("Saved signal plot to: ", Path(args.results_dir) / file_name)
-
 def plot_metrics(test_results, args):
     '''Plot the metrics over the test set'''
     time_values = np.arange(len(test_results['mse']))
@@ -295,46 +250,46 @@ def plot_metrics(test_results, args):
     plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
 
 
-def plot_input_target(**args):
+# def plot_input_target(**args):
 
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
-    ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')
-    ax.plot(y, alpha=0.7, label='Prediction', color='red')
+#     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
+#     ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')
+#     ax.plot(y, alpha=0.7, label='Prediction', color='red')
 
-    ax.set_title('Waveform')
-    ax.set_xlabel('Sample Index')
-    ax.set_ylabel('Amplitude')
-    ax.grid(True)
-    ax.legend()
-    plt.tight_layout()
+#     ax.set_title('Waveform')
+#     ax.set_xlabel('Sample Index')
+#     ax.set_ylabel('Amplitude')
+#     ax.grid(True)
+#     ax.legend()
+#     plt.tight_layout()
 
-    Path(args.results_dir).mkdir(parents=True, exist_ok=True)
-    plt.savefig(Path(args.results_dir) / 'dataset_wave.png')
+#     Path(args.results_dir).mkdir(parents=True, exist_ok=True)
+#     plt.savefig(Path(args.results_dir) / 'dataset_wave.png')
 
-    # Create a figure with subplots
-    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
+#     # Create a figure with subplots
+#     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
 
-    # Plot input spectrogram
-    axs[0].imshow(10 * np.log10(x), aspect='auto', origin='lower')
-    axs[0].set_title('Input Spectrogram')
-    axs[0].set_xlabel('Time')
-    axs[0].set_ylabel('Frequency')
-    axs[0].colorbar(label='dB')
-    axs[2].legend()
-    axs[2].grid(True)
+#     # Plot input spectrogram
+#     axs[0].imshow(10 * np.log10(x), aspect='auto', origin='lower')
+#     axs[0].set_title('Input Spectrogram')
+#     axs[0].set_xlabel('Time')
+#     axs[0].set_ylabel('Frequency')
+#     axs[0].colorbar(label='dB')
+#     axs[2].legend()
+#     axs[2].grid(True)
 
 
-    # Plot target spectrogram
-    axs[1].imshow(10 * np.log10(y), aspect='auto', origin='lower')
-    axs[1].set_title('Target Spectrogram')
-    axs[1].set_xlabel('Time')
-    axs[1].set_ylabel('Frequency')
-    axs[1].colorbar(label='dB')
-    axs[1].legend()
-    axs[1].grid(True)
+#     # Plot target spectrogram
+#     axs[1].imshow(10 * np.log10(y), aspect='auto', origin='lower')
+#     axs[1].set_title('Target Spectrogram')
+#     axs[1].set_xlabel('Time')
+#     axs[1].set_ylabel('Frequency')
+#     axs[1].colorbar(label='dB')
+#     axs[1].legend()
+#     axs[1].grid(True)
     
-    plt.tight_layout()
-    plt.savefig(Path(args.results_dir) / 'dataset_spectrum.png')
+#     plt.tight_layout()
+#     plt.savefig(Path(args.results_dir) / 'dataset_spectrum.png')
 
 def save_plot(plt, path, filename):
     plt.savefig(Path(path) / filename)
