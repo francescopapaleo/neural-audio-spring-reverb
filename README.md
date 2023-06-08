@@ -39,21 +39,18 @@ python inference.py
 ## Tensorboard
 
 ```terminal
-tensorboard dev upload --logdir ./runs --name "01 training" --description "training with batch size=16, lr=0.001"
+tensorboard dev upload --logdir ./runs/01_train --name "01 training" --description "training with batch size=16, lr=0.001"
 ```
 
 ```terminal
-tensorboard dev upload --logdir ./results --name "01 testing" --description "testing trained models"
+tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description "testing trained models"
 ```
 
 ## Folder structure
 
 ```terminal
 .
-├── README.md
-├── TCN.py
 ├── audio
-│   ├── README.md
 │   ├── generated
 │   │   ├── inverse_filter.wav
 │   │   ├── reference_ir.wav
@@ -63,32 +60,28 @@ tensorboard dev upload --logdir ./results --name "01 testing" --description "tes
 │   └── raw
 │       ├── acgtr_clean.wav
 │       ├── acgtr_reverb.wav
+│       ├── README.md
 │       ├── saxophone_input.wav
 │       ├── saxophone_output.wav
 │       └── vermona_retroverb_ir.wav
 ├── checkpoints
-│
+├── plots
+├── runs
+├── utils
+│   ├── decay.py
+│   ├── generator.py
+│   ├── ir.py
+│   ├── plotter.py
+│   ├── rt60.py
+│   └── tf.py
 ├── data.py
 ├── inference.py
-├── plots
-|
+├── README.md
 ├── requirements.txt
-├── results
-│ 
-├── runs
-│ 
+├── TCN.py
 ├── test.py
 ├── train.py
-├── train.sh
-└── utils
-    ├── decay.py
-    ├── generator.py
-    ├── ir.py
-    ├── plotter.py
-    ├── rt60.py
-    └── tf.py
-
-
+└── train.sh
 ```
 
 ## Sources

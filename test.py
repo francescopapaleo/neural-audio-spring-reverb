@@ -36,9 +36,10 @@ def testing(load, data_dir, device, sample_rate):
         cond_dim = hparams['cond_dim'],
     ).to(device)
     
-    batch_size = hparams['batch_size']
+    # batch_size = hparams['batch_size']
+    batch_size = 4
     n_epochs = hparams['n_epochs']
-    lr = hparams['lr']
+    lr = hparams['l_rate']
 
     try:
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -53,7 +54,7 @@ def testing(load, data_dir, device, sample_rate):
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'results/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/01B_test/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
 
     print("## Initializing metrics...")
