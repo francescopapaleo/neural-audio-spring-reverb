@@ -9,22 +9,15 @@ from pathlib import Path
 
 from TCN import TCNBase
 
-def testing(args):
-
-    # parse arguments
-    data_dir = args.data_dir
-    device = args.device
-    sample_rate = args.sample_rate
-    lr = args.lr
+def testing(load, data_dir, device, sample_rate):
 
     # set device                                                                                
     if device is None:                                                              
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    # load from checkpoint                                                                            
-    load_from = Path('./checkpoints') / (args.load + '.pt')                                   
+    # load from checkpoint                                                                                                        
     try:
-        checkpoint = torch.load(load_from, map_location=device)
+        checkpoint = torch.load(load, map_location=device)
         hparams = checkpoint['hparams']
     except Exception as e:
         print(f"Failed to load model state: {e}")
@@ -43,6 +36,7 @@ def testing(args):
     
     batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']
+    lr = hparams['lr']
 
     try:
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -116,20 +110,15 @@ def testing(args):
 if __name__ == "__main__":
 
     parser = ArgumentParser()
-    
-    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
-    parser.add_argument('--n_epochs', type=int, default=25)
-    parser.add_argument('--batch_size', type=int, default=8)
-    parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-    parser.add_argument('--crop', type=int, default=3200)
-    parser.add_argument('--sample_rate', type=int, default=16000)
 
-    parser.add_argument('--load', type=str, default=None, help='checkpoint to load')
+    parser.add_argument('--load', type=str, default=None, help='checkpoint rel path to load')
+    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset rel path')
+    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    parser.add_argument('--sample_rate', type=int, default=16000)
+    
     args = parser.parse_args()
 
     for file in Path('./checkpoints').glob('tcn_*'):
-        args.load = file.stem
-        testing(args)
-
+        args.load = file
+        testing(args.load, args.data_dir, args.device, args.sample_rate)
     

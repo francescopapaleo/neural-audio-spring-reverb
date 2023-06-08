@@ -5,26 +5,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 def decay_db(h, fs, input_file):
-    '''
-    Plots the decay of an impulse response in dB and finds the time at which
-    the response first drops below -60 dB, using the Schroeder integration method.
-
-    Arguments
-    ----------
-    h (array_like): The impulse response.
-    fs (float or int): The sampling frequency of h.
-    input_file (str): The path to the input audio file. This is used to name the plot png file.
-    
-    Returns
-    -------
-    array_like: The energy of the impulse response in dB.
-
-    Note
-    ----
-    The function prints the time at which the response first drops below -60 dB,
-    and saves the plot of the decay as a png file in the path './data/plots'
-    with the filename "{input_filename}_decay.png" where input_filename is extracted from the input_file argument.
-    '''
     power = h ** 2
     energy = np.cumsum(power[::-1])[::-1]  # Integration according to Schroeder
 
@@ -49,7 +29,7 @@ def decay_db(h, fs, input_file):
     input_filename = Path(input_file).stem
     output_filename = f"{input_filename}_decay.png"
 
-    plt.savefig(Path('./data/plots') / output_filename)
+    plt.savefig(Path('./plots') / output_filename)
 
     # Find the index where energy_db first drops below -60 dB
     indices_below_60dB = np.where(energy_db <= -60)[0]

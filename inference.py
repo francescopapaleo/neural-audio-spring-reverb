@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 
 from TCN import TCNBase
 
+
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
     if isinstance(input, str):
@@ -84,10 +85,9 @@ def make_inference(load: str,
     if device is None:                                                              
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     
-    # load from checkpoint                                                                            
-    load_from = Path('./checkpoints') / (load + '.pt')                                   
+    # load from checkpoint                                                                                                     
     try:
-        checkpoint = torch.load(load_from, map_location=device)
+        checkpoint = torch.load(load, map_location=device)
         hparams = checkpoint['hparams']
     except Exception as e:
         print(f"Failed to load model state: {e}")
@@ -170,15 +170,17 @@ def make_inference(load: str,
 
     return y_hat
 
+
 if __name__ == "__main__":
     
+
     parser = ArgumentParser()
 
-    parser.add_argument('--load', type=str, required=True, help='checkpoint to load')
-    parser.add_argument('--input', type=str, required=True, help='path to input audio file')
-    
+    parser.add_argument('--load', type=str, default=None, help='relative path to checkpoint to load')
+    parser.add_argument('--input', type=str, default=None, help='relative path to input audio to load')
     parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     parser.add_argument('--sample_rate', type=int, default=16000)
+    
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
     parser.add_argument('--stereo', type=bool, default=False, help='flag to indicate if the audio is stereo or mono')
     parser.add_argument('--tail', type=bool, default=None, help='flag to indicate if tail padding is required')

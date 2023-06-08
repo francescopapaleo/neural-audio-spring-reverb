@@ -7,7 +7,7 @@ import torchaudio.transforms as T
 
 
 def save_plot(plt, file_name):
-    plot_dir = Path('./data/plots')
+    plot_dir = Path('./plots')
     plot_dir.mkdir(parents=True, exist_ok=True)
     file_path = plot_dir / (file_name + ".png")
     plt.tight_layout()
@@ -75,19 +75,7 @@ def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
         plt.vlines(rt60_tgt, energy_db[-1], 0, label="Target RT60")
 
     apply_decorations(plt, legend=True, location="lower left")
-    # plt.text(
-    #     est_rt60, energy_db[-1] - 2, f"Estimated RT60: {est_rt60 * 1000:.0f} ms",
-    #     ha="center", fontsize=10, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.3')
-    # )
-
-    # plt.annotate(
-    #         f"RT60: {est_rt60 * 1000:.0f} ms",
-    #         xy=(est_rt60, energy_db[-1]),
-    #         xytext=(est_rt60 - 0.25, energy_db[-1] + 50),
-    #         arrowprops=dict(arrowstyle="->"),
-    #         ha="right"
-    #     )
-
+    
     plt.xlabel("Time [s]")
     plt.ylabel("Energy [dB]")
     plt.ylim([-100, 6])

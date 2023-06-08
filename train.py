@@ -12,8 +12,9 @@ from argparse import ArgumentParser
 
 torch.cuda.empty_cache()
 torch.manual_seed(42)            
-    
-def training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate):
+
+   
+def training(data_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
 
     print("Initializing Training Process..", end='\n\n')
     if device is None: 
@@ -196,29 +197,26 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
+    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+    parser.add_argument('--sample_rate', type=int, default=16000)
+
     parser.add_argument('--n_epochs', type=int, default=10)
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     parser.add_argument('--crop', type=int, default=3200)
-    parser.add_argument('--sample_rate', type=int, default=16000)
 
     args = parser.parse_args()
 
     lr_list = [0.001]
     bs_list = [16]
     ep_list = [100, 250]
-    
-    data_dir = args.data_dir
-    crop = args.crop
-    device = args.device
-    sample_rate = args.sample_rate
 
     # Loop over all combinations
     for lr in lr_list:
         for batch_size in bs_list:
             for n_epochs in ep_list:
-                
+
                 print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
 
-                training(data_dir, n_epochs, batch_size, lr, crop, device, sample_rate)
+                training(args.data_dir, args.device, args.sample_rate, n_epochs, batch_size, lr, args.crop)
+
