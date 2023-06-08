@@ -1,6 +1,6 @@
-import soundfile as sf
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.io import wavfile
 from argparse import ArgumentParser
 from pathlib import Path
 
@@ -43,7 +43,7 @@ def decay_db(h, fs, input_file):
 
 def main(args):
 
-    x, fs = sf.read(args.input)
+    fs, data = wavfile.read(args.input)
 
     decay_db(x, fs, args.input)
 

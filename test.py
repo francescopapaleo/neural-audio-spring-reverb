@@ -1,4 +1,6 @@
-# test.py: Testing the model on the test set
+""" Testing script
+Test a trained model on the test set and save the results with Tensorboard.
+"""
 
 import torch
 import auraloss

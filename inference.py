@@ -1,4 +1,6 @@
-# inference.py: Use a pre-trained model to make inference on a given audio file
+""" Inference
+Use a pre-trained model to make inference on a given audio file or numpy array.
+"""
 
 from pathlib import Path
 import numpy as np

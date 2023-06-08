@@ -1,4 +1,31 @@
-# data.py: The code for the dataset class
+"""
+Plate-Spring Dataset Class
+
+Spring Reverb - Bass and Guitar - recorded from the spring reverb tank: Accutronics 4EB2C1B: ’Dry Mix - 0%’, ’Wet Mix - 100%’
+
+File: dry_train.h5, Total Length: 2244.00 seconds, 35904000 samples
+File: wet_train.h5, Total Length: 2244.00 seconds, 35904000 samples
+
+File: dry_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
+File: wet_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
+
+
+Reference:
+----------
+@dataset{martinez_ramirez_marco_a_2019_3746119,
+  author       = {Martinez Ramirez, Marco A and
+                  Benetos, Emmanouil and
+                  Reiss, Joshua D},
+  title        = {{Modeling plate and spring reverberation using a 
+                   DSP-informed deep neural network}},
+  month        = oct,
+  year         = 2019,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.3746119},
+  url          = {https://doi.org/10.5281/zenodo.3746119}
+}
+
+"""
 
 from pathlib import Path
 import h5py
@@ -8,8 +35,6 @@ import numpy as np
 
 class SpringDataset(torch.utils.data.Dataset):
     """
-    SpringDataset is a PyTorch Dataset for loading spring reverb dataset files.
-
     Attributes:
     -----------
         root_dir (pathlib.Path): The root directory where the data files are located.

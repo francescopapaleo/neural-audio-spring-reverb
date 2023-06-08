@@ -1,4 +1,6 @@
-# train.py
+""" Training script
+Train a TCN model on the training set and save the results with Tensorboard.
+"""
 
 import torch
 import auraloss

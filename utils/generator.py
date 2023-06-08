@@ -1,4 +1,7 @@
-# generator.py
+""" Signal Generators for Measurements
+
+Modified version from the originally written by Xavier Lizarraga
+"""
 
 import numpy as np
 from scipy.io import wavfile

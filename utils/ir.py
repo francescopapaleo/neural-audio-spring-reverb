@@ -1,3 +1,6 @@
+""" Impulse response generator.
+"""
+
 import torch
 import numpy as np
 from argparse import ArgumentParser

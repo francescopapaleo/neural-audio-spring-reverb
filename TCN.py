@@ -1,12 +1,15 @@
-'''
-TCN model from: 
+''' Temporal Convolutional Network (TCN) with FiLM conditioning module.
+
+Reference:
+---------- 
 https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
 
 @inproceedings{steinmetz2021steerable,
     title={Steerable discovery of neural audio effects},
     author={Steinmetz, Christian J. and Reiss, Joshua D.},
     booktitle={5th Workshop on Creativity and Design at NeurIPS},
-    year={2021}}'''
+    year={2021}}
+    '''
 
 
 import torch

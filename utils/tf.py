@@ -1,4 +1,7 @@
-# Description: Computes the transfer function of the impulse response
+""" Transfer Function
+
+Modified version from the originally written by Xavier Lizarraga
+"""
 
 from argparse import ArgumentParser
 from pathlib import Path
