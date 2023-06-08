@@ -1,12 +1,13 @@
+import numpy as np
+from scipy.io import wavfile
 from pathlib import Path
 from argparse import ArgumentParser
-import numpy as np
-import soundfile as sf
-import matplotlib.pyplot as plt
+from utils.plotter import plot_rt60
 
 eps = 1e-15
 
-def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True):
+
+def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_name=None):
     '''Automatically determines the reverberation time of an impulse response
     using the Schroeder method [1].
 
@@ -78,51 +79,21 @@ def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True):
         def get_time(x, fs):
             return np.arange(x.shape[0]) / fs - i_5db / fs
 
-        T = get_time(power_db, fs)
-
-        # plot power and energy
-        plt.subplots(figsize=(10, 5))
-        plt.plot(get_time(energy_db, fs), energy_db, label="Energy")
-
-        # now the linear fit
-        plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
-        plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
-        plt.vlines(
-            est_rt60, energy_db_min, 0, linestyles="dashed", label="Estimated RT60"
-        )
-
-        if rt60_tgt is not None:
-            plt.vlines(rt60_tgt, energy_db_min, 0, label="Target RT60")
-
-        plt.legend()
-        plt.grid(True)
-        plt.xlabel("Time [s]")
-        plt.ylabel("Energy [dB]")
-        plt.title("RT60 Measurement")
-
-        # Extract the filename without extension and append 'rt60.png'
-        input_filename = Path(args.input).stem
-        output_filename = f"{input_filename}_rt60.png"
-
-        plt.savefig(Path('./data/plots') / output_filename)
+        T = get_time(energy_db, fs)
+        plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name)
 
     return est_rt60
 
-
-def main(args):
-
-    x, fs = sf.read(args.input)
-
-    est_rt60 = measure_rt60(x, fs, decay_db=60, rt60_tgt=None)
-    print(f"The RT60 is {est_rt60 * 1000:.0f} ms")
-    
 
 if __name__ == "__main__":
     parser = ArgumentParser()
     
     parser.add_argument('--input', type=str, required=True, help='path to input audio file')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate')
     
     args = parser.parse_args()
 
-    main(args)
+    fs, data = wavfile.read(args.input)
+    x = data.astype('float32')
+
+    est_rt60 = measure_rt60(x, fs, decay_db=60, rt60_tgt=None , plot=True, file_name=Path(args.input).stem)
+    print(f"The RT60 is {est_rt60 * 1000:.0f} ms")

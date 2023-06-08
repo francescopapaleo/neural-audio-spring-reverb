@@ -5,7 +5,7 @@ import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-from models.TCN import TCNBase
+from TCN import TCNBase
 from data import SpringDataset
 from datetime import datetime
 from argparse import ArgumentParser

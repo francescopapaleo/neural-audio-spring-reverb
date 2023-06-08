@@ -7,7 +7,7 @@ from data import SpringDataset
 from argparse import ArgumentParser
 from pathlib import Path
 
-from models.TCN import TCNBase
+from TCN import TCNBase
 
 def testing(args):
 

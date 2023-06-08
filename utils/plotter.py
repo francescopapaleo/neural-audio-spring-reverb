@@ -1,125 +1,131 @@
 from pathlib import Path
-from argparse import ArgumentParser
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import torch
 import torchaudio.transforms as T
-import librosa
 
 
-def plot_compare_waveform(y, y_pred):
-    '''Plot the waveform of the input and the predicted signal.
-    Parameters
-    ----------
-    y : array_like
-        Ground truth signal
-    y_pred : array_like
-        The predicted signal
-        '''
+def save_plot(plt, file_name):
+    plot_dir = Path('./data/plots')
+    plot_dir.mkdir(parents=True, exist_ok=True)
+    file_path = plot_dir / (file_name + ".png")
+    plt.tight_layout()
+    plt.savefig(file_path)
+    print(f"Saved plot to {file_path}")
 
+
+def apply_decorations(ax, legend=False, location="upper right"):
+    ax.grid(True)
+    if legend:
+        ax.legend()
+        ax.legend(loc=location)
+
+
+def plot_data(x, y, subplot, title, x_label, y_label, legend=False):
+    subplot.plot(x, y)
+    subplot.set_xlim([0, x[-1]])
+    subplot.set_title(title)
+    subplot.set_xlabel(x_label)
+    subplot.set_ylabel(y_label)
+
+    if x_label == "Frequency [Hz]":
+        subplot.set_xscale("symlog")
+        subplot.set_xlim([20, 12000])
+        formatter = ticker.ScalarFormatter()
+        formatter.set_scientific(False)
+        subplot.xaxis.set_major_formatter(formatter)
+        subplot.xaxis.set_minor_formatter(formatter)
+        
+    apply_decorations(subplot, legend)
+
+
+def get_time_stamps(signal_length, sample_rate):
+    return np.arange(0, signal_length / sample_rate, 1 / sample_rate)
+
+
+def plot_ir(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
+    fig, ax = plt.subplots(3, 1, figsize=(15,7))
+    plot_data(get_time_stamps(len(sweep), sample_rate), sweep, ax[0], "Sweep Tone", "Time [s]", "Amplitude")
+    plot_data(get_time_stamps(len(inverse_filter), sample_rate), inverse_filter, ax[1], "Inverse Filter", "Time [s]", "Amplitude")
+    plot_data(get_time_stamps(len(measured), sample_rate), measured, ax[2], "Impulse Response", "Time [s]", "Amplitude")
+    fig.suptitle(f"{file_name} - Impulse Response δ(t)")
+    save_plot(fig, file_name + "_IR")
+
+
+def plot_transfer_function(magnitude: np.ndarray, phase: np.ndarray, sample_rate: int, file_name: str):
+    freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+    fig, ax = plt.subplots(2, 1, figsize=(15, 7))
+    plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
+    plot_data(freqs, phase, ax[1], " ", "Frequency [Hz]", "Phase [degrees]")
+    plt.suptitle(f"{file_name} - Transfer Function H(w)")
+    save_plot(fig, file_name + "_TF")
+
+
+def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
+    plt.subplots(figsize=(15, 4))
+    plt.plot(T, energy_db, label="Energy")
+    plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
+    plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
+    plt.vlines(
+        est_rt60, energy_db[-1], 0, linestyles="dashed", label="Estimated RT60"
+    )
+
+    if rt60_tgt is not None:
+        plt.vlines(rt60_tgt, energy_db[-1], 0, label="Target RT60")
+
+    apply_decorations(plt, legend=True, location="lower left")
+    # plt.text(
+    #     est_rt60, energy_db[-1] - 2, f"Estimated RT60: {est_rt60 * 1000:.0f} ms",
+    #     ha="center", fontsize=10, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.3')
+    # )
+
+    # plt.annotate(
+    #         f"RT60: {est_rt60 * 1000:.0f} ms",
+    #         xy=(est_rt60, energy_db[-1]),
+    #         xytext=(est_rt60 - 0.25, energy_db[-1] + 50),
+    #         arrowprops=dict(arrowstyle="->"),
+    #         ha="right"
+    #     )
+
+    plt.xlabel("Time [s]")
+    plt.ylabel("Energy [dB]")
+    plt.ylim([-100, 6])
+    plt.title(f"{file_name} RT60 Measurement: {est_rt60 * 1000:.0f} ms")                 
+    save_plot(plt, file_name + "_RT60")
+
+def plot_generic_waveform(y, y_pred, title, file_name):
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
     ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
     ax.plot(y_pred, alpha=0.7, label='Prediction', color='red')
-    ax.set_title('Waveform Comparison (Ground Truth vs Prediction)')
+    ax.set_title(title)
     ax.set_xlabel('Sample Index')
     ax.set_ylabel('Amplitude')
-    ax.grid(True)
-    ax.legend()
-    plt.savefig(Path(args.results_dir) / 'waveform_plot.png')
-    plt.close(fig)
-    print("Saved waveform plot to: ", Path(args.results_dir) / 'waveform_plot.png')
+    apply_decorations(ax, legend=True)
+    save_plot(fig, file_name)
 
 
-def plot_zoom_waveform(y, y_pred, sr, t_start=None, t_end=None, results_dir='./results'):
-    '''Plot the waveform of the ground truth and the prediction
-    Parameters
-    ----------
-    y : array_like
-        Ground truth signal
-    y_pred : array_like
-        The predicted signal
-    fs : int, optional
-        The sampling frequency (default to 1, i.e., samples).
-    t_start : float, optional
-        The start time of the plot (default to None).
-    t_end : float, optional
-        The end time of the plot (default to None).'''
-    
-    # Create a time array
-    t = np.arange(y.shape[0]) / sr
-
-    # Determine the indices corresponding to the start and end times
-    if t_start is not None:
-        i_start = int(t_start * sr)
-    else:
-        i_start = 0
-
-    if t_end is not None:
-        i_end = int(t_end * sr)
-    else:
-        i_end = len(t)
-
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 7))
-
-    ax.plot(t[i_start:i_end], y[i_start:i_end], alpha=0.7, label='Ground Truth', color='blue')
-    ax.plot(t[i_start:i_end], y_pred[i_start:i_end], alpha=0.7, label='Prediction', color='red')
-
-    ax.set_title('Zoom on Waveform (Ground Truth vs Prediction)')
-    ax.set_xlabel('Time [s]')
-    ax.set_ylabel('Amplitude')
-    ax.grid(True)
-    ax.legend()
-
-    plt.savefig(Path(results_dir) / 'waveform_zoom.png')
-    print("Saved zoomed waveform plot to: ", Path(results_dir) / 'waveform_zoom.png')
-    plt.close(fig)
-    print("Saved zoomed waveform plot to: ", Path(args.results_dir) / 'waveform_zoom.png')
+def plot_compare_waveform(y, y_pred, file_name):
+    plot_generic_waveform(y, y_pred, 'Waveform Comparison (Ground Truth vs Prediction)', file_name)
 
 
-def get_spectrogram(
-    waveform,
-    n_fft=400,
-    win_len=None,
-    hop_len=None,
-    power=2.0,
-):
-    spectrogram = T.Spectrogram(
-        n_fft=n_fft,
-        win_length=win_len,
-        hop_length=hop_len,
-        center=True,
-        pad_mode="reflect",
-        power=power,
-    )
+def plot_zoom_waveform(y, y_pred, sample_rate: int, file_name: str, t_start=None, t_end=None):
+    t = np.arange(y.shape[0]) / sample_rate
+    i_start = int(t_start * sample_rate) if t_start is not None else 0
+    i_end = int(t_end * sample_rate) if t_end is not None else len(t)
+    plot_generic_waveform(y[i_start:i_end], y_pred[i_start:i_end], 'Zoom on Waveform (Ground Truth vs Prediction)', file_name)
+
+
+def get_spectrogram(waveform, n_fft=400, win_len=None, hop_len=None, power=2.0):
+    spectrogram = T.Spectrogram(n_fft=n_fft, win_length=win_len, hop_length=hop_len, center=True, pad_mode="reflect", power=power,)
     return spectrogram(waveform)
 
 
-def plot_compare_spectrogram(target, output, input, titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None):
-    '''Plot the spectrogram of the input, the prediction and the ground truth
-    Parameters
-    ----------
-    target : array_like
-        Ground truth spectrogram
-    output : array_like
-        The predicted spectrogram
-    input : array_like
-        The input spectrogram
-    titles : list, optional
-        List of titles for the subplots (default to ['target', 'output', 'input']).
-    ylabel : str, optional
-        Label for the y-axis (default to 'freq_bin').
-    aspect : str, optional
-        Aspect ratio of the plot (default to 'auto').
-    xmax : int, optional
-        Maximum value for the x-axis (default to None).
-    '''
-    spec1 = get_spectrogram(torch.Tensor(target))
-    spec2 = get_spectrogram(torch.Tensor(output))
-    spec3 = get_spectrogram(torch.Tensor(input))
+def plot_compare_spectrogram(target, output, input, file_name: str, titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None):
+    specs = [get_spectrogram(torch.Tensor(sig)) for sig in [target, output, input]]
+    fig, axs = plt.subplots(1, 3, figsize=(15, 7)) 
 
-    fig, axs = plt.subplots(1, 3, figsize=(15, 7)) # 1 row, 3 columns
-
-    for idx, spec in enumerate([spec1, spec2, spec3]):
+    for idx, spec in enumerate(specs):
         axs[idx].set_title(titles[idx])
         axs[idx].set_ylabel(ylabel)
         axs[idx].set_xlabel("frame")
@@ -128,173 +134,6 @@ def plot_compare_spectrogram(target, output, input, titles=['target', 'output', 
             axs[idx].set_xlim((0, xmax))
         fig.colorbar(im, ax=axs[idx])
 
-    # Ensure RESULTS directory exists
-    plt.tight_layout()
-    plt.savefig(Path(args.results_dir) / 'spectrogram.png')
-    plt.close(fig)
-    print("Saved spectrogram plot to: ", Path(args.results_dir) / 'spectrogram.png')
+    save_plot(plt, file_name)
 
 
-def plot_transfer_function(magnitude, phase, sr, file_name):
-    '''Plot the transfer function
-    Parameters
-    ----------
-    magnitude : array_like
-    The magnitude of the transfer function
-    phase : array_like
-    The phase of the transfer function
-    sr : int
-    The sampling frequency
-    file_name : str
-    The name of the file to save the plot to
-    '''
-
-    freqs = np.linspace(0, sr / 2, len(magnitude))
-    
-    fig, ax = plt.subplots(2, 1, figsize=(15, 7))
-    ax[0].semilogx(freqs, magnitude)
-    ax[0].set_xlim([1, freqs[-1]])
-    ax[0].set_title("Transfer Function")
-    ax[0].set_ylim([-100, 6])
-    ax[0].set_xlabel("Frequency [Hz]")
-    ax[0].set_ylabel("Magnitude [dBFS]")
-    ax[0].grid(True)
-    ax[1].semilogx(freqs, phase)
-    ax[1].set_xlim([1, freqs[-1]])
-    ax[1].set_ylim([-180, 180])
-    ax[1].set_xlabel("Frequency [Hz]")
-    ax[1].set_ylabel("Phase [degrees]")
-    ax[1].grid(True)
-    plt.suptitle("H(w) - Transfer Function")
-    plt.tight_layout()
-    plt.savefig(Path(args.results_dir) / file_name)
-    plt.close(fig)
-    print("Saved transfer function plot to: ", Path(args.results_dir) / file_name)
-
-
-def plot_loss_function(loss_history, args):
-    '''Plot the loss function over the training epochs
-    Parameters
-    ----------
-    loss_history : list
-        List of loss values over the training iterations
-    args : Namespace
-        Parsed command line arguments
-    '''
-
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 7))
-
-    ax.plot(loss_history, label='Loss')
-    ax.set_title('Loss function over the training iterations')
-    ax.set_xlabel('Iteration')
-    ax.set_ylabel('Loss')
-    ax.grid(True)
-    ax.legend()
-
-    loss_function_path = Path(args.results_dir) / 'loss_plot.png'
-    plt.savefig(loss_function_path)
-    plt.close(fig)
-    print("Saved loss function plot to: ", loss_function_path)
-
-
-def plot_spectrogram(signals, sr, time_window):
-        
-    fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(15, 5))
-
-    for i, signal in enumerate(signals):
-        axs[i].set_title(f'Spectrogram {i+1}')
-        axs[i].set_xlabel('Time (s)')
-        axs[i].set_ylabel('Frequency (Hz)')
-        librosa.display.specshow(
-            librosa.amplitude_to_db(
-                np.abs(librosa.stft(signal, n_fft=512)),
-                ref=np.max), sr=sr, 
-                x_axis='time', y_axis='linear', 
-                hop_length=512, ax=axs[i], 
-                cmap='inferno')
-        axs[i].axvspan(
-            time_window[0], time_window[1], 
-            alpha=0.5, color='r')
-        plt.show()
-
-
-def plot_specgram(signals, sr, time_window, 
-                  title="Spectrogram", filename="spectrogram"):
-    fig, axs = plt.subplots(1, 3, figsize=(20,5))
-    for i, signal in enumerate(signals):
-        axs[i].specgram(signal, NFFT=64, Fs=sr, 
-                        noverlap=32, cmap='inferno', vmin=-60, vmax=0)
-        axs[i].set_title(f'Spectrogram {i+1}')
-        axs[i].set_xlabel('Time (s)')
-        axs[i].set_ylabel('Frequency (Hz)')
-        axs[i].set_ylim([0, 5000])
-        axs[i].set_xlim(time_window)
-    plt.suptitle(title)
-    plt.tight_layout()
-    plt.savefig('./imgs/'+ filename +'.png')
-    plt.show()
-
-def plot_metrics(test_results, args):
-    '''Plot the metrics over the test set'''
-    time_values = np.arange(len(test_results['mse']))
-    
-    fig, ax = plt.subplots(figsize=(15, 7))
-    for metric_name, values in test_results.items():
-        ax.plot(time_values, values, label=metric_name.capitalize())
-
-    ax.set_xlabel("Sample")
-    ax.set_ylabel("Normalized Metric Value")
-    ax.set_title("Evaluation: Metrics Over Test Set")
-    ax.legend()
-    ax.grid(True)
-    plt.savefig(Path(args.results_dir) / 'eval_metrics_plot.png')
-
-
-# def plot_input_target(**args):
-
-#     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
-#     ax.plot(x, alpha=0.7, label='Ground Truth', color='blue')
-#     ax.plot(y, alpha=0.7, label='Prediction', color='red')
-
-#     ax.set_title('Waveform')
-#     ax.set_xlabel('Sample Index')
-#     ax.set_ylabel('Amplitude')
-#     ax.grid(True)
-#     ax.legend()
-#     plt.tight_layout()
-
-#     Path(args.results_dir).mkdir(parents=True, exist_ok=True)
-#     plt.savefig(Path(args.results_dir) / 'dataset_wave.png')
-
-#     # Create a figure with subplots
-#     fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(15, 10))
-
-#     # Plot input spectrogram
-#     axs[0].imshow(10 * np.log10(x), aspect='auto', origin='lower')
-#     axs[0].set_title('Input Spectrogram')
-#     axs[0].set_xlabel('Time')
-#     axs[0].set_ylabel('Frequency')
-#     axs[0].colorbar(label='dB')
-#     axs[2].legend()
-#     axs[2].grid(True)
-
-
-#     # Plot target spectrogram
-#     axs[1].imshow(10 * np.log10(y), aspect='auto', origin='lower')
-#     axs[1].set_title('Target Spectrogram')
-#     axs[1].set_xlabel('Time')
-#     axs[1].set_ylabel('Frequency')
-#     axs[1].colorbar(label='dB')
-#     axs[1].legend()
-#     axs[1].grid(True)
-    
-#     plt.tight_layout()
-#     plt.savefig(Path(args.results_dir) / 'dataset_spectrum.png')
-
-def save_plot(plt, path, filename):
-    plt.savefig(Path(path) / filename)
-
-if __name__ == '__main__':
-    
-    parser = ArgumentParser()
-    args = parser.parse_args()

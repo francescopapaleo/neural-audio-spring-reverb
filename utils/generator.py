@@ -1,18 +1,31 @@
 # generator.py
 
 import numpy as np
-import soundfile as sf
+from scipy.io import wavfile
+from typing import Tuple
 from pathlib import Path
 from argparse import ArgumentParser
+from utils.plotter import plot_ir
 
-from matplotlib import pyplot as plt
 
-def sine(sample_rate: int, 
-         duration: float, 
-         amplitude: float, 
-         frequency: float = 440.0) -> np.ndarray:
+def impulse(sample_rate: int, duration: float, file_name: str = "impulse") -> np.ndarray:
+    '''Generate an impulse
+
+    Arguments:
+    ----------
+    sample_rate (int): Sample rate for the audio file.
+    array_length (int): Total length of the array.
+    file_name (str): Name of the audio file to be saved.
     '''
-    Generate a sine wave
+    array_length = int(duration * sample_rate)
+    impulse = np.zeros(array_length)
+    impulse[0] = 1.0  # Place the impulse at the first sample
+
+    return impulse
+
+
+def sine(sample_rate: int, duration: float, amplitude: float, frequency: float = 440.0) -> np.ndarray:
+    '''Generate a sine wave
     
     Arguments:
     ----------
@@ -22,17 +35,12 @@ def sine(sample_rate: int,
         frequency (float, optional): Frequency of the sine wave. Defaults to 440Hz.
     '''
     N = np.arange(0, duration, 1.0 / sample_rate)
-    return amplitude * np.sin(2.0 * np.pi * frequency * N)
+    sine = amplitude * np.sin(2.0 * np.pi * frequency * N)
+    return sine
 
 
-def sweep_tone(sample_rate: int, 
-               duration: float, 
-               amplitude: float, 
-               f0: float = 20, 
-               f1: float = 20000, 
-               inverse: bool = False) -> np.ndarray:
-    '''
-    Generate a sweep tone
+def sweep_tone(sample_rate: int, duration: float, amplitude: float, f0: float = 20, f1: float = 20000, inverse: bool = False) -> np.ndarray:
+    '''Generate a sweep tone
     
     Arguments:
     ----------
@@ -49,21 +57,27 @@ def sweep_tone(sample_rate: int,
     if inverse:
         k = np.exp(t * R / duration)
         output = output[::-1] / k
-    return amplitude * output
+    sweep_tone = amplitude * output
+    return sweep_tone
 
 
-def generate_reference(duration: float, sample_rate: int):
-    '''
-    Generate and save reference tone files
+def generate_reference(duration: float, sample_rate: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    '''Generate the reference impulse response
 
     Arguments:
     ----------
         duration (float): Duration of the tone.
         sample_rate (int): Sample rate.
+
+    Returns:
+    --------
+        sweep (np.ndarray): The sweep tone.
+        inverse_filter (np.ndarray): The inverse filter.
+        reference (np.ndarray): The reference impulse response.
     '''
     decibels = -18
     amplitude = 10 ** (decibels / 20)
-    f0 = 5
+    f0 = 20
     f1 = sample_rate / 2
 
     # Generate the sweep tone and inverse filter
@@ -74,76 +88,36 @@ def generate_reference(duration: float, sample_rate: int):
     N = len(sweep)
     reference = np.convolve(inverse_filter, sweep)
 
-    # Save as .wav files
-    sweep_output_path = Path('./data/raw') / "sweep.wav"
-    sf.write(sweep_output_path, sweep, sample_rate)
-    
-    inverse_output_path = Path('./data/raw')  / "inverse_filter.wav"
-    sf.write(inverse_output_path, inverse_filter, sample_rate)
-
-    reference_output_path = Path('./data/raw')  / "reference.wav"
-    sf.write(reference_output_path, reference, sample_rate)
-
     return sweep, inverse_filter, reference
 
-def plot_generator(sweep_filt: np.ndarray, 
-                   inverse_filter: np.ndarray,
-                   measured: np.ndarray, 
-                   duration: float,
-                   sample_rate: int,
-                   file_name: str):
-    '''
-    Plot and save the sweep tone, the inverse filter, and the measured impulse response
-    
-    Arguments:
-    ----------
-        sweep_filt (np.ndarray): The sweep tone.
-        inverse_filter (np.ndarray): The inverse filter.
-        measured (np.ndarray): The measured impulse response.
-        sample_rate (int): The sampling frequency.
-        duration (float): Duration of the sweep tone.
-        file_name (str): Filename to save the plot.
-    '''
-    time_stamps = np.arange(0, duration, 1 / sample_rate)
-    fig, ax = plt.subplots(3, 1, figsize=(15,7))
-    
-    ax[0].plot(time_stamps, sweep_filt)
-    ax[0].set_xlim([0, time_stamps[-1]])
-    ax[0].set_title("Sweep Tone")
-    ax[0].set_xlabel("Time [s]")
-    ax[0].set_ylabel("Amplitude")
-    
-    ax[1].plot(time_stamps, inverse_filter)
-    ax[1].set_xlim([0, time_stamps[-1]])
-    ax[1].set_title("Inverse Filter")
-    ax[1].set_xlabel("Time [s]")
-    ax[1].set_ylabel("Amplitude")
-    
-    time_stamps = np.arange(0, len(measured)/ sample_rate, 1/ sample_rate)
-    ax[2].plot(time_stamps, measured)
-    ax[2].set_xlim([0, time_stamps[-1]])
-    ax[2].set_title("Impulse Response")
-    ax[2].set_xlabel("Time [s]")
-    ax[2].set_ylabel("Amplitude")
-    plt.tight_layout()
-    plt.grid(True)
-    plt.savefig(Path('./data/plots') / file_name)
-    plt.close(fig)
-    print("Saved signal plot to: ", Path('./data/plots') / file_name)
 
-def main(args):
-    '''
-    Main function to generate and plot tones
-    
+def save_audio(path: str, sample_rate: int, audio: np.ndarray, ):
+    '''Saves an audio array to a .wav file.
+
     Arguments:
     ----------
-        args: Command-line arguments.
+        path (str): File path for the audio file to be saved.
+        sample_rate (int): Sample rate.
+        audio (np.ndarray): Audio array.
     '''
-    # Generate and save the impulse, sine wave, and sweep tone
-    sweep, inverse_filter, reference = generate_reference(args.duration, args.sample_rate)
+    output_path = Path('./data/generated') / f"{path}.wav"
+    wavfile.write(output_path, sample_rate, audio.astype(np.float32))
+
+
+def main(duration: float, sample_rate: int):
+
+    # Generate the arrays
+    sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
+    single_impulse = impulse(sample_rate, duration)
+
+    # Save as .wav files
+    save_audio("sweep", sample_rate, sweep)
+    save_audio("inverse_filter", sample_rate, inverse_filter)
+    save_audio("generator_reference", sample_rate, reference)
+    save_audio("single_impulse", sample_rate, single_impulse)
 
     # Plot them
-    plot_generator(sweep, inverse_filter, reference, args.duration, args.sample_rate, "reference.png")
+    plot_ir(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
 
 
 if __name__ == "__main__":
@@ -152,4 +126,5 @@ if __name__ == "__main__":
     parser.add_argument("--duration", type=float, default=5.0, help="duration in seconds")
     args = parser.parse_args()
 
-    main(args)
+    main(args.duration, args.sample_rate)
+    
