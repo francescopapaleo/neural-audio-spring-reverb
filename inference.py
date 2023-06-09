@@ -166,11 +166,11 @@ def make_inference(load: str,
     y_hat /= y_hat.abs().max()
 
     # Save the output using torchaudio
-    output_file_name = Path('./data/processed') / (input_name + '_' + load + '.wav')
+    output_file_name = Path('./audio/processed') / (input_name + '_' + Path(load).stem + '.wav')
     torchaudio.save(str(output_file_name), y_hat, sample_rate=sample_rate, channels_first=True, bits_per_sample=16)
     print(f"Saved processed file to {output_file_name}")
 
-    return y_hat
+    return torch.tensor(y_hat)
 
 
 if __name__ == "__main__":

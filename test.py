@@ -3,6 +3,7 @@ Test a trained model on the test set and save the results with Tensorboard.
 """
 
 import torch
+import torchaudio
 import auraloss
 from datetime import datetime
 from data import SpringDataset
@@ -10,6 +11,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from TCN import TCNBase
+from utils.plotter import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
 
 def testing(load, data_dir, device, sample_rate):
 
@@ -37,7 +39,7 @@ def testing(load, data_dir, device, sample_rate):
     ).to(device)
     
     # batch_size = hparams['batch_size']
-    batch_size = 4
+    batch_size = 16
     n_epochs = hparams['n_epochs']
     lr = hparams['l_rate']
 
@@ -70,6 +72,9 @@ def testing(load, data_dir, device, sample_rate):
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
     
     print("## Testing...")
+
+    num_batches = len(test_loader)
+    middle_batch_idx = num_batches // 2
     
     model.eval()
     with torch.no_grad():
@@ -98,6 +103,15 @@ def testing(load, data_dir, device, sample_rate):
                 # Write metrics to tensorboard
                 writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
+             # Save and plot for the last batch only
+            if step == num_batches - 1:
+                single_target = target_pad[0]
+                single_output = output_trim[0]
+
+                # plot waveforms
+                plot_compare_waveform(single_target.cpu(), single_output.cpu(), f"waveform_comparison_last_batch")
+
+
     print("## Computing global metrics...")
     # compute global metrics means
     for name in test_results.keys():
@@ -111,17 +125,16 @@ def testing(load, data_dir, device, sample_rate):
 
 
 if __name__ == "__main__":
-
     parser = ArgumentParser()
 
-    parser.add_argument('--load', type=str, default=None, help='checkpoint rel path to load')
+    parser.add_argument('--load', type=str, default= 'checkpoints/tcn_50_16_0.001_20230605_190459.pt', help='checkpoint rel path to load')
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset rel path')
     parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
     parser.add_argument('--sample_rate', type=int, default=16000)
     
     args = parser.parse_args()
 
-    for file in Path('./checkpoints').glob('tcn_*'):
-        args.load = file
-        testing(args.load, args.data_dir, args.device, args.sample_rate)
+    # for file in Path('./checkpoints').glob('tcn_*'):
+    #     args.load = file
+    testing(args.load, args.data_dir, args.device, args.sample_rate)
     

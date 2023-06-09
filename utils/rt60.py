@@ -58,7 +58,7 @@ def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_nam
         t_5db = i_5db / fs
 
         # after decay
-        i_decay = np.min(np.where(-5 - decay_db - energy_db > 0)[0])
+        i_decay = np.min(np.where(-decay_db - energy_db > 0)[0])
         t_decay = i_decay / fs
 
         # compute the decay time

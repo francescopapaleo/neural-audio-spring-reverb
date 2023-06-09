@@ -49,7 +49,7 @@ def get_time_stamps(signal_length, sample_rate):
 
 def plot_ir(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
-    plot_data(get_time_stamps(len(sweep), sample_rate), sweep, ax[0], "Sweep Tone", "Time [s]", "Amplitude")
+    plot_data(get_time_stamps(len(sweep), sample_rate), sweep, ax[0], "Processed Sweep Tone", "Time [s]", "Amplitude")
     plot_data(get_time_stamps(len(inverse_filter), sample_rate), inverse_filter, ax[1], "Inverse Filter", "Time [s]", "Amplitude")
     plot_data(get_time_stamps(len(measured), sample_rate), measured, ax[2], "Impulse Response", "Time [s]", "Amplitude")
     fig.suptitle(f"{file_name} - Impulse Response δ(t)")
@@ -112,9 +112,9 @@ def get_spectrogram(waveform, n_fft=400, win_len=None, hop_len=None, power=2.0):
     return spectrogram(waveform)
 
 
-def plot_compare_spectrogram(target, output, input, file_name: str, titles=['target', 'output', 'input'], ylabel="freq_bin", aspect="auto", xmax=None):
-    specs = [get_spectrogram(torch.Tensor(sig)) for sig in [target, output, input]]
-    fig, axs = plt.subplots(1, 3, figsize=(15, 7)) 
+def plot_compare_spectrogram(target, output, file_name: str, titles=['target', 'output'], ylabel="freq_bin", aspect="auto", xmax=None):
+    specs = [get_spectrogram(torch.Tensor(sig)) for sig in [target, output]]
+    fig, axs = plt.subplots(1, 2, figsize=(10, 5)) 
 
     for idx, spec in enumerate(specs):
         axs[idx].set_title(titles[idx])
@@ -126,5 +126,6 @@ def plot_compare_spectrogram(target, output, input, file_name: str, titles=['tar
         fig.colorbar(im, ax=axs[idx])
 
     save_plot(plt, file_name)
+
 
 
