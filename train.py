@@ -34,7 +34,7 @@ def training(data_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/train01C/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
@@ -214,8 +214,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     lr_list = [0.001]
-    bs_list = [16]
-    ep_list = [10]
+    bs_list = [8]
+    ep_list = [100]
 
     # Loop over all combinations
     for lr in lr_list:
