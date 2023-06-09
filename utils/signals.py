@@ -8,7 +8,7 @@ from scipy.io import wavfile
 from typing import Tuple
 from pathlib import Path
 from argparse import ArgumentParser
-from utils.plotter import plot_ir
+from utils.plotter import plot_impulse_response
 
 
 def impulse(sample_rate: int, duration: float, file_name: str = "impulse") -> np.ndarray:
@@ -120,13 +120,14 @@ def main(duration: float, sample_rate: int):
     save_audio("single_impulse", sample_rate, single_impulse)
 
     # Plot them
-    plot_ir(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
+    plot_impulse_response(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument("--sample_rate", type=int, default=16000, help="sample rate")
-    parser.add_argument("--duration", type=float, default=5.0, help="duration in seconds")
+    parser = ArgumentParser(description="Generate audio files for measurements")
+    parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
+
     args = parser.parse_args()
 
     main(args.duration, args.sample_rate)

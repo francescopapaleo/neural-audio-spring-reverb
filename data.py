@@ -124,5 +124,3 @@ class SpringDataset(torch.utils.data.Dataset):
         print(f"Index: {index}")
         print(f"Index data: {self.index[index]}")
 
-
-

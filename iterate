@@ -1,0 +1,8 @@
+for file in Path('./checkpoints').glob('tcn_*'):
+    args.load = file
+
+    load = args.load
+    sample_rate = args.sample_rate
+    duration = args.duration
+    device = args.device
+

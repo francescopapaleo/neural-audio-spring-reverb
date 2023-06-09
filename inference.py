@@ -2,12 +2,13 @@
 Use a pre-trained model to make inference on a given audio file or numpy array.
 """
 
-from pathlib import Path
+
 import numpy as np
 import torch
 import torchaudio
 import torchaudio.functional as F
 from argparse import ArgumentParser
+from pathlib import Path
 
 from TCN import TCNBase
 
@@ -31,7 +32,6 @@ def load_audio(input, sample_rate):
         raise ValueError('input must be either a file path or a numpy array')
     
     return x_p, fs_x, input_name
-
 
 
 def make_inference(load: str, 
@@ -106,6 +106,14 @@ def make_inference(load: str,
         cond_dim = hparams['cond_dim'],
     ).to(device)
 
+    # batch_size = hparams['batch_size']
+    batch_size = hparams['batch_size']
+    n_epochs = hparams['n_epochs']
+    lr = hparams['l_rate']
+    model_name = checkpoint['name']
+
+    print(f"Loaded: {model_name}")
+
     try:
         model.load_state_dict(checkpoint['model_state_dict'])
     except Exception as e:
@@ -174,23 +182,22 @@ def make_inference(load: str,
 
 
 if __name__ == "__main__":
-    
 
     parser = ArgumentParser()
-
-    parser.add_argument('--load', type=str, default=None, help='relative path to checkpoint to load')
-    parser.add_argument('--input', type=str, default=None, help='relative path to input audio to load')
-    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-    parser.add_argument('--sample_rate', type=int, default=16000)
+    parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
+    parser.add_argument('--input', type=str, required=True, help='Path (rel) relative to input audio')
+    parser.add_argument('--device', type=str, 
+                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
     
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
-    parser.add_argument('--stereo', type=bool, default=False, help='flag to indicate if the audio is stereo or mono')
-    parser.add_argument('--tail', type=bool, default=None, help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=0, help='width parameter for the model')
+    parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
+    parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
+    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
     parser.add_argument('--c0', type=float, default=0, help='c0 parameter for the model')
     parser.add_argument('--c1', type=float, default=0, help='c1 parameter for the model')
     parser.add_argument('--gain_dB', type=float, default=0, help='gain in dB for the model')
-    parser.add_argument('--mix', type=float, default=100, help='mix parameter for the model')
+    parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
     args = parser.parse_args()
 
     make_inference(args.load, args.input, args.sample_rate, args.device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)

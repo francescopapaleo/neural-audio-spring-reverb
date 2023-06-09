@@ -200,16 +200,17 @@ def training(data_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
     
 if __name__ == "__main__":
 
-    parser = ArgumentParser()
-    
-    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='dataset')
-    parser.add_argument('--device', type=lambda x: torch.device(x), default=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-    parser.add_argument('--sample_rate', type=int, default=16000)
-
-    parser.add_argument('--n_epochs', type=int, default=10)
-    parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--lr', type=float, default=0.001)
-    parser.add_argument('--crop', type=int, default=3200)
+    parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
+    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
+    parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
+    parser.add_argument('--device', type=str, 
+                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
+    parser.add_argument('--n_epochs', type=int, default=10, help='the total number of epochs')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
+    parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
+    parser.add_argument('--crop', type=int, default=3200, help='crop size')
 
     args = parser.parse_args()
 

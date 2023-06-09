@@ -43,15 +43,14 @@ def decay_db(h, fs, input_file):
 
 def main(args):
 
-    fs, data = wavfile.read(args.input)
+    fs, x = wavfile.read(args.input)
 
     decay_db(x, fs, args.input)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    
-    parser.add_argument('--input', type=str, required=True, help='path to input audio file')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate')
+    parser.add_argument('--input', type=str, required=True, help='Path (rel) relative to input audio')
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
     
     args = parser.parse_args()
 

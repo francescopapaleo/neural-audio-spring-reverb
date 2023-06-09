@@ -47,7 +47,7 @@ def get_time_stamps_np(signal_length, sample_rate):
     return np.arange(0, signal_length / sample_rate, 1 / sample_rate)
 
 
-def plot_ir(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
+def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
     plot_data(get_time_stamps_np(len(sweep), sample_rate), sweep, ax[0], "Processed Sweep Tone", "Time [s]", "Amplitude")
     plot_data(get_time_stamps_np(len(inverse_filter), sample_rate), inverse_filter, ax[1], "Inverse Filter", "Time [s]", "Amplitude")
@@ -153,6 +153,7 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Ta
             if xlim:
                 ax.set_xlim(xlim)
             ax.set_title(labels[idx])
+            figure.suptitle(file_name)
             figure.colorbar(im, ax=ax)
     
     plt.show(block=False)
