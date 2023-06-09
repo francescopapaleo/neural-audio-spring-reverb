@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from TCN import TCNBase
-from utils.plotter import plot_compare_waveform, plot_zoom_waveform, plot_compare_spectrogram
+from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
 def testing(load, data_dir, device, sample_rate):
 
@@ -37,11 +37,14 @@ def testing(load, data_dir, device, sample_rate):
         dilation_growth = hparams['dilation_growth'],
         cond_dim = hparams['cond_dim'],
     ).to(device)
-    
+
     # batch_size = hparams['batch_size']
-    batch_size = 16
+    batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']
     lr = hparams['l_rate']
+    name = checkpoint['name']
+
+    print(f"model name: {name}")
 
     try:
         model.load_state_dict(checkpoint['model_state_dict'])
@@ -56,7 +59,7 @@ def testing(load, data_dir, device, sample_rate):
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/01B_test/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/01C_test/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
 
     print("## Initializing metrics...")
@@ -74,12 +77,12 @@ def testing(load, data_dir, device, sample_rate):
     print("## Testing...")
 
     num_batches = len(test_loader)
-    middle_batch_idx = num_batches // 2
     
     model.eval()
     with torch.no_grad():
         for step, (input, target) in enumerate(test_loader):
             global_step = step + 1
+            print(f"Batch {global_step}/{num_batches}")
 
             # move input and target to device
             input = input.to(device)                    
@@ -103,15 +106,16 @@ def testing(load, data_dir, device, sample_rate):
                 # Write metrics to tensorboard
                 writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
-             # Save and plot for the last batch only
-            if step == num_batches - 1:
+             # Plot for the last batch only
+            if step % 4 ==0:
                 single_target = target_pad[0]
                 single_output = output_trim[0]
 
-                # plot waveforms
-                plot_compare_waveform(single_target.cpu(), single_output.cpu(), f"waveform_comparison_last_batch")
-
-
+                plot_compare_waveform(single_target.detach().cpu(), single_output.detach().cpu(),
+                                        sample_rate, file_name=f"Target-Output_{global_step}") 
+                plot_compare_spectrogram(single_target.detach().cpu(), single_output.detach().cpu(), 
+                                      sample_rate, file_name=f"Spectrograms_{global_step}", t_label="Spectrogram 1", o_label="Spectrogram 2",)
+                
     print("## Computing global metrics...")
     # compute global metrics means
     for name in test_results.keys():

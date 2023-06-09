@@ -165,8 +165,12 @@ def training(data_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
                 save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
                 torch.save({
                     'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'scheduler_state_dict': scheduler.state_dict(),
+                    'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
                     'hparams': hparams
                 }, save_to)
+
                 min_valid_loss = avg_valid_loss
             
             scheduler.step()
@@ -203,15 +207,15 @@ if __name__ == "__main__":
     parser.add_argument('--sample_rate', type=int, default=16000)
 
     parser.add_argument('--n_epochs', type=int, default=10)
-    parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=0.01)
+    parser.add_argument('--batch_size', type=int, default=16)
+    parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--crop', type=int, default=3200)
 
     args = parser.parse_args()
 
     lr_list = [0.001]
     bs_list = [16]
-    ep_list = [100, 250]
+    ep_list = [10]
 
     # Loop over all combinations
     for lr in lr_list:
