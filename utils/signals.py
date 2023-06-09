@@ -11,20 +11,22 @@ from argparse import ArgumentParser
 from utils.plotter import plot_impulse_response
 
 
-def impulse(sample_rate: int, duration: float, file_name: str = "impulse") -> np.ndarray:
+def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndarray:
     '''Generate an impulse
 
     Arguments:
     ----------
-    sample_rate (int): Sample rate for the audio file.
-    array_length (int): Total length of the array.
-    file_name (str): Name of the audio file to be saved.
+        sample_rate (int): Sample rate for the audio file.
+        duration (float): Duration of the impulse.
+        decibels (float): Amplitude of the impulse in decibels.
+        file_name (str): Name of the audio file to be saved.
     '''
     array_length = int(duration * sample_rate)
     impulse = np.zeros(array_length)
-    impulse[0] = 1.0  # Place the impulse at the first sample
+    impulse[0] = 10 ** (decibels / 20)  # Convert decibels to amplitude
 
     return impulse
+
 
 
 def sine(sample_rate: int, duration: float, amplitude: float, frequency: float = 440.0) -> np.ndarray:
@@ -64,13 +66,15 @@ def sweep_tone(sample_rate: int, duration: float, amplitude: float, f0: float = 
     return sweep_tone
 
 
-def generate_reference(duration: float, sample_rate: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def generate_reference(duration: float, sample_rate: int, decibels: float = -18, f0: float = 20) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     '''Generate the reference impulse response
 
     Arguments:
     ----------
         duration (float): Duration of the tone.
         sample_rate (int): Sample rate.
+        decibels (float): The decibel level of the signal. Defaults to -18 dB.
+        f0 (float): The start frequency of the sweep. Defaults to 20Hz.
 
     Returns:
     --------
@@ -78,9 +82,7 @@ def generate_reference(duration: float, sample_rate: int) -> Tuple[np.ndarray, n
         inverse_filter (np.ndarray): The inverse filter.
         reference (np.ndarray): The reference impulse response.
     '''
-    decibels = -18
     amplitude = 10 ** (decibels / 20)
-    f0 = 20
     f1 = sample_rate / 2
 
     # Generate the sweep tone and inverse filter
@@ -94,30 +96,37 @@ def generate_reference(duration: float, sample_rate: int) -> Tuple[np.ndarray, n
     return sweep, inverse_filter, reference
 
 
-def save_audio(path: str, sample_rate: int, audio: np.ndarray, ):
+
+def save_audio(dir_path: str, file_name: str, sample_rate: int, audio: np.ndarray):
     '''Saves an audio array to a .wav file.
 
     Arguments:
     ----------
-        path (str): File path for the audio file to be saved.
+        dir_path (str): Directory path for the audio file to be saved.
+        file_name (str): Name of the audio file to be saved.
         sample_rate (int): Sample rate.
         audio (np.ndarray): Audio array.
     '''
-    output_path = Path('./data/generated') / f"{path}.wav"
+    # Create the directory if it does not exist
+    output_directory = Path(dir_path)
+    output_directory.mkdir(parents=True, exist_ok=True)
+    
+    output_path = output_directory / f"{file_name}.wav"
     wavfile.write(output_path, sample_rate, audio.astype(np.float32))
+    print(f"Saved {output_path}")
 
 
-def main(duration: float, sample_rate: int):
+def main(duration: float, sample_rate: int, audio_dir: str):
 
     # Generate the arrays
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
-    single_impulse = impulse(sample_rate, duration)
+    single_impulse = impulse(sample_rate, duration, decibels=-18)
 
     # Save as .wav files
-    save_audio("sweep", sample_rate, sweep)
-    save_audio("inverse_filter", sample_rate, inverse_filter)
-    save_audio("generator_reference", sample_rate, reference)
-    save_audio("single_impulse", sample_rate, single_impulse)
+    save_audio(audio_dir, "sweep", sample_rate, sweep)
+    save_audio(audio_dir, "inverse_filter", sample_rate, inverse_filter)
+    save_audio(audio_dir, "generator_reference", sample_rate, reference)
+    save_audio(audio_dir, "single_impulse", sample_rate, single_impulse)
 
     # Plot them
     plot_impulse_response(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
@@ -125,10 +134,12 @@ def main(duration: float, sample_rate: int):
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Generate audio files for measurements")
+    parser.add_argument('--audio_dir', type=str, default='./audio/generated/', help='Path (rel) to audio files')
+
     parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
 
     args = parser.parse_args()
 
-    main(args.duration, args.sample_rate)
+    main(args.duration, args.sample_rate, args.audio_dir)
     

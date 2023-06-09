@@ -116,6 +116,8 @@ def testing(load, data_dir, audio_dir, device, sample_rate):
                 plot_compare_spectrogram(single_target.detach().cpu(), single_output.detach().cpu(), 
                                       sample_rate, file_name=f"Spectra_{model_name}_{global_step}", t_label=f"Target_{global_step}", o_label=f"Output_{global_step}",)
                 
+                audio_dir = Path(audio_dir)
+                audio_dir.mkdir(parents=True, exist_ok=True)
                 torchaudio.save(str(audio_dir / f"Target_{model_name}_{global_step}.wav"), single_target.detach().cpu(), sample_rate)
                 torchaudio.save(str(audio_dir / f"Output_{model_name}_{global_step}.wav"), single_output.detach().cpu(), sample_rate)
 
@@ -137,14 +139,11 @@ if __name__ == "__main__":
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
-    parser.add_argument('--input', type=str, required=True, help='Path (rel) relative to input audio')
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
     
     args = parser.parse_args()
 
-    # for file in Path('./checkpoints').glob('tcn_*'):
-    #     args.load = file
     testing(args.load, args.data_dir, args.audio_dir, args.device, args.sample_rate)
     

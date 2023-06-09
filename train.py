@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
+
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
@@ -215,8 +215,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     lr_list = [0.001]
-    bs_list = [8]
-    ep_list = [100]
+    bs_list = [4, 16]
+    ep_list = [25, 50, 100]
 
     # Loop over all combinations
     for lr in lr_list:

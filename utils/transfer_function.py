@@ -40,6 +40,8 @@ def transfer_function(x: np.ndarray, y: np.ndarray):
     return tf
 
 def main(load, sample_rate, device, duration):
+    
+    device = torch.device(device)
 
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate) 
     
@@ -53,7 +55,7 @@ def main(load, sample_rate, device, duration):
     file_name = f'{Path(load).stem}'
     plot_impulse_response(sweep_test, inverse_filter, measured_ir, sample_rate, file_name)
     
-    measured_output_path = Path('./audio/processed')  / (file_name + '.wav')
+    measured_output_path = Path('./audio/processed')  / (file_name + '_IR.wav')
     wavfile.write(measured_output_path, sample_rate, reference.astype(np.float32))
 
     # Compute the transfer function
@@ -68,7 +70,9 @@ if __name__ == "__main__":
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
     parser.add_argument('--device', type=str, 
-                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
+                    default="cuda:0" if torch.cuda.is_available() else "cpu", 
+                    help='set device to run the model on')
+
     parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
 
     args = parser.parse_args()

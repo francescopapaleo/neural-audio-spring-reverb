@@ -178,7 +178,7 @@ def make_inference(load: str,
     torchaudio.save(str(output_file_name), y_hat, sample_rate=sample_rate, channels_first=True, bits_per_sample=16)
     print(f"Saved processed file to {output_file_name}")
 
-    return torch.tensor(y_hat)
+    return y_hat
 
 
 if __name__ == "__main__":
