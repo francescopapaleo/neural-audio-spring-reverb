@@ -1,0 +1,129 @@
+Training with lr=0.001, batch_size=8, n_epochs=100
+Initializing Training Process..
+
+Torch version: 1.11.0 ------ Selected Device: cuda:0
+Sample Rate: 16000 Hz ------  Crop Lenght:3200 samples
+
+Found 4 files in ../plate-spring/spring
+Using dry_train.h5 and wet_train.h5 for train split.
+Parameters: 526.923 k
+Receptive field: 14323 samples or 895.2 ms
+
+Training Loop
+
+Validation Loss Decreased(inf--->1.479375) Saving model ...
+Epoch: 0, Learning Rate: 0.001
+Epoch 1 		 Validation Loss: 1.479375, 		 Training Loss: 1.519171Validation Loss Decreased(1.479375--->1.244009) Saving model ...
+Epoch: 1, Learning Rate: 0.001
+Epoch 2 		 Validation Loss: 1.244009, 		 Training Loss: 1.333125Validation Loss Decreased(1.244009--->1.199453) Saving model ...
+Epoch: 2, Learning Rate: 0.001
+Epoch 3 		 Validation Loss: 1.199453, 		 Training Loss: 1.211794Epoch: 3, Learning Rate: 0.001
+Epoch 4 		 Validation Loss: 1.239029, 		 Training Loss: 1.161408Validation Loss Decreased(1.199453--->1.151160) Saving model ...
+Epoch: 4, Learning Rate: 0.001
+Epoch 5 		 Validation Loss: 1.151160, 		 Training Loss: 1.133619Validation Loss Decreased(1.151160--->1.069781) Saving model ...
+Epoch: 5, Learning Rate: 0.001
+Epoch 6 		 Validation Loss: 1.069781, 		 Training Loss: 1.095681Validation Loss Decreased(1.069781--->1.054135) Saving model ...
+Epoch: 6, Learning Rate: 0.001
+Epoch 7 		 Validation Loss: 1.054135, 		 Training Loss: 1.061993Epoch: 7, Learning Rate: 0.001
+Epoch 8 		 Validation Loss: 1.099652, 		 Training Loss: 1.121006Epoch: 8, Learning Rate: 0.001
+Epoch 9 		 Validation Loss: 1.066126, 		 Training Loss: 1.047754Validation Loss Decreased(1.054135--->1.019215) Saving model ...
+Epoch: 9, Learning Rate: 0.001
+Epoch 10 		 Validation Loss: 1.019215, 		 Training Loss: 1.013488Epoch: 10, Learning Rate: 0.001
+Epoch 11 		 Validation Loss: 1.035712, 		 Training Loss: 1.023365Validation Loss Decreased(1.019215--->0.985722) Saving model ...
+Epoch: 11, Learning Rate: 0.001
+Epoch 12 		 Validation Loss: 0.985722, 		 Training Loss: 1.004909Epoch: 12, Learning Rate: 0.001
+Epoch 13 		 Validation Loss: 0.986342, 		 Training Loss: 0.990766Validation Loss Decreased(0.985722--->0.979221) Saving model ...
+Epoch: 13, Learning Rate: 0.001
+Epoch 14 		 Validation Loss: 0.979221, 		 Training Loss: 0.992013Epoch: 14, Learning Rate: 0.001
+Epoch 15 		 Validation Loss: 1.003274, 		 Training Loss: 0.967908Epoch: 15, Learning Rate: 0.001
+Epoch 16 		 Validation Loss: 1.041250, 		 Training Loss: 0.977988Validation Loss Decreased(0.979221--->0.969563) Saving model ...
+Epoch: 16, Learning Rate: 0.001
+Epoch 17 		 Validation Loss: 0.969563, 		 Training Loss: 0.964961Validation Loss Decreased(0.969563--->0.934468) Saving model ...
+Epoch: 17, Learning Rate: 0.001
+Epoch 18 		 Validation Loss: 0.934468, 		 Training Loss: 0.937278Validation Loss Decreased(0.934468--->0.928915) Saving model ...
+Epoch: 18, Learning Rate: 0.001
+Epoch 19 		 Validation Loss: 0.928915, 		 Training Loss: 0.944300Epoch: 19, Learning Rate: 0.001
+Epoch 20 		 Validation Loss: 0.949881, 		 Training Loss: 0.931737Epoch: 20, Learning Rate: 0.001
+Epoch 21 		 Validation Loss: 0.931971, 		 Training Loss: 0.940439Epoch: 21, Learning Rate: 0.001
+Epoch 22 		 Validation Loss: 1.013315, 		 Training Loss: 0.925373Epoch: 22, Learning Rate: 0.001
+Epoch 23 		 Validation Loss: 1.030838, 		 Training Loss: 0.927757Epoch: 23, Learning Rate: 0.001
+Epoch 24 		 Validation Loss: 0.929292, 		 Training Loss: 0.936904Epoch: 24, Learning Rate: 0.001
+Epoch 25 		 Validation Loss: 0.944686, 		 Training Loss: 0.919833Validation Loss Decreased(0.928915--->0.921119) Saving model ...
+Epoch: 25, Learning Rate: 0.001
+Epoch 26 		 Validation Loss: 0.921119, 		 Training Loss: 0.903051Epoch: 26, Learning Rate: 0.001
+Epoch 27 		 Validation Loss: 0.927437, 		 Training Loss: 0.903706Epoch: 27, Learning Rate: 0.001
+Epoch 28 		 Validation Loss: 0.943990, 		 Training Loss: 0.901258Validation Loss Decreased(0.921119--->0.903033) Saving model ...
+Epoch: 28, Learning Rate: 0.001
+Epoch 29 		 Validation Loss: 0.903033, 		 Training Loss: 0.904632Validation Loss Decreased(0.903033--->0.886242) Saving model ...
+Epoch: 29, Learning Rate: 0.001
+Epoch 30 		 Validation Loss: 0.886242, 		 Training Loss: 0.894178Epoch: 30, Learning Rate: 0.001
+Epoch 31 		 Validation Loss: 0.918278, 		 Training Loss: 0.887174Epoch: 31, Learning Rate: 0.001
+Epoch 32 		 Validation Loss: 0.947385, 		 Training Loss: 0.913350Epoch: 32, Learning Rate: 0.001
+Epoch 33 		 Validation Loss: 0.910287, 		 Training Loss: 0.901726Epoch: 33, Learning Rate: 0.001
+Epoch 34 		 Validation Loss: 2.020582, 		 Training Loss: 1.103649Epoch: 34, Learning Rate: 0.001
+Epoch 35 		 Validation Loss: 0.979020, 		 Training Loss: 1.200275Epoch: 35, Learning Rate: 0.001
+Epoch 36 		 Validation Loss: 0.912189, 		 Training Loss: 0.921622Epoch: 36, Learning Rate: 0.001
+Epoch 37 		 Validation Loss: 0.932123, 		 Training Loss: 0.902103Epoch: 37, Learning Rate: 0.001
+Epoch 38 		 Validation Loss: 0.905843, 		 Training Loss: 0.888484Epoch: 38, Learning Rate: 0.001
+Epoch 39 		 Validation Loss: 29.672707, 		 Training Loss: 4.768880Epoch: 39, Learning Rate: 0.001
+Epoch 40 		 Validation Loss: 3.187627, 		 Training Loss: 212.319818Epoch: 40, Learning Rate: 0.001
+Epoch 41 		 Validation Loss: 2.724159, 		 Training Loss: 2.832251Epoch: 41, Learning Rate: 0.001
+Epoch 42 		 Validation Loss: 2.683719, 		 Training Loss: 2.547513Epoch: 42, Learning Rate: 0.001
+Epoch 43 		 Validation Loss: 2.429340, 		 Training Loss: 2.588978Epoch: 43, Learning Rate: 0.001
+Epoch 44 		 Validation Loss: 2.163954, 		 Training Loss: 2.239324Epoch: 44, Learning Rate: 0.001
+Epoch 45 		 Validation Loss: 2.089911, 		 Training Loss: 2.214833Epoch: 45, Learning Rate: 0.001
+Epoch 46 		 Validation Loss: 2.017599, 		 Training Loss: 2.079225Epoch: 46, Learning Rate: 0.001
+Epoch 47 		 Validation Loss: 1.928962, 		 Training Loss: 1.985783Epoch: 47, Learning Rate: 0.001
+Epoch 48 		 Validation Loss: 1.846217, 		 Training Loss: 1.875475Epoch: 48, Learning Rate: 0.001
+Epoch 49 		 Validation Loss: 1.787474, 		 Training Loss: 1.776510Epoch: 49, Learning Rate: 0.001
+Epoch 50 		 Validation Loss: 1.696733, 		 Training Loss: 1.735126Epoch: 50, Learning Rate: 0.001
+Epoch 51 		 Validation Loss: 1.702831, 		 Training Loss: 1.710120Epoch: 51, Learning Rate: 0.001
+Epoch 52 		 Validation Loss: 1.625104, 		 Training Loss: 1.789727Epoch: 52, Learning Rate: 0.001
+Epoch 53 		 Validation Loss: 1.570447, 		 Training Loss: 1.599530Epoch: 53, Learning Rate: 0.001
+Epoch 54 		 Validation Loss: 1.591673, 		 Training Loss: 1.561384Epoch: 54, Learning Rate: 0.001
+Epoch 55 		 Validation Loss: 1.576291, 		 Training Loss: 1.529168Epoch: 55, Learning Rate: 0.001
+Epoch 56 		 Validation Loss: 1.482709, 		 Training Loss: 1.536506Epoch: 56, Learning Rate: 0.001
+Epoch 57 		 Validation Loss: 1.490663, 		 Training Loss: 1.479475Epoch: 57, Learning Rate: 0.001
+Epoch 58 		 Validation Loss: 1.452000, 		 Training Loss: 1.448430Epoch: 58, Learning Rate: 0.001
+Epoch 59 		 Validation Loss: 1.463569, 		 Training Loss: 1.448135Epoch: 59, Learning Rate: 0.001
+Epoch 60 		 Validation Loss: 1.420234, 		 Training Loss: 1.444853Epoch: 60, Learning Rate: 0.001
+Epoch 61 		 Validation Loss: 1.902045, 		 Training Loss: 1.384345Epoch: 61, Learning Rate: 0.001
+Epoch 62 		 Validation Loss: 1.395812, 		 Training Loss: 1.545159Epoch: 62, Learning Rate: 0.001
+Epoch 63 		 Validation Loss: 1.372398, 		 Training Loss: 1.389244Epoch: 63, Learning Rate: 0.001
+Epoch 64 		 Validation Loss: 1.362276, 		 Training Loss: 1.362329Epoch: 64, Learning Rate: 0.001
+Epoch 65 		 Validation Loss: 1.423825, 		 Training Loss: 1.350290Epoch: 65, Learning Rate: 0.001
+Epoch 66 		 Validation Loss: 1.413967, 		 Training Loss: 1.319007Epoch: 66, Learning Rate: 0.001
+Epoch 67 		 Validation Loss: 1.307124, 		 Training Loss: 1.327601Epoch: 67, Learning Rate: 0.001
+Epoch 68 		 Validation Loss: 1.324425, 		 Training Loss: 1.298231Epoch: 68, Learning Rate: 0.001
+Epoch 69 		 Validation Loss: 1.349291, 		 Training Loss: 1.402633Epoch: 69, Learning Rate: 0.001
+Epoch 70 		 Validation Loss: 2.326136, 		 Training Loss: 2.602974Epoch: 70, Learning Rate: 0.001
+Epoch 71 		 Validation Loss: 1.711605, 		 Training Loss: 1.860629Epoch: 71, Learning Rate: 0.001
+Epoch 72 		 Validation Loss: 1.554548, 		 Training Loss: 1.615331Epoch: 72, Learning Rate: 0.001
+Epoch 73 		 Validation Loss: 1.454579, 		 Training Loss: 1.492499Epoch: 73, Learning Rate: 0.001
+Epoch 74 		 Validation Loss: 1.401222, 		 Training Loss: 1.417223Epoch: 74, Learning Rate: 0.001
+Epoch 75 		 Validation Loss: 1.363457, 		 Training Loss: 1.379252Epoch: 75, Learning Rate: 0.001
+Epoch 76 		 Validation Loss: 1.572632, 		 Training Loss: 1.335890Epoch: 76, Learning Rate: 0.001
+Epoch 77 		 Validation Loss: 1.318476, 		 Training Loss: 1.416887Epoch: 77, Learning Rate: 0.001
+Epoch 78 		 Validation Loss: 1.358722, 		 Training Loss: 1.309601Epoch: 78, Learning Rate: 0.001
+Epoch 79 		 Validation Loss: 1.284100, 		 Training Loss: 1.293890Epoch: 79, Learning Rate: 0.0001
+Epoch 80 		 Validation Loss: 1.307449, 		 Training Loss: 1.267074Epoch: 80, Learning Rate: 0.0001
+Epoch 81 		 Validation Loss: 1.268978, 		 Training Loss: 1.249961Epoch: 81, Learning Rate: 0.0001
+Epoch 82 		 Validation Loss: 1.258411, 		 Training Loss: 1.241823Epoch: 82, Learning Rate: 0.0001
+Epoch 83 		 Validation Loss: 1.283146, 		 Training Loss: 1.275996Epoch: 83, Learning Rate: 0.0001
+Epoch 84 		 Validation Loss: 1.257040, 		 Training Loss: 1.242049Epoch: 84, Learning Rate: 0.0001
+Epoch 85 		 Validation Loss: 1.252195, 		 Training Loss: 1.228676Epoch: 85, Learning Rate: 0.0001
+Epoch 86 		 Validation Loss: 1.248867, 		 Training Loss: 1.228556Epoch: 86, Learning Rate: 0.0001
+Epoch 87 		 Validation Loss: 1.253849, 		 Training Loss: 1.228136Epoch: 87, Learning Rate: 0.0001
+Epoch 88 		 Validation Loss: 1.245130, 		 Training Loss: 1.227719Epoch: 88, Learning Rate: 0.0001
+Epoch 89 		 Validation Loss: 1.241040, 		 Training Loss: 1.228532Epoch: 89, Learning Rate: 0.0001
+Epoch 90 		 Validation Loss: 1.246264, 		 Training Loss: 1.218519Epoch: 90, Learning Rate: 0.0001
+Epoch 91 		 Validation Loss: 1.239864, 		 Training Loss: 1.216765Epoch: 91, Learning Rate: 0.0001
+Epoch 92 		 Validation Loss: 1.237091, 		 Training Loss: 1.216861Epoch: 92, Learning Rate: 0.0001
+Epoch 93 		 Validation Loss: 1.238443, 		 Training Loss: 1.224785Epoch: 93, Learning Rate: 0.0001
+Epoch 94 		 Validation Loss: 1.246116, 		 Training Loss: 1.209549Epoch: 94, Learning Rate: 1e-05
+Epoch 95 		 Validation Loss: 1.404477, 		 Training Loss: 1.215897Epoch: 95, Learning Rate: 1e-05
+Epoch 96 		 Validation Loss: 1.240257, 		 Training Loss: 1.249436Epoch: 96, Learning Rate: 1e-05
+Epoch 97 		 Validation Loss: 1.234075, 		 Training Loss: 1.209176Epoch: 97, Learning Rate: 1e-05
+Epoch 98 		 Validation Loss: 1.231496, 		 Training Loss: 1.202585Epoch: 98, Learning Rate: 1e-05
+Epoch 99 		 Validation Loss: 1.230177, 		 Training Loss: 1.201878Epoch: 99, Learning Rate: 1e-05
+Epoch 100 		 Validation Loss: 1.229123, 		 Training Loss: 1.203700Training Completed!

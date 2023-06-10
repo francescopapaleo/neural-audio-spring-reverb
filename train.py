@@ -38,7 +38,7 @@ def training(data_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
-        'l_rate': lr,
+        'lr': lr,
         'sched_gamma': 0.1,
         'n_inputs': 1,
         'n_outputs': 1,
@@ -207,23 +207,13 @@ if __name__ == "__main__":
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=10, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
+    parser.add_argument('--n_epochs', type=int, default=25, help='the total number of epochs')
+    parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--crop', type=int, default=3200, help='crop size')
-
     args = parser.parse_args()
 
-    lr_list = [0.001]
-    bs_list = [4, 16]
-    ep_list = [25, 50, 100]
+    print(f"Training with lr={args.lr}, batch_size={args.batch_size}, n_epochs={args.n_epochs}")
 
-    # Loop over all combinations
-    for lr in lr_list:
-        for batch_size in bs_list:
-            for n_epochs in ep_list:
-
-                print(f"Training with lr={lr}, batch_size={batch_size}, n_epochs={n_epochs}")
-
-                training(args.data_dir, args.device, args.sample_rate, n_epochs, batch_size, lr, args.crop)
+    training(args.data_dir, args.device, args.sample_rate, args.n_epochs, args.batch_size, args.lr, args.crop)
 

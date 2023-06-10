@@ -109,7 +109,7 @@ def make_inference(load: str,
     # batch_size = hparams['batch_size']
     batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']
-    lr = hparams['l_rate']
+    lr = hparams['lr']
     model_name = checkpoint['name']
 
     print(f"Loaded: {model_name}")

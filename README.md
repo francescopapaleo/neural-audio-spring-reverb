@@ -1,10 +1,10 @@
 # Modeling Spring Reverb with Neural Audio Effects
 
-## *Assessment of different models for the task*
+## TCN model with FiLM
 
 This is the working repository for the thesis project.
-A basic command line interface is provided to train, test and evaluate the models.
-A transfer function and RT60 measurement script is also provided.
+A basic command line interface is provided to train, test and evaluate the model.
+Impulse Response, Transfer Function and RT60 measurements are provided.
 
 ## Train
 
@@ -107,9 +107,9 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 └── train.sh
 ```
 
-## Maine Sources
+## Main Sources
 
-[Baseline Dataset](https://zenodo.org/record/3746119)
+[Plate-Spring Dataset](https://zenodo.org/record/3746119)
 
 [Steerable-Nafx](https://github.com/csteinmetz1/steerable-nafx)
 [Micro-tcn](https://github.com/csteinmetz1/micro-tcn.git)
@@ -118,3 +118,33 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 
 [PedalNet](https://github.com/teddykoker/pedalnet)
 [PedalNetRT](https://github.com/GuitarML/PedalNetRT)
+
+
+## TODO
+
+### Add metadata to the checkpoint
+
+```python
+
+torch.save({
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'scheduler_state_dict': scheduler.state_dict(),
+    'state_epoch': epoch,          
+    'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
+    'hparams': hparams,
+    'criterion': str(criterion)      # Add criterion as a string here
+}, save_to)
+
+
+## Add Loss function metadata to a saved checkpoint
+
+### Load checkpoint
+checkpoint = torch.load('path_to_checkpoint.pt')
+
+### Add criterion to the checkpoint dictionary
+checkpoint['criterion'] = str(criterion)
+
+### Save checkpoint
+torch.save(checkpoint, 'path_to_checkpoint.pt')
+```
