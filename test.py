@@ -13,7 +13,7 @@ from pathlib import Path
 from TCN import TCNBase
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
-def testing(load, data_dir, audio_dir, device, sample_rate):
+def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
 
     # set device                                                                                
     if device is None:                                                              
@@ -59,7 +59,7 @@ def testing(load, data_dir, audio_dir, device, sample_rate):
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/test01C/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/{log_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
 
     print("## Initializing metrics...")
@@ -137,6 +137,7 @@ def testing(load, data_dir, audio_dir, device, sample_rate):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--log_dir', type=str, default='tcn', help='Path (rel) to tensorboard logs')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
     parser.add_argument('--device', type=str, 
@@ -145,5 +146,5 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    testing(args.load, args.data_dir, args.audio_dir, args.device, args.sample_rate)
+    testing(args.load, args.data_dir, args.log_dir, args.audio_dir, args.device, args.sample_rate)
     
