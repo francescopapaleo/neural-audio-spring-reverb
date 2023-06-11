@@ -137,7 +137,7 @@ def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--log_dir', type=str, default='tcn', help='Path (rel) to tensorboard logs')
+    parser.add_argument('--log_dir', type=str, default='./runs/', help='name of the subfolder in runs/ to save the logs')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
     parser.add_argument('--device', type=str, 

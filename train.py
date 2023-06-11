@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--log_dir', type=str, default='./runs/', help='Path (rel) to tensorboard logs')
+    parser.add_argument('--log_dir', type=str, default='./runs/', help='name of the subfolder in runs/ to save the logs')
 
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
