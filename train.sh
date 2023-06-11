@@ -19,4 +19,4 @@ eval "$(conda shell.bash hook)"
 
 source activate envtorch
 
-python train.py  --device cuda:0 --n_epochs 100 --batch_size 4 --log_dir train01
+python train.py  --device cuda:0 --n_epochs 100 --batch_size 4 --sub_dir train01

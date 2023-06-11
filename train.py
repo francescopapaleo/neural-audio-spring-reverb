@@ -16,7 +16,7 @@ torch.cuda.empty_cache()
 torch.manual_seed(42)            
 
    
-def training(data_dir, log_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
+def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
 
     print("Initializing Training Process..", end='\n\n')
     if device is None: 
@@ -34,7 +34,7 @@ def training(data_dir, log_dir, device, sample_rate, n_epochs, batch_size, lr, c
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/{log_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/{sub_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
@@ -203,7 +203,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--log_dir', type=str, default='./runs/', help='name of the subfolder in runs/ to save the logs')
+    parser.add_argument('--sub_dir', type=str, default='train', help='name of the subfolder in runs/ to save the logs')
 
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')

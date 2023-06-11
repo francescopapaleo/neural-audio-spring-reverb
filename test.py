@@ -13,7 +13,7 @@ from pathlib import Path
 from TCN import TCNBase
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
-def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
+def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
 
     # set device                                                                                
     if device is None:                                                              
@@ -59,7 +59,7 @@ def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/{log_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'runs/{sub_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
 
     print("## Initializing metrics...")
@@ -111,15 +111,20 @@ def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
                 single_target = target_pad[0]
                 single_output = output_trim[0]
 
-                plot_compare_waveform(single_target.detach().cpu(), single_output.detach().cpu(),
+                plot_compare_waveform(single_target.detach().cpu(), 
+                                      single_output.detach().cpu(),
                                         sample_rate, file_name=f"Waveform_{model_name}_{global_step}") 
-                plot_compare_spectrogram(single_target.detach().cpu(), single_output.detach().cpu(), 
-                                      sample_rate, file_name=f"Spectra_{model_name}_{global_step}", t_label=f"Target_{global_step}", o_label=f"Output_{global_step}",)
+                plot_compare_spectrogram(single_target.detach().cpu(), 
+                                         single_output.detach().cpu(), 
+                                      sample_rate, file_name=f"Spectra_{model_name}_{global_step}", 
+                                      t_label=f"Target_{global_step}", o_label=f"Output_{global_step}",)
                 
                 audio_dir = Path(audio_dir)
                 audio_dir.mkdir(parents=True, exist_ok=True)
-                torchaudio.save(str(audio_dir / f"Target_{model_name}_{global_step}.wav"), single_target.detach().cpu(), sample_rate)
-                torchaudio.save(str(audio_dir / f"Output_{model_name}_{global_step}.wav"), single_output.detach().cpu(), sample_rate)
+                torchaudio.save(str(audio_dir / f"Target_{model_name}_{global_step}.wav"),
+                                 single_target.detach().cpu(), sample_rate)
+                torchaudio.save(str(audio_dir / f"Output_{model_name}_{global_step}.wav"),
+                                 single_output.detach().cpu(), sample_rate)
 
 
     print("## Computing global metrics...")
@@ -137,7 +142,7 @@ def testing(load, data_dir, log_dir, audio_dir, device, sample_rate):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--log_dir', type=str, default='./runs/', help='name of the subfolder in runs/ to save the logs')
+    parser.add_argument('--sub_dir', type=str, default='test', help='name of the subfolder in runs/ to save the logs')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
     parser.add_argument('--device', type=str, 
