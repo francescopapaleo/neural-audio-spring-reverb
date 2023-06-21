@@ -13,7 +13,7 @@ from pathlib import Path
 from models.TCN import TCNBase
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
-def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
+def testing(load, datadir, logdir, audiodir, device, sample_rate):
 
     # set device                                                                                
     if device is None:                                                              
@@ -53,13 +53,13 @@ def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
         return
     
     # load test dataset
-    dataset = SpringDataset(root_dir=data_dir, split='test')
+    dataset = SpringDataset(root_dir=datadir, split='test')
     test_loader = torch.utils.data.DataLoader(dataset, batch_size, num_workers=0, drop_last=True)
 
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/{sub_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'{logdir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     
 
     print("## Initializing metrics...")
@@ -119,7 +119,7 @@ def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
                                       sample_rate, file_name=f"Spectra_{model_name}_{global_step}", 
                                       t_label=f"Target_{global_step}", o_label=f"Output_{global_step}",)
                 
-                audio_dir = Path(audio_dir)
+                audio_dir = Path(audiodir)
                 audio_dir.mkdir(parents=True, exist_ok=True)
                 torchaudio.save(str(audio_dir / f"Target_{model_name}_{global_step}.wav"),
                                  single_target.detach().cpu(), sample_rate)
@@ -151,5 +151,5 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    testing(args.load, args.data_dir, args.log_dir, args.audio_dir, args.device, args.sample_rate)
+    testing(args.load, args.datadir, args.logdir, args.audiodir, args.device, args.sample_rate)
     

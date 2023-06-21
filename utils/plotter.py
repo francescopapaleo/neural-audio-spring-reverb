@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import torch
 import torchaudio.transforms as T
-
+import librosa
 
 def save_plot(plt, file_name):
-    plot_dir = Path('./plots')
+    plot_dir = Path('./results/plots')
     plot_dir.mkdir(parents=True, exist_ok=True)
     file_path = plot_dir / (file_name + ".png")
     plt.tight_layout()
@@ -106,8 +106,8 @@ def plot_compare_waveform(target, output, sample_rate, file_name, xlim=None, yli
     if target_ch == 1:
         axes = [axes]
     for c in range(target_ch):
-        axes[c].plot(time_target, target[c], linewidth=1, alpha=0.6, label='Target', color='blue')
-        axes[c].plot(time_output, output[c], linewidth=1, alpha=0.6, label='Output', color='red')
+        axes[c].plot(time_target, target[c], linewidth=1, alpha=0.8, label='Target')
+        axes[c].plot(time_output, output[c], linewidth=1, alpha=0.8, label='Output')
         axes[c].grid(True)
         if target_ch > 1:
             axes[c].set_ylabel(f'Channel {c+1}')
@@ -129,7 +129,7 @@ def get_spectrogram(waveform, n_fft=400, win_len=None, hop_len=None, power=2.0):
     return spectrogram(waveform)
 
 
-def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Target", o_label="Output", xlim=None):
+def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Target", o_label="Output", xlim=None, ylim=None):
 
     target_ch, target_frames = target.shape
     output_ch, output_frames = output.shape
@@ -143,8 +143,11 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Ta
 
     for idx, ax in enumerate(axes):
         for c in range(num_channels[idx]):
-            spectrogram = get_spectrogram(waveforms[idx][c].unsqueeze(0))
-            im = ax.imshow(torch.log10(spectrogram[0]).numpy().transpose(), origin="lower", aspect="auto", vmin=0, vmax=10, cmap='jet')
+            spectrogram = get_spectrogram(waveforms[idx][c].squeeze())
+            freqs = np.linspace(0, sample_rate / 4, spectrogram.shape[0])
+            im = ax.imshow(librosa.power_to_db(spectrogram), origin="lower", aspect="auto")
+            ax.set_yticks(np.linspace(0, spectrogram.shape[0], 5))  # set 5 y-ticks
+            ax.set_yticklabels(np.linspace(0, sample_rate / 2, 5).astype(int))  # label them with the corresponding frequency values
             if num_channels[idx] > 1:
                 ax.set_ylabel(f'Channel {c+1}')
             else:
@@ -152,12 +155,15 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Ta
             ax.set_xlabel("Frames")
             if xlim:
                 ax.set_xlim(xlim)
+            if ylim:
+                ax.set_ylim(ylim)
             ax.set_title(labels[idx])
             figure.suptitle(file_name)
             figure.colorbar(im, ax=ax)
-    
+
     plt.show(block=False)
     save_plot(figure, file_name)
+
 
 
 if __name__ == "__main__":
