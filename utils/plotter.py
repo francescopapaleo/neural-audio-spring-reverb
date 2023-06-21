@@ -160,46 +160,5 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Ta
     save_plot(figure, file_name)
 
 
-# --------------------------- Old Plotting functions --------------------------- #
-
-"""
-def plot_generic_waveform(y, y_pred, title, file_name):
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15, 10))
-    ax.plot(y, alpha=0.7, label='Ground Truth', color='blue')
-    ax.plot(y_pred, alpha=0.7, label='Prediction', color='red')
-    ax.set_title(title)
-    ax.set_xlabel('Sample Index')
-    ax.set_ylabel('Amplitude')
-    apply_decorations(ax, legend=True)
-    save_plot(fig, file_name)
-
-
-def plot_compare_waveform(x, y, file_name):
-    plot_generic_waveform(x, y, 'Waveform Comparison (Ground Truth vs Prediction)', file_name)
-
-
-def plot_zoom_waveform(y, y_pred, sample_rate: int, file_name: str, t_start=None, t_end=None):
-    t = np.arange(y.shape[0]) / sample_rate
-    i_start = int(t_start * sample_rate) if t_start is not None else 0
-    i_end = int(t_end * sample_rate) if t_end is not None else len(t)
-    plot_generic_waveform(y[i_start:i_end], y_pred[i_start:i_end], 'Zoom on Waveform (Ground Truth vs Prediction)', file_name)
-
-
-def plot_compare_spectrogram(target, output, file_name: str, titles=['target', 'output'], ylabel="freq_bin", aspect="auto", xmax=None):
-    specs = [get_spectrogram(torch.Tensor(sig)) for sig in [target, output]]
-    fig, axs = plt.subplots(1, 2, figsize=(10, 5)) 
-
-    for idx, spec in enumerate(specs):
-        axs[idx].set_title(titles[idx])
-        axs[idx].set_ylabel(ylabel)
-        axs[idx].set_xlabel("frame")
-        im = axs[idx].imshow(torch.log10(spec[0]), origin="lower", aspect=aspect, cmap='hot')
-        if xmax:
-            axs[idx].set_xlim((0, xmax))
-        fig.colorbar(im, ax=axs[idx])
-
-    save_plot(plt, file_name)"""
-
-
 if __name__ == "__main__":
     print("This module is not intended to be executed directly. Do it only for debugging purposes.")

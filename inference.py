@@ -10,7 +10,7 @@ import torchaudio.functional as F
 from argparse import ArgumentParser
 from pathlib import Path
 
-from TCN import TCNBase
+from models.TCN import TCNBase
 
 
 def load_audio(input, sample_rate):

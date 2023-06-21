@@ -10,7 +10,7 @@ from data import SpringDataset
 from argparse import ArgumentParser
 from pathlib import Path
 
-from TCN import TCNBase
+from models.TCN import TCNBase
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
 def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
@@ -141,7 +141,7 @@ def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--data_dir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--sub_dir', type=str, default='test', help='name of the subfolder in runs/ to save the logs')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')

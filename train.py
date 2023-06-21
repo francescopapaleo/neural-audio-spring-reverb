@@ -7,7 +7,7 @@ import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-from TCN import TCNBase
+from models.TCN import TCNBase
 from data import SpringDataset
 from datetime import datetime
 from argparse import ArgumentParser
@@ -201,7 +201,7 @@ def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, c
 if __name__ == "__main__":
 
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
-    parser.add_argument('--data_dir', type=str, default='../plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--data_dir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--sub_dir', type=str, default='train', help='name of the subfolder in runs/ to save the logs')
 
