@@ -9,8 +9,8 @@ import torch
 import torchaudio.transforms as T
 import librosa
 
-def save_plot(plt, file_name, folder):
-    plot_dir = Path(folder)
+def save_plot(plt, file_name):
+    plot_dir = Path('./results/plots')
     plot_dir.mkdir(parents=True, exist_ok=True)
     file_path = plot_dir / (file_name + ".png")
     plt.tight_layout()
@@ -86,13 +86,7 @@ def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
     save_plot(plt, file_name + "_RT60")
 
 
-def get_time_axes_torch(target_frames, output_frames, sample_rate):
-    time_target = torch.arange(0, target_frames) / sample_rate
-    time_output = torch.arange(0, output_frames) / sample_rate
-    return time_target, time_output
-
-
-def plot_compare_waveform(target, output, sample_rate, file_name, folder, xlim=None, ylim=None):
+def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=None):
     target = target.numpy()
     output = output.numpy()
 
@@ -100,7 +94,8 @@ def plot_compare_waveform(target, output, sample_rate, file_name, folder, xlim=N
     output_ch, output_frames = output.shape
     assert target_ch == output_ch, "Both waveforms must have the same number of channels"
     
-    time_target, time_output = get_time_axes_torch(target_frames, output_frames, sample_rate)
+    time_target = torch.arange(0, target_frames) / sample_rate
+    time_output = torch.arange(0, output_frames) / sample_rate
 
     figure, axes = plt.subplots(target_ch, 1, figsize=(10, 5))
     if target_ch == 1:
@@ -119,32 +114,26 @@ def plot_compare_waveform(target, output, sample_rate, file_name, folder, xlim=N
         if ylim:
             axes[c].set_ylim(ylim)
         apply_decorations(axes[c], legend=True)
-    figure.suptitle(file_name)
+    figure.suptitle(title)
+    plt.tight_layout()
     plt.show(block=False)
-    save_plot(figure, file_name)
+
+    return figure
 
 
-def get_spectrogram(waveform, n_fft=400, win_len=None, hop_len=None, power=2.0):
-    spectrogram = T.Spectrogram(n_fft=n_fft, win_length=win_len, hop_length=hop_len, center=True, pad_mode="reflect", power=power,)
-    return spectrogram(waveform)
-
-
-def plot_compare_spectrogram(target, output, sample_rate, file_name, folder, t_label="Target", o_label="Output", xlim=None, ylim=None):
+def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None):
 
     target_ch, target_frames = target.shape
     output_ch, output_frames = output.shape
-    time_target, time_output = get_time_axes_torch(target_frames, output_frames, sample_rate)
 
     figure, axes = plt.subplots(1, 2, figsize=(10, 5))
     waveforms = [target, output]
     labels = [t_label, o_label]
     num_channels = [target_ch, output_ch]
-    time_axes = [time_target, time_output]
 
     for idx, ax in enumerate(axes):
         for c in range(num_channels[idx]):
-            spectrogram = get_spectrogram(waveforms[idx][c].squeeze())
-            freqs = np.linspace(0, sample_rate / 4, spectrogram.shape[0])
+            spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)(waveforms[idx][c].squeeze())
             im = ax.imshow(librosa.power_to_db(spectrogram), origin="lower", aspect="auto")
             ax.set_yticks(np.linspace(0, spectrogram.shape[0], 5))  # set 5 y-ticks
             ax.set_yticklabels(np.linspace(0, sample_rate / 2, 5).astype(int))  # label them with the corresponding frequency values
@@ -158,12 +147,12 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, folder, t_l
             if ylim:
                 ax.set_ylim(ylim)
             ax.set_title(labels[idx])
-            figure.suptitle(file_name)
+            figure.suptitle(title)
             figure.colorbar(im, ax=ax)
-
+    plt.tight_layout()
     plt.show(block=False)
-    save_plot(figure, file_name)
 
+    return figure
 
 
 if __name__ == "__main__":
