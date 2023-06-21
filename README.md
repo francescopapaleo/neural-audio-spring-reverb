@@ -14,7 +14,7 @@ Impulse Response, Transfer Function and RT60 measurements are provided.
 
 To run the code in this repository, you will need the following dependencies installed:
 
-```terminal 
+```terminal
 auraloss==0.4.0
 h5py==3.8.0
 matplotlib==3.7.1
@@ -22,6 +22,7 @@ numpy==1.23.5
 scipy==1.10.1
 torch==2.0.1
 torchaudio==2.0.2
+tensorboard==2.12.3
 
 # You can install these dependencies by running the following command:
 
@@ -58,6 +59,14 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 --c1 C1                       c1 parameter for the model
 --gain_dB GAIN_DB             gain in dB for the model
 --mix MIX                     mix parameter for the model
+```
+
+### Download the dataset
+
+```terminal
+mkdir ../datasets
+wget -P ../datasets/ https://zenodo.org/record/3746119/files/plate-spring.zip
+unzip ../datasets/plate-spring.zip -d ../datasets/plate-spring
 ```
 
 ### Training
