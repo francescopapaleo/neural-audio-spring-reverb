@@ -144,7 +144,7 @@ def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Ta
     for idx, ax in enumerate(axes):
         for c in range(num_channels[idx]):
             spectrogram = get_spectrogram(waveforms[idx][c].unsqueeze(0))
-            im = ax.imshow(torch.log10(spectrogram[0]).numpy().transpose(), origin="lower", aspect="auto", cmap='hot')
+            im = ax.imshow(torch.log10(spectrogram[0]).numpy().transpose(), origin="lower", aspect="auto", vmin=0, vmax=10, cmap='jet')
             if num_channels[idx] > 1:
                 ax.set_ylabel(f'Channel {c+1}')
             else:
