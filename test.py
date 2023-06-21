@@ -59,8 +59,8 @@ def testing(load, datadir, logdir, audiodir, device, sample_rate):
     # initialize tensorboard writer
     from torch.utils.tensorboard import SummaryWriter
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'{logdir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
-    
+    current_run = f"{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
+    writer = SummaryWriter(log_dir=f'{logdir}/{current_run}')
 
     print("## Initializing metrics...")
     l1 = torch.nn.L1Loss()
@@ -113,17 +113,17 @@ def testing(load, datadir, logdir, audiodir, device, sample_rate):
 
                 plot_compare_waveform(single_target.detach().cpu(), 
                                       single_output.detach().cpu(),
-                                        sample_rate, file_name=f"Waveform_{model_name}_{global_step}") 
+                                        sample_rate, file_name=f"Waveform_{model_name}_{global_step}", folder=current_run) 
                 plot_compare_spectrogram(single_target.detach().cpu(), 
                                          single_output.detach().cpu(), 
                                       sample_rate, file_name=f"Spectra_{model_name}_{global_step}", 
-                                      t_label=f"Target_{global_step}", o_label=f"Output_{global_step}",)
+                                      t_label=f"Target_{global_step}", o_label=f"Output_{global_step}", folder=current_run)
                 
-                audio_dir = Path(audiodir)
-                audio_dir.mkdir(parents=True, exist_ok=True)
-                torchaudio.save(str(audio_dir / f"Target_{model_name}_{global_step}.wav"),
+                audiodir = Path(audiodir)
+                audiodir.mkdir(parents=True, exist_ok=True)
+                torchaudio.save(str(audiodir / current_run / f"Target_{model_name}_{global_step}.wav"),
                                  single_target.detach().cpu(), sample_rate)
-                torchaudio.save(str(audio_dir / f"Output_{model_name}_{global_step}.wav"),
+                torchaudio.save(str(audiodir / current_run / f"Output_{model_name}_{global_step}.wav"),
                                  single_output.detach().cpu(), sample_rate)
 
 

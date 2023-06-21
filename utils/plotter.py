@@ -9,8 +9,8 @@ import torch
 import torchaudio.transforms as T
 import librosa
 
-def save_plot(plt, file_name):
-    plot_dir = Path('./results/plots')
+def save_plot(plt, file_name, folder):
+    plot_dir = Path(folder)
     plot_dir.mkdir(parents=True, exist_ok=True)
     file_path = plot_dir / (file_name + ".png")
     plt.tight_layout()
@@ -92,7 +92,7 @@ def get_time_axes_torch(target_frames, output_frames, sample_rate):
     return time_target, time_output
 
 
-def plot_compare_waveform(target, output, sample_rate, file_name, xlim=None, ylim=None):
+def plot_compare_waveform(target, output, sample_rate, file_name, folder, xlim=None, ylim=None):
     target = target.numpy()
     output = output.numpy()
 
@@ -129,7 +129,7 @@ def get_spectrogram(waveform, n_fft=400, win_len=None, hop_len=None, power=2.0):
     return spectrogram(waveform)
 
 
-def plot_compare_spectrogram(target, output, sample_rate, file_name, t_label="Target", o_label="Output", xlim=None, ylim=None):
+def plot_compare_spectrogram(target, output, sample_rate, file_name, folder, t_label="Target", o_label="Output", xlim=None, ylim=None):
 
     target_ch, target_frames = target.shape
     output_ch, output_frames = output.shape
