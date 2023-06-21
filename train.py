@@ -16,7 +16,7 @@ torch.cuda.empty_cache()
 torch.manual_seed(42)            
 
    
-def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, crop):
+def training(datadir, logdir, device, sample_rate, n_epochs, batch_size, lr, crop):
 
     print("Initializing Training Process..", end='\n\n')
     if device is None: 
@@ -25,7 +25,7 @@ def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, c
     print(f'Torch version: {torch.__version__} ------ Selected Device: {device}')
     print(f'Sample Rate: {sample_rate} Hz ------  Crop Lenght:{crop} samples', end='\n\n')
     
-    dataset = SpringDataset(root_dir=data_dir, split='train')
+    dataset = SpringDataset(root_dir=datadir, split='train')
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
     train, valid = torch.utils.data.random_split(dataset, [train_size, val_size])
@@ -34,7 +34,7 @@ def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, c
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    writer = SummaryWriter(log_dir=f'runs/{sub_dir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
+    writer = SummaryWriter(log_dir=f'{logdir}/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}')
     hparams = ({
         'batch_size': batch_size,
         'n_epochs': n_epochs,
@@ -162,7 +162,7 @@ def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, c
             
             if min_valid_loss > avg_valid_loss:
                 print(f'Validation Loss Decreased({min_valid_loss:.6f}--->{avg_valid_loss:.6f}) Saving model ...')
-                save_to = f'checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+                save_to = f'results/checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
                 torch.save({
                     'model_state_dict': model.state_dict(),
                     'optimizer_state_dict': optimizer.state_dict(),
@@ -201,9 +201,9 @@ def training(data_dir, sub_dir, device, sample_rate, n_epochs, batch_size, lr, c
 if __name__ == "__main__":
 
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
-    parser.add_argument('--data_dir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--sub_dir', type=str, default='train', help='name of the subfolder in runs/ to save the logs')
+    parser.add_argument('--datadir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--audiodir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
+    parser.add_argument('--logdir', type=str, default='./results/runs', help='name of the log directory')
 
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
@@ -216,5 +216,5 @@ if __name__ == "__main__":
 
     print(f"Training with lr={args.lr}, batch_size={args.batch_size}, n_epochs={args.n_epochs}")
 
-    training(args.data_dir, args.log_dir, args.device, args.sample_rate, args.n_epochs, args.batch_size, args.lr, args.crop)
+    training(args.datadir, args.logdir, args.device, args.sample_rate, args.n_epochs, args.batch_size, args.lr, args.crop)
 

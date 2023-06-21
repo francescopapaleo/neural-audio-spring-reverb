@@ -141,9 +141,9 @@ def testing(load, data_dir, sub_dir, audio_dir, device, sample_rate):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--data_dir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--sub_dir', type=str, default='test', help='name of the subfolder in runs/ to save the logs')
-    parser.add_argument('--audio_dir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
+    parser.add_argument('--datadir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--audiodir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
+    parser.add_argument('--logdir', type=str, default='./results/runs', help='name of the log directory')
     parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
