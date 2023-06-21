@@ -104,7 +104,7 @@ def testing(load, datadir, logdir, audiodir, device, sample_rate):
                 # Write metrics to tensorboard
                 writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
-             # Plot and save audios every 4 batches
+            # Plot and save audios every 4 batches
             if step % 4 ==0:
                 single_target = target_pad[0]
                 single_output = output_trim[0]
