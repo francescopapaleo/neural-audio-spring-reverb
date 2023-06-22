@@ -5,7 +5,7 @@ import torchaudio
 import numpy as np
 from pathlib import Path
 
-from utils.dataset import SpringDataset
+from data.dataset import SpringDataset
 from models.TCN import TCN
 from models.WaveNet import WaveNet
 

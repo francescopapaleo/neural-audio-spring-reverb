@@ -1,11 +1,9 @@
-""" Testing script
-Test a trained model on the test set and save the results with Tensorboard.
-"""
+#test.py
 
 import torch
 import auraloss
 from datetime import datetime
-from utils.dataset import SpringDataset
+from data.dataset import SpringDataset
 from argparse import ArgumentParser
 
 from models.TCN import TCN

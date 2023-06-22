@@ -65,9 +65,7 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 ### Download the dataset
 
 ```terminal
-mkdir ../datasets
-wget -P ../datasets/ https://zenodo.org/record/3746119/files/plate-spring.zip
-unzip ../datasets/plate-spring.zip -d ../datasets/plate-spring
+python src/data/download_dataset.py
 ```
 
 ### Training
@@ -154,35 +152,6 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 
 [PedalNet](https://github.com/teddykoker/pedalnet)
 [PedalNetRT](https://github.com/GuitarML/PedalNetRT)
-
-## TO DO
-
-### Add metadata to the checkpoint
-
-```python
-
-torch.save({
-    'model_state_dict': model.state_dict(),
-    'optimizer_state_dict': optimizer.state_dict(),
-    'scheduler_state_dict': scheduler.state_dict(),
-    'state_epoch': epoch,          
-    'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
-    'hparams': hparams,
-    'criterion': str(criterion)      # Add criterion as a string here
-}, save_to)
-
-
-## Add Loss function metadata to a saved checkpoint
-
-### Load checkpoint
-checkpoint = torch.load('path_to_checkpoint.pt')
-
-### Add criterion to the checkpoint dictionary
-checkpoint['criterion'] = str(criterion)
-
-### Save checkpoint
-torch.save(checkpoint, 'path_to_checkpoint.pt')
-```
 
 ### Citation
 

@@ -1,16 +1,16 @@
+# train.py
+
 import torch
 import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
-
 from datetime import datetime
 from argparse import ArgumentParser
 
 from utils.helpers import load_data, initialize_model, save_model_checkpoint
 
 torch.cuda.empty_cache()
-torch.manual_seed(42)
-
+torch.manual_seed(42)            
 
 def training_loop(model, criterion, esr, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
@@ -63,9 +63,9 @@ def validation_loop(model, criterion, esr, valid_loader, device, writer, global_
 
 def parse_args():
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
-    parser.add_argument('--datadir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--audiodir', type=str, default='./audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--logdir', type=str, default='./results/runs', help='name of the log directory')
+    parser.add_argument('--datadir', type=str, default='../../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
+    parser.add_argument('--audiodir', type=str, default='../audio/processed/', help='Path (rel) to audio files')
+    parser.add_argument('--logdir', type=str, default='../results/runs', help='name of the log directory')
 
     parser.add_argument('--device', type=str, 
                         default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
@@ -136,9 +136,10 @@ def main():
 
         # Save the model if it improved
         if valid_loss < min_valid_loss:
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
             min_valid_loss = valid_loss
             save_model_checkpoint(
-                model, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, datetime.now().strftime("%Y%m%d-%H%M%S")
+                model, hparams, criterion, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
             )
 
 if __name__ == "__main__":
