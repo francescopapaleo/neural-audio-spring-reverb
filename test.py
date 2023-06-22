@@ -5,10 +5,10 @@ Test a trained model on the test set and save the results with Tensorboard.
 import torch
 import auraloss
 from datetime import datetime
-from data import SpringDataset
+from utils.dataset import SpringDataset
 from argparse import ArgumentParser
 
-from models.TCN import TCNBase
+from models.TCN import TCN
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 
 def testing(load, datadir, logdir, audiodir, device, sample_rate):
@@ -26,7 +26,7 @@ def testing(load, datadir, logdir, audiodir, device, sample_rate):
         return
     
     # instantiate model 
-    model = TCNBase(                                                        
+    model = TCN(                                                        
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],

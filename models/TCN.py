@@ -85,7 +85,7 @@ class TCNBlock(torch.nn.Module):
         return x
 
 
-class TCNBase(torch.nn.Module):
+class TCN(torch.nn.Module):
     """ Temporal convolutional network with conditioning module.
     """
     def __init__(self, 
@@ -97,7 +97,7 @@ class TCNBase(torch.nn.Module):
                  dilation_growth=4, 
                  cond_dim=0):
         
-        super(TCNBase, self).__init__()
+        super(TCN, self).__init__()
         self.kernel_size = kernel_size
         self.n_channels = n_channels
         self.dilation_growth = dilation_growth

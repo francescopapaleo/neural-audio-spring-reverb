@@ -7,8 +7,8 @@ import auraloss
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
-from models.TCN import TCNBase
-from data import SpringDataset
+from models.TCN import TCN
+from utils.dataset import SpringDataset
 from datetime import datetime
 from argparse import ArgumentParser
 
@@ -49,7 +49,7 @@ def training(datadir, logdir, device, sample_rate, n_epochs, batch_size, lr, cro
         'cond_dim': 0,
         })                     
     
-    model = TCNBase(                                                    # instantiate model     
+    model = TCN(
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
@@ -69,10 +69,10 @@ def training(datadir, logdir, device, sample_rate, n_epochs, batch_size, lr, cro
     print(f"Parameters: {params*1e-3:0.3f} k")
     print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')       
     
-    criterion = auraloss.freq.STFTLoss().to(device)                 # loss function       
-    esr = auraloss.time.ESRLoss().to(device)                        # metric
+    criterion = auraloss.freq.STFTLoss().to(device)  
+    esr = auraloss.time.ESRLoss().to(device)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)         # optimizer
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     ms1 = int(n_epochs * 0.8)
     ms2 = int(n_epochs * 0.95)

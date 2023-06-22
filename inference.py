@@ -10,7 +10,7 @@ import torchaudio.functional as F
 from argparse import ArgumentParser
 from pathlib import Path
 
-from models.TCN import TCNBase
+from models.TCN import TCN
 
 
 def load_audio(input, sample_rate):
@@ -96,7 +96,7 @@ def make_inference(load: str,
         return
     
     # instantiate model 
-    model = TCNBase(                                                        
+    model = TCN(                                                        
         n_inputs = hparams['n_inputs'], 
         n_outputs = hparams['n_outputs'], 
         n_blocks = hparams['n_blocks'],
