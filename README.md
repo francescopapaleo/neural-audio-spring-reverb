@@ -5,10 +5,7 @@
 The spring reverb is an archaic device, simple but rich of nonlinear features, present in most guitar amplifiers, and still quite used in music production in general. Historically, this was the cheapest way to generate a reverberation effect. In this thesis, we will address the problem of creating a spring reverberation model with deep learning.
 Different deep learning architectures, based either in time or frequency domain, have been already used for similar tasks. In some cases, certain features can be manipulated by the user to generate results that maintain a similarity to the original emulated effect, providing greater flexibility in the possible outcomes. In this work, we will focus on the use of a Time Convolutional Network (TCN) with Feature-wise Linear Modulation (FiLM) to model the spring reverb.
 
-## How to run
-
-A basic command line interface is provided to train, test and evaluate the model.
-Impulse Response, Transfer Function and RT60 measurements are provided.
+A basic command line interface is implemented to use the repository. Impulse Response, Transfer Function and RT60 measurements are provided.
 
 ### Requirements
 
@@ -62,36 +59,18 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 --mix MIX                     mix parameter for the model
 ```
 
-### Download the dataset
+### How to Run
 
 ```terminal
-mkdir ../datasets
-wget -P ../datasets/ https://zenodo.org/record/3746119/files/plate-spring.zip
-unzip ../datasets/plate-spring.zip -d ../datasets/plate-spring
-```
+cd src
 
-### Training
+python3 data/download_dataset.py
 
-From the repository root use the following CLI command to train the model:
+python3 train.py
 
-```terminal
-python train.py
-```
+python3 test.py --checkpoint_path CHECKPOINT_PATH
 
-### Testing
-
-To test the model on the test set, use the following command:
-
-```terminal
-python test.py
-```
-
-### Inference
-
-To run inference on a single audio file, use the following command:
-
-```terminal
-python inference.py
+python3 inference.py --input INPUT --checkpoint_path CHECKPOINT_PATH
 ```
 
 ### Tensorboard
@@ -108,39 +87,23 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 
 ```terminal
 .
-├── audio                                       # audio files
+├── audio
 │   ├── generated
-│   │   ├── inverse_filter.wav
-│   │   ├── reference_ir.wav
-│   │   ├── single_impulse.wav
-│   │   └── sweep.wav
 │   ├── processed
 │   └── raw
-│       ├── acgtr_clean.wav
-│       ├── acgtr_reverb.wav
-│       ├── README.md
-│       ├── saxophone_input.wav
-│       ├── saxophone_output.wav
-│       └── vermona_retroverb_ir.wav
-├── models                                      # models 
-├── notebooks                                   # notebooks
-├── results                                     # experiments results
+├── notebooks
+├── results
 │   ├── checkpoints
 │   ├── plots
 │   └── runs
-├── scripts                                     # bash scripts
-├── utils                                       # utility functions
-│   ├── generator.py
-│   ├── ir.py
-│   ├── plotter.py
-│   ├── rt60.py
-│   └── tf.py
-├── data.py
-├── inference.py
+├── scripts
+├── src
+│   ├── data
+│   ├── measures
+│   ├── models
+│   └── utils
 ├── README.md
-├── requirements.txt
-├── test.py
-└── train.py
+└── requirements.txt
 ```
 
 ## Main Sources
@@ -154,35 +117,6 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 
 [PedalNet](https://github.com/teddykoker/pedalnet)
 [PedalNetRT](https://github.com/GuitarML/PedalNetRT)
-
-## TO DO
-
-### Add metadata to the checkpoint
-
-```python
-
-torch.save({
-    'model_state_dict': model.state_dict(),
-    'optimizer_state_dict': optimizer.state_dict(),
-    'scheduler_state_dict': scheduler.state_dict(),
-    'state_epoch': epoch,          
-    'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
-    'hparams': hparams,
-    'criterion': str(criterion)      # Add criterion as a string here
-}, save_to)
-
-
-## Add Loss function metadata to a saved checkpoint
-
-### Load checkpoint
-checkpoint = torch.load('path_to_checkpoint.pt')
-
-### Add criterion to the checkpoint dictionary
-checkpoint['criterion'] = str(criterion)
-
-### Save checkpoint
-torch.save(checkpoint, 'path_to_checkpoint.pt')
-```
 
 ### Citation
 
