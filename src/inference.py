@@ -1,7 +1,4 @@
-""" Inference
-Use a pre-trained model to make inference on a given audio file or numpy array.
-"""
-
+# inference.py
 
 import numpy as np
 import torch
@@ -12,6 +9,7 @@ from pathlib import Path
 
 from models.TCN import TCN
 
+torch.manual_seed(42)
 
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
@@ -48,39 +46,39 @@ def make_inference(load: str,
                    mix: float
                    ) -> torch.Tensor:
     """
-    Make inference on a given audio file using a pre-trained model.
+        Make inference on a given audio file using a pre-trained model.
 
-    Parameters
-    ----------
-    load : str
-        Path to the checkpoint file to load.
-    input_path : str
-        Path to the input audio file.
-    sample_rate : int
-        Sample rate of the input audio file.
-    device : str
-        Device to use for inference (usually 'cpu' or 'cuda').
-    max_length : float
-        Maximum length of the input signal in seconds.
-    stereo : bool
-        Whether to process input as stereo audio. If true and input is mono, it will be duplicated to two channels.
-    tail : float
-        Length of reverb tail in seconds.
-    width : float
-        Width of stereo field (only applicable for stereo input).
-    c0 : float
-        Conditioning parameter defined by the user.
-    c1 : float
-        Conditioning parameter defined by the user.
-    gain_dB : float
-        Gain of the output signal in dB.
-    mix : float
-        Proportion of dry/wet signal in the output (expressed as a percentage).
+        Parameters
+        ----------
+        load : str
+            Path to the checkpoint file to load.
+        input_path : str
+            Path to the input audio file.
+        sample_rate : int
+            Sample rate of the input audio file.
+        device : str
+            Device to use for inference (usually 'cpu' or 'cuda').
+        max_length : float
+            Maximum length of the input signal in seconds.
+        stereo : bool
+            Whether to process input as stereo audio. If true and input is mono, it will be duplicated to two channels.
+        tail : float
+            Length of reverb tail in seconds.
+        width : float
+            Width of stereo field (only applicable for stereo input).
+        c0 : float
+            Conditioning parameter defined by the user.
+        c1 : float
+            Conditioning parameter defined by the user.
+        gain_dB : float
+            Gain of the output signal in dB.
+        mix : float
+            Proportion of dry/wet signal in the output (expressed as a percentage).
 
-    Returns
-    -------
-    torch.Tensor
-        Output audio after processing.
+        Returns
+        -------
+        torch.Tensor
+            Output audio after processing.
     """
 
     # set device                                                                                
@@ -182,23 +180,4 @@ def make_inference(load: str,
 
 
 if __name__ == "__main__":
-
-    parser = ArgumentParser()
-    parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
-    parser.add_argument('--input', type=str, required=True, help='Path (rel) relative to input audio')
-    parser.add_argument('--device', type=str, 
-                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
     
-    parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
-    parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
-    parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
-    parser.add_argument('--c0', type=float, default=0, help='c0 parameter for the model')
-    parser.add_argument('--c1', type=float, default=0, help='c1 parameter for the model')
-    parser.add_argument('--gain_dB', type=float, default=0, help='gain in dB for the model')
-    parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
-    args = parser.parse_args()
-
-    make_inference(args.load, args.input, args.sample_rate, args.device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
-

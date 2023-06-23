@@ -3,13 +3,13 @@
 import torch
 import auraloss
 import numpy as np
+
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
-from argparse import ArgumentParser
+from pathlib import Path
 
-from utils.helpers import load_data, initialize_model, save_model_checkpoint
+from utils.helpers import load_data, initialize_model, save_model_checkpoint, parse_args
 
-torch.cuda.empty_cache()
 torch.manual_seed(42)            
 
 def training_loop(model, criterion, esr, optimizer, train_loader, device, writer, global_step):
@@ -61,21 +61,6 @@ def validation_loop(model, criterion, esr, valid_loader, device, writer, global_
     return avg_valid_loss, avg_valid_metric
 
 
-def parse_args():
-    parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
-    parser.add_argument('--datadir', type=str, default='../../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
-    parser.add_argument('--audiodir', type=str, default='../audio/processed/', help='Path (rel) to audio files')
-    parser.add_argument('--logdir', type=str, default='../results/runs', help='name of the log directory')
-
-    parser.add_argument('--device', type=str, 
-                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=2, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
-    parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
-    parser.add_argument('--crop', type=int, default=3200, help='crop size')
-    return parser.parse_args()
-
 def main():
     # Parse command line arguments
     args = parse_args()
@@ -113,7 +98,8 @@ def main():
     )
 
     # Initialize Tensorboard writer
-    writer = SummaryWriter(log_dir=args.logdir)
+    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}"
+    writer = SummaryWriter(log_dir=log_dir)
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
