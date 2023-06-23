@@ -1,21 +1,20 @@
 # inference.py
 
-import numpy as np
 import torch
 import torchaudio
 import torchaudio.functional as F
 from pathlib import Path
 from datetime import datetime
 
-from utils.helpers import initialize_model, load_audio
+from utils.helpers import load_audio, select_device, load_model_checkpoint
 from config import parse_args
 
 torch.manual_seed(42)
 
 
-def make_inference(input, model, device, max_length: float, stereo: bool, tail: float, width: float, c0: float, c1: float, gain_dB: float, mix: float) -> torch.Tensor:
+def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, tail: float, width: float, c0: float, c1: float, gain_dB: float, mix: float) -> torch.Tensor:
     
-    x_p = input.to(device)
+    x_p = x_p.to(device)
     
     rf = model.compute_receptive_field()
     
@@ -42,7 +41,7 @@ def make_inference(input, model, device, max_length: float, stereo: bool, tail: 
                 factor = (width * 5e-3)
             elif n == 1:
                 factor = -(width * 5e-3)
-            c = torch.tensor([float(c0 + factor), float(c1 + factor)]).view(1, 1, -1)
+            c = torch.tensor([float(c0 + factor), float(c1 + factor)]).view(1, 1, -1).to(device)
         
             y_wet_ch = model(gain_ln * x_p_pad[n, :].view(1, 1, -1), c)
 
@@ -71,29 +70,20 @@ def make_inference(input, model, device, max_length: float, stereo: bool, tail: 
     return y_hat
 
 
-if __name__ == "__main__":
+def main():
     args = parse_args()
-    
-    hparams = {
-        'n_inputs': 1,
-        'n_outputs': 1,
-        'n_blocks': 10,
-        'kernel_size': 15,
-        'n_channels': 64,
-        'dilation_growth': 2,
-        'cond_dim': 0,
-    }
 
-    model, device, params = initialize_model(args.device, "TCN", hparams, checkpoint_path=args.checkpoint_path)
+    device = select_device(args.device)
+
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
 
     x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
 
-    y_hat = make_inference(x_p, model, device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
+    y_hat = make_inference(x_p, fs_x, model, device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
 
     # Create formatted filename
     now = datetime.now()
-    timestamp_str = now.strftime("%Y%m%d_%H%M%S")
-    filename = f"tcn_{timestamp_str}_IR.wav"
+    filename = f"{input_name}_{model_name}.wav"
 
     # Output file path
     output_file_path = Path(args.audiodir) / filename
@@ -102,3 +92,7 @@ if __name__ == "__main__":
     y_hat = y_hat.cpu()
     torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=16)
     print(f"Saved processed file to {output_file_path}")
+
+
+if __name__ == "__main__":
+    main()

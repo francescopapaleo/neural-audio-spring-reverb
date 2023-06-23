@@ -4,21 +4,16 @@ import torch
 import auraloss
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
+from pathlib import Path
 
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
-from utils.helpers import load_data, initialize_model
+from utils.helpers import load_data, select_device, load_model_checkpoint
 from config import parse_args
 
 torch.manual_seed(42)
 
 
-def initialize_tensorboard(logdir, model_name, device, n_epochs, batch_size, lr):
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    current_run = f"{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
-    writer = SummaryWriter(log_dir=f'{logdir}/{current_run}')
-    return writer
-
-def evaluate_model(model, test_loader, writer, sample_rate):
+def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
     l1 = torch.nn.L1Loss()
     esr = auraloss.time.ESRLoss()
     dc = auraloss.time.DCLoss()
@@ -58,7 +53,7 @@ def evaluate_model(model, test_loader, writer, sample_rate):
                 test_results[name].append(batch_score)
 
                 # Write metrics to tensorboard
-                writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
+                # writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
             # Plot and save audios every 4 batches
             if step % 4 ==0:
@@ -86,38 +81,36 @@ def evaluate_model(model, test_loader, writer, sample_rate):
                                 single_output.detach().cpu(), global_step, sample_rate=sample_rate)
 
     return test_results, global_step
+    
 
-def compute_and_log_global_metrics(test_results, global_step, writer):
-    # compute global metrics means
+def main():
+    args = parse_args()
+
+    device = select_device(args.device)
+
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
+    
+    batch_size = hparams['batch_size']
+
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    writer = SummaryWriter(log_dir=log_dir)
+
+    _, _, test_loader = load_data(args.datadir, batch_size)
+
+    test_results, global_step = evaluate_model(model, device, model_name, test_loader, writer, args.sample_rate)
+
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])
         writer.add_scalar(f'test/global_{name}', global_score, global_step)
+    
+    mean_test_results = {k: sum(v) / len(v) for k, v in test_results.items()}
+    writer.add_hparams(hparams, mean_test_results)
 
-def close_writer(writer):
-    # Flush and close the writer
     writer.flush()
     writer.close()
 
 if __name__ == "__main__":
-
-    args = parse_args()
+    main()
     
-    hparams = {
-        'n_inputs': 1,
-        'n_outputs': 1,
-        'n_blocks': 10,
-        'kernel_size': 15,
-        'n_channels': 64,
-        'dilation_growth': 2,
-        'cond_dim': 0,
-    }
 
-    device = torch.device(args.device)
-    model_name = "TCN"
-    model = initialize_model(device, "TCN", hparams)
-    
-    writer = initialize_tensorboard(args.logdir, model_name, device, 100, 32, 0.001) # Adjust these arguments based on your needs
-    _, _, test_loader = load_data(args.datadir, 32) # Adjust batch size as needed
-    test_results, global_step = evaluate_model(model, test_loader, writer, args.sample_rate)
-    compute_and_log_global_metrics(test_results, global_step, writer)
-    close_writer(writer)

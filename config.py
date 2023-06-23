@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('--audiodir', type=str, default='audio/processed/', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/runs', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--checkpoint_path', type=str, default='results/checkpoint', help='Path (rel) to checkpoint to load')
+    parser.add_argument('--checkpoint_path', type=str, default='results/checkpoints', help='Path (rel) to checkpoint to load')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
     # Model

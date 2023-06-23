@@ -117,17 +117,17 @@ def save_audio(dir_path: str, file_name: str, sample_rate: int, audio: np.ndarra
     print(f"Saved {output_path}")
 
 
-def main(duration: float, sample_rate: int, audio_dir: str):
+def main(duration: float, sample_rate: int, audiodir: str):
 
     # Generate the arrays
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
     single_impulse = impulse(sample_rate, duration, decibels=-18)
 
     # Save as .wav files
-    save_audio(audio_dir, "sweep", sample_rate, sweep)
-    save_audio(audio_dir, "inverse_filter", sample_rate, inverse_filter)
-    save_audio(audio_dir, "generator_reference", sample_rate, reference)
-    save_audio(audio_dir, "single_impulse", sample_rate, single_impulse)
+    save_audio(audiodir, "sweep", sample_rate, sweep)
+    save_audio(audiodir, "inverse_filter", sample_rate, inverse_filter)
+    save_audio(audiodir, "generator_reference", sample_rate, reference)
+    save_audio(audiodir, "single_impulse", sample_rate, single_impulse)
 
     # Plot them
     plot_impulse_response(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
@@ -137,5 +137,5 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    main(args.duration, args.sample_rate, args.audio_dir)
+    main(args.duration, args.sample_rate, args.audiodir)
     

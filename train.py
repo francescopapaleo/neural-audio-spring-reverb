@@ -8,7 +8,8 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
-from utils.helpers import load_data, initialize_model, save_model_checkpoint, parse_args
+from utils.helpers import load_data, select_device, initialize_model, save_model_checkpoint
+from config import parse_args
 
 torch.manual_seed(42)            
 
@@ -62,11 +63,12 @@ def validation_loop(model, criterion, esr, valid_loader, device, writer, global_
 
 
 def main():
-    # Parse command line arguments
     args = parse_args()
 
-    # Define hyperparameters
+    device = select_device(args.device)
+
     hparams = {
+        'model_type': 'TCN',
         'n_inputs': 1,
         'n_outputs': 1,
         'n_blocks': 10,
@@ -76,13 +78,13 @@ def main():
         'cond_dim': 0,
     }
 
+    # Initialize model
+    model, rf, params = initialize_model(device, hparams)
+
     # Define loss function and optimizer
-    device = torch.device(args.device)
     criterion = auraloss.freq.STFTLoss().to(device)  
     esr = auraloss.time.ESRLoss().to(device)
-
-    # Initialize model
-    model = initialize_model(device, "TCN", hparams)
+    metrics = {'training/esr': [],'validation/esr': []}
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
@@ -98,7 +100,8 @@ def main():
     )
 
     # Initialize Tensorboard writer
-    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}"
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     # Load data
@@ -107,26 +110,42 @@ def main():
     # Initialize minimum validation loss with infinity
     min_valid_loss = np.inf
 
+    hparams.update({
+        'n_epochs': args.n_epochs,
+        'batch_size': args.batch_size,
+        'lr': args.lr,
+        'receptive_field': rf,
+        'params': params,
+    })
+
     # Loop through each epoch
     for epoch in range(args.n_epochs):
         # Train model
         model, train_loss, train_metric = training_loop(
             model, criterion, esr, optimizer, train_loader, device, writer, epoch)
+        metrics['training/esr'].append(train_metric)
         
         # Validate model
         valid_loss, valid_metric = validation_loop(
             model, criterion, esr, valid_loader, device, writer, epoch)
+        metrics['validation/esr'].append(valid_metric)
 
         # Update learning rate
         scheduler.step()
 
         # Save the model if it improved
         if valid_loss < min_valid_loss:
-            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
             min_valid_loss = valid_loss
             save_model_checkpoint(
                 model, hparams, criterion, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
             )
+
+        final_train_metric = metrics['training/esr'][-1]
+        final_valid_metric = metrics['validation/esr'][-1]
+        writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
+
+
+    writer.close()
 
 if __name__ == "__main__":
     main()

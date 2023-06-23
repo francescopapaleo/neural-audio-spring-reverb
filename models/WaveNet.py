@@ -41,7 +41,6 @@ def _conv_stack(dilations, in_channels, out_channels, kernel_size):
         ]
     )
 
-
 class WaveNet(nn.Module):
     def __init__(self, num_channels, dilation_depth, num_repeat, kernel_size=2):
         super(WaveNet, self).__init__()

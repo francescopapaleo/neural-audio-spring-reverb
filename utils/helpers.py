@@ -5,9 +5,10 @@ import torchaudio
 import numpy as np
 from pathlib import Path
 
-from data import SpringDataset
-from models import TCN
-from models import WaveNet
+from data.dataset import SpringDataset
+from models.TCN import TCN
+from models.WaveNet import WaveNet
+from config import parse_args
 
 
 def load_audio(input, sample_rate):
@@ -47,9 +48,7 @@ def load_data(datadir, batch_size):
     return train_loader, valid_loader, test_loader
 
 
-def initialize_model(device, model_type, hparams=None, criterion=None, checkpoint_path=None):
-    """Initialize a specific model"""
-
+def select_device(device):
     if device is None: 
         if torch.cuda.is_available():
             device = torch.device("cuda:0")  # use the first cuda device
@@ -57,70 +56,73 @@ def initialize_model(device, model_type, hparams=None, criterion=None, checkpoin
             device = torch.device("cpu")  # default to cpu if no cuda device is available
     else:
         device = torch.device(device)  # use the user-specified device
+    print(f"Selected device: {device}")
+    
+    return device
 
-    # Load the model from a checkpoint if provided
-    if checkpoint_path is not None:
-        try:
-            checkpoint = torch.load(checkpoint_path, map_location=device)
-            model = checkpoint['model_class'](
-                n_inputs = checkpoint['hparams']['n_inputs'], 
-                n_outputs = checkpoint['hparams']['n_outputs'], 
-                n_blocks = checkpoint['hparams']['n_blocks'],
-                kernel_size = checkpoint['hparams']['kernel_size'],
-                n_channels = checkpoint['hparams']['n_channels'], 
-                dilation_growth = checkpoint['hparams']['dilation_growth'],
-                cond_dim = checkpoint['hparams']['cond_dim'],
-            ).to(device)
-            model.load_state_dict(checkpoint['model_state_dict'])
-        except Exception as e:
-            raise RuntimeError(f"Failed to load model state from checkpoint: {e}")
-        print(f"Model loaded from checkpoint: {checkpoint_path}")
-    # Otherwise, initialize a new model as usual
+
+def initialize_model(device, hparams):
+    if hparams['model_type'] == "TCN":
+        model = TCN(
+            n_inputs = hparams['n_inputs'], 
+            n_outputs = hparams['n_outputs'], 
+            n_blocks = hparams['n_blocks'],
+            kernel_size = hparams['kernel_size'],
+            n_channels = hparams['n_channels'], 
+            dilation_growth = hparams['dilation_growth'],
+            cond_dim = hparams['cond_dim'],
+        ).to(device)
+    elif hparams['model_type'] == "WaveNet":
+        model = WaveNet(
+            n_inputs = hparams['n_inputs'], 
+            n_outputs = hparams['n_outputs'], 
+            n_blocks = hparams['n_blocks'],
+            kernel_size = hparams['kernel_size'],
+            n_channels = hparams['n_channels'], 
+            dilation_growth = hparams['dilation_growth'],
+            cond_dim = hparams['cond_dim'],
+        ).to(device)
     else:
-        if model_type == "TCN":
-            model = TCN(
-                n_inputs = hparams['n_inputs'], 
-                n_outputs = hparams['n_outputs'], 
-                n_blocks = hparams['n_blocks'],
-                kernel_size = hparams['kernel_size'],
-                n_channels = hparams['n_channels'], 
-                dilation_growth = hparams['dilation_growth'],
-                cond_dim = hparams['cond_dim'],
-            ).to(device)
-        elif model_type == "WaveNet":
-            model = WaveNet(
-                n_inputs = hparams['n_inputs'], 
-                n_outputs = hparams['n_outputs'], 
-                n_blocks = hparams['n_blocks'],
-                kernel_size = hparams['kernel_size'],
-                n_channels = hparams['n_channels'], 
-                dilation_growth = hparams['dilation_growth'],
-                cond_dim = hparams['cond_dim'],
-            ).to(device)
-        else:
-            raise ValueError(f"Unknown model type: {model_type}")
-        
-    model.hparams = hparams  # store hyperparameters in the model
-    model.criterion = str(criterion)  # store the name of the criterion in the model
+        raise ValueError(f"Unknown model type: {hparams['model_type']}")
+    print(f"Model initialized: {hparams['model_type']}")
+    model.to(device)
+    
+    rf = model.compute_receptive_field()
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    return model, device, params
+    return model, rf , params
+
+
+def load_model_checkpoint(device, checkpoint_path):
+    try:
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+        model_name = checkpoint['name']
+
+        hparams = checkpoint['hparams']
+        model, _, _ = initialize_model(device, hparams)
+
+        model.load_state_dict(checkpoint['model_state_dict'])
+        
+    except Exception as e:
+        raise RuntimeError(f"Failed to load model state from checkpoint: {e}")
+    print(f"Model loaded from checkpoint: {checkpoint_path}")
+    
+    return model, model_name, hparams
 
 
 def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp):
-    """Save the model if validation loss decreases"""
-    save_to = f'../results/checkpoints/tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+    args = parse_args()
+    save_to = Path(args.checkpoint_path) / f'tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
     torch.save({
-        'model_class': type(model),
+        'model_type': type(model).__name__,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
         'state_epoch': n_epochs,          
         'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
         'hparams': hparams,
-        'criterion': str(criterion)      # Add criterion as a string here
+        'criterion': str(criterion)
     }, save_to)
 
     print(f"Checkpoint saved: {save_to}")
-
 
