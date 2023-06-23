@@ -17,7 +17,7 @@ def training_loop(model, criterion, esr, optimizer, train_loader, device, writer
     train_loss = 0.0
     train_metric = 0.0
     model.train()
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
     for batch_idx, (input, target) in enumerate(train_loader):
         optimizer.zero_grad()
         input, target = input.to(device), target.to(device)

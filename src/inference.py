@@ -4,128 +4,21 @@ import numpy as np
 import torch
 import torchaudio
 import torchaudio.functional as F
-from argparse import ArgumentParser
 from pathlib import Path
+from datetime import datetime
 
-from models.TCN import TCN
+from utils.helpers import initialize_model, parse_args, load_audio
 
 torch.manual_seed(42)
 
-def load_audio(input, sample_rate):
-    print(f"Input type: {type(input)}")  # add this line to check the type of the input
-    if isinstance(input, str):
-        # Load audio file
-        x_p, fs_x = torchaudio.load(input)
-        x_p = x_p.float()
-        input_name = Path(input).stem
-    elif isinstance(input, np.ndarray):  # <-- change here
-        # Convert numpy array to tensor and ensure it's float32
-        x_p = torch.from_numpy(input).float()
-        # Add an extra dimension if necessary to simulate channel dimension
-        if len(x_p.shape) == 1:
-            x_p = x_p.unsqueeze(0)
-        fs_x = sample_rate
-        input_name = 'sweep'
-    else:
-        raise ValueError('input must be either a file path or a numpy array')
+
+def make_inference(input, model, device, max_length: float, stereo: bool, tail: float, width: float, c0: float, c1: float, gain_dB: float, mix: float) -> torch.Tensor:
     
-    return x_p, fs_x, input_name
-
-
-def make_inference(load: str, 
-                   input: any, 
-                   sample_rate: int, 
-                   device: str,
-                   max_length: float, 
-                   stereo: bool, 
-                   tail: float, 
-                   width: float, 
-                   c0: float,
-                   c1: float,
-                   gain_dB: float,
-                   mix: float
-                   ) -> torch.Tensor:
-    """
-        Make inference on a given audio file using a pre-trained model.
-
-        Parameters
-        ----------
-        load : str
-            Path to the checkpoint file to load.
-        input_path : str
-            Path to the input audio file.
-        sample_rate : int
-            Sample rate of the input audio file.
-        device : str
-            Device to use for inference (usually 'cpu' or 'cuda').
-        max_length : float
-            Maximum length of the input signal in seconds.
-        stereo : bool
-            Whether to process input as stereo audio. If true and input is mono, it will be duplicated to two channels.
-        tail : float
-            Length of reverb tail in seconds.
-        width : float
-            Width of stereo field (only applicable for stereo input).
-        c0 : float
-            Conditioning parameter defined by the user.
-        c1 : float
-            Conditioning parameter defined by the user.
-        gain_dB : float
-            Gain of the output signal in dB.
-        mix : float
-            Proportion of dry/wet signal in the output (expressed as a percentage).
-
-        Returns
-        -------
-        torch.Tensor
-            Output audio after processing.
-    """
-
-    # set device                                                                                
-    if device is None:                                                              
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    x_p = input.to(device)
     
-    # load from checkpoint                                                                                                     
-    try:
-        checkpoint = torch.load(load, map_location=device)
-        hparams = checkpoint['hparams']
-    except Exception as e:
-        print(f"Failed to load model state: {e}")
-        return
-    
-    # instantiate model 
-    model = TCN(                                                        
-        n_inputs = hparams['n_inputs'], 
-        n_outputs = hparams['n_outputs'], 
-        n_blocks = hparams['n_blocks'],
-        kernel_size = hparams['kernel_size'],
-        n_channels = hparams['n_channels'], 
-        dilation_growth = hparams['dilation_growth'],
-        cond_dim = hparams['cond_dim'],
-    ).to(device)
-
-    # batch_size = hparams['batch_size']
-    batch_size = hparams['batch_size']
-    n_epochs = hparams['n_epochs']
-    lr = hparams['lr']
-    model_name = checkpoint['name']
-
-    print(f"Loaded: {model_name}")
-
-    try:
-        model.load_state_dict(checkpoint['model_state_dict'])
-    except Exception as e:
-        print(f"Failed to load model state: {e}")
-        return
-
-    # Load the audio
-    x_p, fs_x, input_name = load_audio(input, sample_rate)
-    
-    # Receptive field
     rf = model.compute_receptive_field()
     
     chs = x_p.shape[0]
-
     # If mono and stereo requested
     if chs == 1 and stereo:
         x_p = x_p.repeat(2, 1)
@@ -157,11 +50,14 @@ def make_inference(load: str,
 
             y_wet[n, :] = y_wet_ch
 
-    x_dry = x_p_pad
+    x_dry = x_p_pad.to(device)
 
     # Normalize each first
     y_wet /= y_wet.abs().max()
     x_dry /= x_p_pad.abs().max()
+
+    y_wet = y_wet.to(device)
+    x_dry = x_dry.to(device)
 
     # Mix
     mix = mix / 100.0
@@ -169,15 +65,39 @@ def make_inference(load: str,
 
     # # Remove transient
     y_hat = y_hat[..., 8192:]
-    y_hat /= y_hat.abs().max()
-
-    # Save the output using torchaudio
-    output_file_name = Path('./audio/processed') / (input_name + '_' + Path(load).stem + '.wav')
-    torchaudio.save(str(output_file_name), y_hat, sample_rate=sample_rate, channels_first=True, bits_per_sample=16)
-    print(f"Saved processed file to {output_file_name}")
+    y_hat /= y_hat.abs().max().item()
 
     return y_hat
 
 
 if __name__ == "__main__":
+    args = parse_args()
     
+    hparams = {
+        'n_inputs': 1,
+        'n_outputs': 1,
+        'n_blocks': 10,
+        'kernel_size': 15,
+        'n_channels': 64,
+        'dilation_growth': 2,
+        'cond_dim': 0,
+    }
+
+    model, device, params = initialize_model(args.device, "TCN", hparams, checkpoint_path=args.checkpoint_path)
+
+    x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
+
+    y_hat = make_inference(x_p, model, device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
+
+    # Create formatted filename
+    now = datetime.now()
+    timestamp_str = now.strftime("%Y%m%d_%H%M%S")
+    filename = f"tcn_{timestamp_str}_IR.wav"
+
+    # Output file path
+    output_file_path = Path(args.audiodir) / filename
+
+    # Save the output using torchaudio
+    y_hat = y_hat.cpu()
+    torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=16)
+    print(f"Saved processed file to {output_file_path}")

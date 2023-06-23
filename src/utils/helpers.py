@@ -16,10 +16,10 @@ def parse_args():
     parser.add_argument('--datadir', type=str, default='../../datasets/plate-spring/spring/', help='Path (rel) to dataset ')
     parser.add_argument('--audiodir', type=str, default='../audio/processed/', help='Path (rel) to audio files')
     parser.add_argument('--logdir', type=str, default='../results/runs', help='name of the log directory')
-    parser.add_argument('--checkpoint_path', type=str, required=True, help='Path (rel) to checkpoint to load')
+    parser.add_argument('--checkpoint_path', type=str, default='../results/checkpoint', help='Path (rel) to checkpoint to load')
+    parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
-    parser.add_argument('--device', type=str, 
-                        default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
+    parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=2, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
@@ -78,10 +78,16 @@ def load_data(datadir, batch_size):
 
 def initialize_model(device, model_type, hparams=None, criterion=None, checkpoint_path=None):
     """Initialize a specific model"""
+
     if device is None: 
-        device = torch.device("xpu")
-    
-        # Load the model from a checkpoint if provided
+        if torch.cuda.is_available():
+            device = torch.device("cuda:0")  # use the first cuda device
+        else:
+            device = torch.device("cpu")  # default to cpu if no cuda device is available
+    else:
+        device = torch.device(device)  # use the user-specified device
+
+    # Load the model from a checkpoint if provided
     if checkpoint_path is not None:
         try:
             checkpoint = torch.load(checkpoint_path, map_location=device)
@@ -127,7 +133,7 @@ def initialize_model(device, model_type, hparams=None, criterion=None, checkpoin
     model.criterion = str(criterion)  # store the name of the criterion in the model
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    return model
+    return model, device, params
 
 
 def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp):
