@@ -1,16 +1,15 @@
 """ Impulse response and transfer function generator.
 """
 
-import torch
 import numpy as np
-from argparse import ArgumentParser
 from pathlib import Path
 from scipy.io import wavfile
 from scipy.fft import fft
 
-from utils.signals import generate_reference
-from utils.plotter import plot_impulse_response, plot_transfer_function
+from signals import generate_reference
+from plotter import plot_impulse_response, plot_transfer_function
 from inference import make_inference
+from config import parse_args
 
 
 def generate_impulse_response(load, sample_rate, device, duration):
@@ -88,14 +87,9 @@ def generate_transfer_function(reference, measured_ir, sample_rate):
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='Generate impulse response or transfer function from a trained model')
-    parser.add_argument('--load', type=str, required=True, help='Path (rel) to checkpoint to load')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
-    parser.add_argument('--device', type=str, default="cuda:0" if torch.cuda.is_available() else "cpu", help='set device to run the model on')
-    parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
-    parser.add_argument("--mode", type=str, choices=['ir', 'tf'], default='ir', help="Mode to run: 'ir' for impulse response or 'tf' for transfer function")
+    print('Generate impulse response or transfer function from a trained model')
 
-    args = parser.parse_args()
+    args = parse_args()
 
     if args.mode == 'ir':
         generate_impulse_response(args.load, args.sample_rate, args.device, args.duration)

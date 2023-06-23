@@ -6,7 +6,8 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
-from utils.helpers import load_data, initialize_model, parse_args
+from utils.helpers import load_data, initialize_model
+from config import parse_args
 
 torch.manual_seed(42)
 

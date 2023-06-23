@@ -7,8 +7,9 @@ import numpy as np
 from scipy.io import wavfile
 from typing import Tuple
 from pathlib import Path
-from argparse import ArgumentParser
+
 from utils.plotter import plot_impulse_response
+from config import parse_args
 
 
 def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndarray:
@@ -133,13 +134,8 @@ def main(duration: float, sample_rate: int, audio_dir: str):
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="Generate audio files for measurements")
-    parser.add_argument('--audio_dir', type=str, default='./audio/generated/', help='Path (rel) to audio files')
 
-    parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')
-
-    args = parser.parse_args()
+    args = parse_args()
 
     main(args.duration, args.sample_rate, args.audio_dir)
     

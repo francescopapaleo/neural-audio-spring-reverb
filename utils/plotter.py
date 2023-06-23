@@ -1,16 +1,18 @@
 """" Plotting utilities for the project.
 """
 
-from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import torch
 import torchaudio.transforms as T
 import librosa
+from pathlib import Path
+from config import parse_args
 
 def save_plot(plt, file_name):
-    plot_dir = Path('./results/plots')
+    args = parse_args()
+    plot_dir = Path(args.plotsdir)
     plot_dir.mkdir(parents=True, exist_ok=True)
     file_path = plot_dir / (file_name + ".png")
     plt.tight_layout()

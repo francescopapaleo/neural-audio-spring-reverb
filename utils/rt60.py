@@ -13,8 +13,9 @@ https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental
 import numpy as np
 from scipy.io import wavfile
 from pathlib import Path
-from argparse import ArgumentParser
-from utils.plotter import plot_rt60
+
+from plotter import plot_rt60
+from config import parse_args
 
 eps = 1e-15
 
@@ -87,10 +88,9 @@ def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_nam
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='RT60 measurement and plotting')
-    parser.add_argument('--input', type=str, required=True, help='Path (rel) relative to input audio')
-
-    args = parser.parse_args()
+    print('RT60 measurement and plotting')
+    
+    args = parse_args()
 
     fs, data = wavfile.read(args.input)
     x = data.astype('float32')

@@ -7,7 +7,8 @@ import torchaudio.functional as F
 from pathlib import Path
 from datetime import datetime
 
-from utils.helpers import initialize_model, parse_args, load_audio
+from utils.helpers import initialize_model, load_audio
+from config import parse_args
 
 torch.manual_seed(42)
 

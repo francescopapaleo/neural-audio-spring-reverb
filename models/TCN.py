@@ -1,3 +1,5 @@
+import torch
+
 ''' Temporal Convolutional Network (TCN) with FiLM conditioning module.
 
 Reference:
@@ -10,9 +12,6 @@ https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
     booktitle={5th Workshop on Creativity and Design at NeurIPS},
     year={2021}}
     '''
-
-
-import torch
 
 def center_crop(x, length: int):
         start = (x.shape[-1]-length)//2

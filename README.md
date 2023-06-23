@@ -61,16 +61,23 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 
 ### How to Run
 
-```terminal
-cd src
+From the project root folder, run the following commands to download, train, test and inference:
 
-python3 data/download_dataset.py
+```terminal
+
+python3 -m data.download_dataset
 
 python3 train.py
 
-python3 test.py --checkpoint_path CHECKPOINT_PATH
+python3 test.py --checkpoint_path CHECKPOINT_RELATIVE_PATH
 
-python3 inference.py --input INPUT --checkpoint_path CHECKPOINT_PATH
+python3 inference.py --input INPUT_RELATIVE_PATH --checkpoint_path CHECKPOINT_RELATIVE_PATH
+```
+
+To generate reference signals:
+  
+```terminal
+python3 -m utils.signals
 ```
 
 ### Tensorboard
@@ -91,17 +98,20 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 │   ├── generated
 │   ├── processed
 │   └── raw
+├── data
+├── models
 ├── notebooks
 ├── results
 │   ├── checkpoints
 │   ├── plots
 │   └── runs
 ├── scripts
-├── src
-│   ├── data
-│   ├── measures
-│   ├── models
-│   └── utils
+├── utils
+├── config.py
+├── inference.py
+├── test.py
+├── train.py
+├── LICENSE
 ├── README.md
 └── requirements.txt
 ```
