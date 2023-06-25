@@ -154,7 +154,6 @@ def main():
     final_valid_metric = metrics['validation/esr'][-1]
     writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
 
-
     writer.close()
 
 if __name__ == "__main__":

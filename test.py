@@ -21,7 +21,6 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
     criterions = [mae, mse, esr, snr]
     test_results = {"mae": [], "mse": [], "esr": [], "snr": []}
 
-    # dummy condition tensor    
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
 
     num_batches = len(test_loader)
@@ -50,9 +49,6 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
             for metric, name in zip(criterions, test_results.keys()):
                 batch_score = metric(output_trim, target_pad).item()
                 test_results[name].append(batch_score)
-
-                # Write metrics to tensorboard
-                # writer.add_scalar(f'test/batch_{name}', batch_score, global_step)
 
             # Plot and save audios every 4 batches
             if step % 4 ==0:

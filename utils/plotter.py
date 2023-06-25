@@ -161,13 +161,16 @@ def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target
     o_spec = librosa.amplitude_to_db(np.abs(librosa.stft(output.numpy().squeeze())), ref=np.max)
 
     axs[0].set_title(t_label or "Target Spectrogram (db)")
-    librosa.display.specshow(
+    img1 = librosa.display.specshow(
         t_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="linear", ax=axs[0])
+    fig.colorbar(img1, ax=axs[0], format="%+2.f dB")
 
     axs[1].set_title(o_label or "Output Spectrogram (db)")
-    librosa.display.specshow(
+    img2 = librosa.display.specshow(
         o_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="linear", ax=axs[1])
+    fig.colorbar(img2, ax=axs[1], format="%+2.f dB")
     
+    plt.tight_layout()
     plt.show(block=False)
 
     return fig
