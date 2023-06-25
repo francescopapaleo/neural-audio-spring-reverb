@@ -10,6 +10,8 @@ from models.TCN import TCN
 from models.WaveNet import WaveNet
 from config import parse_args
 
+args = parse_args()
+sample_rate = args.sample_rate
 
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
@@ -88,6 +90,9 @@ def initialize_model(device, hparams):
     
     rf = model.compute_receptive_field()
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    print(f"Parameters: {params*1e-3:0.3f} k")
+    print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')    
 
     return model, rf , params
 

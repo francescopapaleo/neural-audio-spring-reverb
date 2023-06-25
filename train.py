@@ -68,28 +68,28 @@ def main():
 
     device = select_device(args.device)
 
-    hparams = {
-        'model_type': 'TCN',
-        'n_inputs': 1,
-        'n_outputs': 1,
-        'n_blocks': 10,
-        'kernel_size': 15,
-        'n_channels': 64,
-        'dilation_growth': 2,
-        'cond_dim': 0,
-    }
+    # hparams = {
+    #     'model_type': 'TCN',
+    #     'n_inputs': 1,
+    #     'n_outputs': 1,
+    #     'n_blocks': 10,
+    #     'kernel_size': 15,
+    #     'n_channels': 64,
+    #     'dilation_growth': 2,
+    #     'cond_dim': 0,
+    # }
 
     hparams = {
         'model_type': 'WaveNet',
-        'num_channels': 32,
+        'num_channels': 28,
         'dilation_depth': 10,
-        'num_repeat': 3,
+        'num_repeat': 2,
         'kernel_size': 15
         }
 
     # Initialize model
     model, rf, params = initialize_model(device, hparams)
-
+    
     # Define loss function and optimizer
     criterion = auraloss.freq.STFTLoss().to(device)  
     esr = auraloss.time.ESRLoss().to(device)

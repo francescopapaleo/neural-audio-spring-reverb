@@ -4,7 +4,7 @@
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 n_epochs=(25 50)
-batch_size=(4 8 32)
+batch_size=(4 8 )
 
 for epoch in "${n_epochs[@]}"; do
     for batch in "${batch_size[@]}"; do
