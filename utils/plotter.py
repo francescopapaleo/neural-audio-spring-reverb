@@ -125,33 +125,52 @@ def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=No
 def bin_to_freq(bin, sample_rate, n_fft):
     return bin * sample_rate / n_fft
 
-def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None):
+# def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None):
 
-    spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)
-    target_spec = spectrogram(target)
-    output_spec = spectrogram(output)
+#     spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)
+#     target_spec = spectrogram(target)
+#     output_spec = spectrogram(output)
 
-    # Create the figure and subplots
+#     # Create the figure and subplots
+#     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    
+#     # Plot target spectrogram
+#     axs[0].set_title(t_label or "Target Spectrogram (db)")
+#     axs[0].set_ylabel("freq bin")
+#     axs[0].set_xlabel("frame")
+#     im_target = axs[0].imshow(librosa.power_to_db(target_spec[0]), origin="lower", aspect="auto")
+#     fig.colorbar(im_target, ax=axs[0])
+    
+#     # Plot output spectrogram
+#     axs[1].set_title(o_label or "Output Spectrogram (db)")
+#     axs[1].set_ylabel("freq bin")
+#     axs[1].set_xlabel("frame")
+#     im_output = axs[1].imshow(librosa.power_to_db(output_spec[0]), origin="lower", aspect="auto")
+#     fig.colorbar(im_output, ax=axs[1])
+    
+#     plt.show(block=False)
+
+#     return fig
+
+def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None): 
+    hop_size = 512
+    
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
     
-    # Plot target spectrogram
+    t_spec = librosa.amplitude_to_db(np.abs(librosa.stft(target.numpy().squeeze())), ref=np.max)
+    o_spec = librosa.amplitude_to_db(np.abs(librosa.stft(output.numpy().squeeze())), ref=np.max)
+
     axs[0].set_title(t_label or "Target Spectrogram (db)")
-    axs[0].set_ylabel("freq bin")
-    axs[0].set_xlabel("frame")
-    im_target = axs[0].imshow(librosa.power_to_db(target_spec[0]), origin="lower", aspect="auto")
-    fig.colorbar(im_target, ax=axs[0])
-    
-    # Plot output spectrogram
+    librosa.display.specshow(
+        t_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="linear", ax=axs[0])
+
     axs[1].set_title(o_label or "Output Spectrogram (db)")
-    axs[1].set_ylabel("freq bin")
-    axs[1].set_xlabel("frame")
-    im_output = axs[1].imshow(librosa.power_to_db(output_spec[0]), origin="lower", aspect="auto")
-    fig.colorbar(im_output, ax=axs[1])
+    librosa.display.specshow(
+        o_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="linear", ax=axs[1])
     
     plt.show(block=False)
 
     return fig
-
 
 if __name__ == "__main__":
     print("This module is not intended to be executed directly. Do it only for debugging purposes.")
