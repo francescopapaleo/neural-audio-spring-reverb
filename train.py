@@ -11,7 +11,8 @@ from pathlib import Path
 from utils.helpers import load_data, select_device, initialize_model, save_model_checkpoint
 from config import parse_args
 
-torch.manual_seed(42)            
+torch.manual_seed(42)
+torch.cuda.empty_cache()            
 
 def training_loop(model, criterion, esr, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
@@ -78,6 +79,14 @@ def main():
         'cond_dim': 0,
     }
 
+    hparams = {
+        'model_type': 'WaveNet',
+        'num_channels': 32,
+        'dilation_depth': 10,
+        'num_repeat': 3,
+        'kernel_size': 15
+        }
+
     # Initialize model
     model, rf, params = initialize_model(device, hparams)
 
@@ -101,7 +110,7 @@ def main():
 
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     # Load data
@@ -118,7 +127,8 @@ def main():
         'params': params,
     })
 
-    # Loop through each epoch
+    print(f"Training model for {args.n_epochs} epochs, with batch size {args.batch_size} and learning rate {args.lr}")
+    
     for epoch in range(args.n_epochs):
         # Train model
         model, train_loss, train_metric = training_loop(
@@ -140,9 +150,9 @@ def main():
                 model, hparams, criterion, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
             )
 
-        final_train_metric = metrics['training/esr'][-1]
-        final_valid_metric = metrics['validation/esr'][-1]
-        writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
+    final_train_metric = metrics['training/esr'][-1]
+    final_valid_metric = metrics['validation/esr'][-1]
+    writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
 
 
     writer.close()

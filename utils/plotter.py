@@ -122,39 +122,35 @@ def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=No
 
     return figure
 
+def bin_to_freq(bin, sample_rate, n_fft):
+    return bin * sample_rate / n_fft
 
 def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None):
 
-    target_ch, target_frames = target.shape
-    output_ch, output_frames = output.shape
+    spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)
+    target_spec = spectrogram(target)
+    output_spec = spectrogram(output)
 
-    figure, axes = plt.subplots(1, 2, figsize=(10, 5))
-    waveforms = [target, output]
-    labels = [t_label, o_label]
-    num_channels = [target_ch, output_ch]
-
-    for idx, ax in enumerate(axes):
-        for c in range(num_channels[idx]):
-            spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)(waveforms[idx][c].squeeze())
-            im = ax.imshow(librosa.power_to_db(spectrogram), origin="lower", aspect="auto")
-            ax.set_yticks(np.linspace(0, spectrogram.shape[0], 5))  # set 5 y-ticks
-            ax.set_yticklabels(np.linspace(0, sample_rate / 2, 5).astype(int))  # label them with the corresponding frequency values
-            if num_channels[idx] > 1:
-                ax.set_ylabel(f'Channel {c+1}')
-            else:
-                ax.set_ylabel("Frequency [Hz]")
-            ax.set_xlabel("Frames")
-            if xlim:
-                ax.set_xlim(xlim)
-            if ylim:
-                ax.set_ylim(ylim)
-            ax.set_title(labels[idx])
-            figure.suptitle(title)
-            figure.colorbar(im, ax=ax)
-    plt.tight_layout()
+    # Create the figure and subplots
+    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    
+    # Plot target spectrogram
+    axs[0].set_title(t_label or "Target Spectrogram (db)")
+    axs[0].set_ylabel("freq bin")
+    axs[0].set_xlabel("frame")
+    im_target = axs[0].imshow(librosa.power_to_db(target_spec[0]), origin="lower", aspect="auto")
+    fig.colorbar(im_target, ax=axs[0])
+    
+    # Plot output spectrogram
+    axs[1].set_title(o_label or "Output Spectrogram (db)")
+    axs[1].set_ylabel("freq bin")
+    axs[1].set_xlabel("frame")
+    im_output = axs[1].imshow(librosa.power_to_db(output_spec[0]), origin="lower", aspect="auto")
+    fig.colorbar(im_output, ax=axs[1])
+    
     plt.show(block=False)
 
-    return figure
+    return fig
 
 
 if __name__ == "__main__":

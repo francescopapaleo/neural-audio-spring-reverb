@@ -12,15 +12,14 @@ from config import parse_args
 
 torch.manual_seed(42)
 
-
 def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
-    l1 = torch.nn.L1Loss()
+    mae = torch.nn.L1Loss()
+    mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
-    dc = auraloss.time.DCLoss()
     snr = auraloss.time.SNRLoss()
 
-    criterions = [l1, esr, dc, snr]
-    test_results = {"l1": [], "esr": [], "dc": [], "snr": []}
+    criterions = [mae, mse, esr, snr]
+    test_results = {"mae": [], "mse": [], "esr": [], "snr": []}
 
     # dummy condition tensor    
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
@@ -65,8 +64,8 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
                                                     sample_rate,
                                                     title=f"Waveform_{model_name}_{global_step}"
                                                     )
-                spectrogram_fig = plot_compare_spectrogram(single_target.detach().cpu(), 
-                                                        single_output.detach().cpu(), 
+                spectrogram_fig = plot_compare_spectrogram(single_target.cpu(), 
+                                                        single_output.cpu(), 
                                                         sample_rate,
                                                         title=f"Spectra_{model_name}_{global_step}",
                                                         t_label=f"Target_{global_step}", o_label=f"Output_{global_step}"
@@ -91,9 +90,11 @@ def main():
     model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
     
     batch_size = hparams['batch_size']
+    n_epochs = hparams['n_epochs']
+    lr = hparams['lr']
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) / f"tcn_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     _, _, test_loader = load_data(args.datadir, batch_size)

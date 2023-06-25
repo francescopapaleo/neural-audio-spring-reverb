@@ -1,3 +1,8 @@
+"""
+WaveNet model implementation from:
+https://github.com/GuitarML/PedalNetRT/blob/master/model.py
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -42,7 +47,11 @@ def _conv_stack(dilations, in_channels, out_channels, kernel_size):
     )
 
 class WaveNet(nn.Module):
-    def __init__(self, num_channels, dilation_depth, num_repeat, kernel_size=2):
+    def __init__(self, 
+                 num_channels, 
+                 dilation_depth, 
+                 num_repeat, 
+                 kernel_size):
         super(WaveNet, self).__init__()
         dilations = [2 ** d for d in range(dilation_depth)] * num_repeat
         internal_channels = int(num_channels * 2)
@@ -61,7 +70,7 @@ class WaveNet(nn.Module):
         )
         self.num_channels = num_channels
 
-    def forward(self, x):
+    def forward(self, x, c=None):
         out = x
         skips = []
         out = self.input_layer(out)
@@ -84,3 +93,10 @@ class WaveNet(nn.Module):
         out = torch.cat([s[:, :, -out.size(2) :] for s in skips], dim=1)
         out = self.linear_mix(out)
         return out
+
+    def compute_receptive_field(self):
+        receptive_field = 1
+        for hidden in self.hidden:
+            dilation, kernel_size = hidden.dilation[0], hidden.kernel_size[0]
+            receptive_field += (kernel_size - 1) * dilation
+        return receptive_field

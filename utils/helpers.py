@@ -31,10 +31,12 @@ def load_audio(input, sample_rate):
     
     return x_p, fs_x, input_name
 
+def peak_normalize(tensor):
+    return tensor / tensor.abs().max()
 
 def load_data(datadir, batch_size):
     """Load and split the dataset"""
-    trainset = SpringDataset(root_dir=datadir, split='train')
+    trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
     train_size = int(0.8 * len(trainset))
     val_size = len(trainset) - train_size
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
@@ -42,7 +44,7 @@ def load_data(datadir, batch_size):
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
-    testset = SpringDataset(root_dir=datadir, split="test")
+    testset = SpringDataset(root_dir=datadir, split="test", transform=peak_normalize)
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, valid_loader, test_loader
@@ -51,11 +53,11 @@ def load_data(datadir, batch_size):
 def select_device(device):
     if device is None: 
         if torch.cuda.is_available():
-            device = torch.device("cuda:0")  # use the first cuda device
+            device = torch.device("cuda")
         else:
-            device = torch.device("cpu")  # default to cpu if no cuda device is available
+            device = torch.device("cpu")
     else:
-        device = torch.device(device)  # use the user-specified device
+        device = torch.device(device)
     print(f"Selected device: {device}")
     
     return device
@@ -74,13 +76,10 @@ def initialize_model(device, hparams):
         ).to(device)
     elif hparams['model_type'] == "WaveNet":
         model = WaveNet(
-            n_inputs = hparams['n_inputs'], 
-            n_outputs = hparams['n_outputs'], 
-            n_blocks = hparams['n_blocks'],
+            num_channels = hparams['num_channels'],
+            dilation_depth=hparams['dilation_depth'],
+            num_repeat=hparams['num_repeat'],
             kernel_size = hparams['kernel_size'],
-            n_channels = hparams['n_channels'], 
-            dilation_growth = hparams['dilation_growth'],
-            cond_dim = hparams['cond_dim'],
         ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
@@ -112,9 +111,10 @@ def load_model_checkpoint(device, checkpoint_path):
 
 def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp):
     args = parse_args()
-    save_to = Path(args.checkpoint_path) / f'tcn_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+    model_type = hparams['model_type']
+    save_to = Path(args.checkpoint_path) / f'{model_type}_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
     torch.save({
-        'model_type': type(model).__name__,
+        'model_type': model_type,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),

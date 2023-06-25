@@ -102,13 +102,13 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 ├── models
 ├── notebooks
 ├── results
-│   ├── checkpoints
+│   ├── checkpoints         # saved models
 │   ├── plots
-│   └── runs
-├── scripts
-├── utils
-├── config.py
-├── inference.py
+│   └── runs                # tensorboard logs
+├── scripts                 # bash scripts
+├── utils                   # IR, TF and RT60 measurements
+├── config.py               # CLI arguments
+├── inference.py          
 ├── test.py
 ├── train.py
 ├── LICENSE
