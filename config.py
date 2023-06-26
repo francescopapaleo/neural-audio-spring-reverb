@@ -14,8 +14,8 @@ def parse_args():
     # Model
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=50, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
+    parser.add_argument('--n_epochs', type=int, default=25, help='the total number of epochs')
+    parser.add_argument('--batch_size', type=int, default=32, help='batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--crop', type=int, default=3200, help='crop size')
         
