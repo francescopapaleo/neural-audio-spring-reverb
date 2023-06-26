@@ -10,9 +10,6 @@ from models.TCN import TCN
 from models.WaveNet import WaveNet
 from config import parse_args
 
-args = parse_args()
-sample_rate = args.sample_rate
-
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
     if isinstance(input, str):
@@ -66,6 +63,8 @@ def select_device(device):
 
 
 def initialize_model(device, hparams):
+    args = parse_args()
+    sample_rate = args.sample_rate
     if hparams['model_type'] == "TCN":
         model = TCN(
             n_inputs = hparams['n_inputs'], 
