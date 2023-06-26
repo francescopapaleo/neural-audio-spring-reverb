@@ -68,24 +68,24 @@ def main():
 
     device = select_device(args.device)
 
-    # hparams = {
-    #     'model_type': 'TCN',
-    #     'n_inputs': 1,
-    #     'n_outputs': 1,
-    #     'n_blocks': 5,
-    #     'kernel_size': 13,
-    #     'n_channels': 8,
-    #     'dilation_growth': 8,
-    #     'cond_dim': 0,
-    # }
-
     hparams = {
-        'model_type': 'WaveNet',
-        'num_channels': 2,
-        'dilation_depth': 2,
-        'num_repeat': 32,
-        'kernel_size': 13
-        }
+        'model_type': 'TCN',
+        'n_inputs': 1,
+        'n_outputs': 1,
+        'n_blocks': 5,
+        'kernel_size': 13,
+        'n_channels': 8,
+        'dilation_growth': 8,
+        'cond_dim': 2,
+    }
+
+    # hparams = {
+    #     'model_type': 'WaveNet',
+    #     'num_channels': 2,
+    #     'dilation_depth': 2,
+    #     'num_repeat': 32,
+    #     'kernel_size': 13
+    #     }
 
     # Initialize model
     model, rf, params = initialize_model(device, hparams)
