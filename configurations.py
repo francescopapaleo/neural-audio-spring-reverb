@@ -70,6 +70,17 @@ configs = [{
     'cond_dim': 0,
     },
     {
+    'conf_name': 'TCN_3',
+    'model_type': 'TCN',
+    'n_inputs': 1,
+    'n_outputs': 1,
+    'n_blocks': 5,
+    'kernel_size': 5,
+    'n_channels': 32,
+    'dilation_growth': 4,
+    'cond_dim': 0,
+    },
+    {
     'conf_name': 'WaveNet_1',
     'model_type': 'WaveNet',
     'num_channels': 2,
@@ -84,6 +95,14 @@ configs = [{
     'dilation_depth': 10,
     'num_repeat': 3,
     'kernel_size': 15
+    },
+    {
+    'conf_name': 'WaveNet_3',
+    'model_type': 'WaveNet',
+    'num_channels': 16,
+    'dilation_depth': 10,
+    'num_repeat': 4,
+    'kernel_size': 10
     },
     ]
 
