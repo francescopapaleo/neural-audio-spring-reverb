@@ -9,7 +9,7 @@ from typing import Tuple
 from pathlib import Path
 
 from utils.plotter import plot_impulse_response
-from config import parse_args
+from configurations import parse_args
 
 
 def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndarray:

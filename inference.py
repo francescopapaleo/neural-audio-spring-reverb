@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 
 from utils.helpers import load_audio, select_device, load_model_checkpoint
-from config import parse_args
+from configurations import parse_args
 
 torch.manual_seed(42)
 

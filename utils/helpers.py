@@ -8,7 +8,7 @@ from pathlib import Path
 from data.dataset import SpringDataset
 from models.TCN import TCN
 from models.WaveNet import WaveNet
-from config import parse_args
+from configurations import parse_args
 
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
@@ -31,7 +31,13 @@ def load_audio(input, sample_rate):
     return x_p, fs_x, input_name
 
 def peak_normalize(tensor):
-    return tensor / tensor.abs().max()
+    # max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
+    # normalized_tensor = tensor / max_values
+    # return normalized_tensor
+    torch.nn.functional.normalize(tensor, p=2, dim=1)
+    return tensor
+
+
 
 def load_data(datadir, batch_size):
     """Load and split the dataset"""

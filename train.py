@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 from utils.helpers import load_data, select_device, initialize_model, save_model_checkpoint
-from config import parse_args
+from configurations import parse_args, configs
 
 torch.manual_seed(42)
 torch.cuda.empty_cache()            
@@ -68,24 +68,11 @@ def main():
 
     device = select_device(args.device)
 
-    hparams = {
-        'model_type': 'TCN',
-        'n_inputs': 1,
-        'n_outputs': 1,
-        'n_blocks': 5,
-        'kernel_size': 13,
-        'n_channels': 8,
-        'dilation_growth': 8,
-        'cond_dim': 2,
-    }
-
-    # hparams = {
-    #     'model_type': 'WaveNet',
-    #     'num_channels': 2,
-    #     'dilation_depth': 2,
-    #     'num_repeat': 32,
-    #     'kernel_size': 13
-    #     }
+     # Find the configuration in the list
+    sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
+    if sel_config is None:
+        raise ValueError('Configuration not found')
+    hparams = sel_config
 
     # Initialize model
     model, rf, params = initialize_model(device, hparams)

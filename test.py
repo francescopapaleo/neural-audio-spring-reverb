@@ -8,7 +8,7 @@ from pathlib import Path
 
 from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
 from utils.helpers import load_data, select_device, load_model_checkpoint
-from config import parse_args
+from configurations import parse_args
 
 torch.manual_seed(42)
 
@@ -80,7 +80,8 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
 
 def main():
     args = parse_args()
-
+    torch.cuda.empty_cache()
+    
     device = select_device(args.device)
 
     model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)

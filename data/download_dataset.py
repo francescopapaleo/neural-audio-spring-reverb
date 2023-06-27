@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from config import parse_args
+from configurations import parse_args
 
 if __name__ == "__main__":
 

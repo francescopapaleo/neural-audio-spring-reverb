@@ -9,7 +9,7 @@ from scipy.fft import fft
 from signals import generate_reference
 from plotter import plot_impulse_response, plot_transfer_function
 from inference import make_inference
-from config import parse_args
+from configurations import parse_args
 
 
 def generate_impulse_response(load, sample_rate, device, duration):

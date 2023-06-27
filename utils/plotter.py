@@ -8,7 +8,7 @@ import torch
 import torchaudio.transforms as T
 import librosa
 from pathlib import Path
-from config import parse_args
+from configurations import parse_args
 
 def save_plot(plt, file_name):
     args = parse_args()

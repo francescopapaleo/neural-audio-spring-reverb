@@ -15,7 +15,7 @@ from scipy.io import wavfile
 from pathlib import Path
 
 from plotter import plot_rt60
-from config import parse_args
+from configurations import parse_args
 
 eps = 1e-15
 
