@@ -37,21 +37,25 @@ def parse_args():
     return parser.parse_args()
 
 configs = [{
-    'conf_name': 'TCN_Baseline',
+    'conf_name': 'baseline',
     'model_type': 'TCN',
-    'n_inputs': 1,
-    'n_outputs': 1,
-    'n_blocks': 5,
-    'kernel_size': 9,
     'n_channels': 32,
     'dilation_growth': 10,
+    'n_blocks': 5,
+    'kernel_size': 9,
     'cond_dim': 2,
+    },
+    {
+    'conf_name': 'WaveNet0',
+    'model_type': 'WaveNet',
+    'num_channels': 16,
+    'dilation_depth': 10,
+    'num_repeat': 1,
+    'kernel_size': 5,
     },
     {
     'conf_name': 'TCN_1',
     'model_type': 'TCN',
-    'n_inputs': 1,
-    'n_outputs': 1,
     'n_blocks': 5,
     'kernel_size': 9,
     'n_channels': 64,

@@ -74,8 +74,6 @@ def initialize_model(device, hparams):
     sample_rate = args.sample_rate
     if hparams['model_type'] == "TCN":
         model = TCN(
-            n_inputs = hparams['n_inputs'], 
-            n_outputs = hparams['n_outputs'], 
             n_blocks = hparams['n_blocks'],
             kernel_size = hparams['kernel_size'],
             n_channels = hparams['n_channels'], 
