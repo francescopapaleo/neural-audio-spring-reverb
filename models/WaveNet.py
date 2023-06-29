@@ -68,7 +68,7 @@ class WaveNet(nn.Module):
             out_channels=1,
             kernel_size=1,
         )
-        self.num_channels = n_channels
+        self.n_channels = n_channels
 
     def forward(self, x, c=None):
         out = x
@@ -81,7 +81,7 @@ class WaveNet(nn.Module):
 
             # gated activation
             #   split (32,16,3) into two (16,16,3) for tanh and sigm calculations
-            out_hidden_split = torch.split(out_hidden, self.num_channels, dim=1)
+            out_hidden_split = torch.split(out_hidden, self.n_channels, dim=1)
             out = torch.tanh(out_hidden_split[0]) * torch.sigmoid(out_hidden_split[1])
 
             skips.append(out)
