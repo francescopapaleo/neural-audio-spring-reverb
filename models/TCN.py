@@ -90,15 +90,15 @@ class TCN(torch.nn.Module):
                  n_inputs=1,
                  n_outputs=1,
                  n_blocks=10, 
-                 kernel_size=13,
-                 n_channels=64, 
-                 dilation_growth=4, 
+                 kernel_size=9,
+                 n_channels=32, 
+                 dilation=4, 
                  cond_dim=0):
         
         super(TCN, self).__init__()
         self.kernel_size = kernel_size
         self.n_channels = n_channels
-        self.dilation_growth = dilation_growth
+        self.dilation_growth = dilation
         self.n_blocks = n_blocks
         self.stack_size = n_blocks
 
@@ -117,7 +117,7 @@ class TCN(torch.nn.Module):
                 out_ch = n_channels
                 act = True
       
-            dilation = dilation_growth ** n
+            dilation = dilation ** n
             self.blocks.append(TCNBlock(in_ch, out_ch, kernel_size, 
                                         dilation, cond_dim=cond_dim, activation=act))
 

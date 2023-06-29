@@ -77,13 +77,13 @@ def initialize_model(device, hparams):
             n_blocks = hparams['n_blocks'],
             kernel_size = hparams['kernel_size'],
             n_channels = hparams['n_channels'], 
-            dilation_growth = hparams['dilation_growth'],
+            dilation = hparams['dilation_growth'],
             cond_dim = hparams['cond_dim'],
         ).to(device)
     elif hparams['model_type'] == "WaveNet":
         model = WaveNet(
-            num_channels = hparams['num_channels'],
-            dilation_depth=hparams['dilation_depth'],
+            n_channels = hparams['num_channels'],
+            dilation=hparams['dilation_depth'],
             num_repeat=hparams['num_repeat'],
             kernel_size = hparams['kernel_size'],
         ).to(device)

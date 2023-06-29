@@ -48,27 +48,27 @@ def _conv_stack(dilations, in_channels, out_channels, kernel_size):
 
 class WaveNet(nn.Module):
     def __init__(self, 
-                 num_channels, 
-                 dilation_depth, 
+                 n_channels, 
+                 dilation, 
                  num_repeat, 
                  kernel_size):
         super(WaveNet, self).__init__()
-        dilations = [2 ** d for d in range(dilation_depth)] * num_repeat
-        internal_channels = int(num_channels * 2)
-        self.hidden = _conv_stack(dilations, num_channels, internal_channels, kernel_size)
-        self.residuals = _conv_stack(dilations, num_channels, num_channels, 1)
+        dilations = [2 ** d for d in range(dilation)] * num_repeat
+        internal_channels = int(n_channels * 2)
+        self.hidden = _conv_stack(dilations, n_channels, internal_channels, kernel_size)
+        self.residuals = _conv_stack(dilations, n_channels, n_channels, 1)
         self.input_layer = CausalConv1d(
             in_channels=1,
-            out_channels=num_channels,
+            out_channels=n_channels,
             kernel_size=1,
         )
 
         self.linear_mix = nn.Conv1d(
-            in_channels=num_channels * dilation_depth * num_repeat,
+            in_channels=n_channels * dilation * num_repeat,
             out_channels=1,
             kernel_size=1,
         )
-        self.num_channels = num_channels
+        self.num_channels = n_channels
 
     def forward(self, x, c=None):
         out = x
