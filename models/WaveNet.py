@@ -80,7 +80,7 @@ class WaveNet(nn.Module):
             out_hidden = hidden(x)
 
             # gated activation
-            #   split (32,16,3) into two (16,16,3) for tanh and sigm calculations
+            # split (32,16,3) into two (16,16,3) for tanh and sigm calculations
             out_hidden_split = torch.split(out_hidden, self.n_channels, dim=1)
             out = torch.tanh(out_hidden_split[0]) * torch.sigmoid(out_hidden_split[1])
 

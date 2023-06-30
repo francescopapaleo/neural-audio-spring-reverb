@@ -1,5 +1,6 @@
 # Local files that should be ignored
 .DS_Store
+results/
 
 # IDE
 .vscode

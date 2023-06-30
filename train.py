@@ -69,6 +69,7 @@ def main():
     device = select_device(args.device)
 
      # Find the configuration in the list
+    print(f"Using configuration {args.config}")
     sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
     if sel_config is None:
         raise ValueError('Configuration not found')
