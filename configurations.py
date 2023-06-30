@@ -119,7 +119,7 @@ configs = [{
     {
     'conf_name': 'WN-2',
     'model_type': 'WaveNet',
-    'n_channels': 8,
+    'n_channels': 16,
     'dilation': 4,
     'num_repeat': 24,
     'kernel_size': 5,
@@ -135,7 +135,7 @@ configs = [{
     {
     'conf_name': 'WN-4',
     'model_type': 'WaveNet',
-    'n_channels': 8,
+    'n_channels': 16,
     'dilation': 10,
     'num_repeat': 24,
     'kernel_size': 5,
@@ -183,9 +183,9 @@ configs = [{
     {
     'conf_name': 'WN-10',
     'model_type': 'WaveNet',
-    'n_channels': 8,
-    'dilation': 10,
-    'num_repeat': 10,
-    'kernel_size': 5,
+    'n_channels': 16,
+    'dilation': 6,
+    'num_repeat': 24,
+    'kernel_size': 3,
     },
     ]

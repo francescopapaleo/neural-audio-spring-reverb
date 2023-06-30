@@ -1,7 +1,8 @@
 # Modeling Spring Reverb with Neural Audio Effects
+
 Thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.
 
-### :warning: WORK IN PROGRESS :warning:
+## :warning: WORK IN PROGRESS :warning:
 
 ## Abstract
 
@@ -134,10 +135,10 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 ### Citation
 
 ```bibtex
-@article{YourName,
-  title={Your Title},
-  author={Your team},
-  journal={Location},
-  year={Year}
+@article{Francesco Papaleo,
+  title={Modeling Spring Reverb with Neural Audio Effects},
+  author={},
+  journal={},
+  year={2023}
 }
 ```  

@@ -86,7 +86,7 @@ def main():
 
     model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
     
-    batch_size = hparams['batch_size']
+    batch_size = 16
     n_epochs = hparams['n_epochs']
     lr = hparams['lr']
 
