@@ -1,0 +1,3 @@
+[submodule "spring-reverb-notebooks"]
+	path = spring-reverb-notebooks
+	url = https://github.com/francescopapaleo/spring-reverb-notebooks.git
