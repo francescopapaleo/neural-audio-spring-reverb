@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# configs=("TCN-1" "TCN-2" "TCN-3" "TCN-4" "TCN-5" "TCN-6" "WN-1" "WN-2" "WN-3" "WN-4" "WN-5" "WN-6")
-configs=("WN-8" "WN-9")
+configs=("TCN-1" "TCN-2" "TCN-3" "TCN-4" "TCN-5" "TCN-6" "TCN-7" "TCN-8")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(25)
+n_epochs=(50)
 batch_size=(32)
 
 for epoch in "${n_epochs[@]}"; do
