@@ -3,6 +3,7 @@
 import torch
 import auraloss
 import numpy as np
+from torchinfo import summary
 
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -23,6 +24,7 @@ def training_loop(model, criterion, esr, optimizer, train_loader, device, writer
     for batch_idx, (input, target) in enumerate(train_loader):
         optimizer.zero_grad()
         input, target = input.to(device), target.to(device)
+        # print(input.shape)
         output = model(input, c)
         loss = criterion(output, target)             
         metric = esr(output, target)
@@ -82,11 +84,18 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     log_dir = Path(args.logdir) / f"{hparams['model_type']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
-
-    model_str = str(model)
-    writer.add_text('Model Architecture', model_str, 0)
-    writer.close()
     
+    with torch.no_grad():
+        inputs = torch.randn(args.batch_size, 1, 32000).to(device)
+        dummy_c = torch.randn(1, 1, 2).to(device)
+        writer.add_graph(model, (inputs, dummy_c))
+        summary(model, input_data=[inputs, dummy_c])
+
+        del inputs, dummy_c
+    torch.cuda.empty_cache()
+
+   
+
     # Define loss function and optimizer
     criterion = auraloss.freq.STFTLoss().to(device)  
     esr = auraloss.time.ESRLoss().to(device)
