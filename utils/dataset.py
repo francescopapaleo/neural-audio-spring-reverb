@@ -52,6 +52,7 @@ class SpringDataset(torch.utils.data.Dataset):
         # Check if the files are not empty
         if self.dry_file.stat().st_size == 0 or self.wet_file.stat().st_size == 0:
             raise ValueError("Data files are empty. Please check the data integrity.")
+        
         print(f"Found {len(self.file_list)} files in {self.root_dir}")
         print(f"Using {self.dry_file.name} and {self.wet_file.name} for {self.split} split.")
 

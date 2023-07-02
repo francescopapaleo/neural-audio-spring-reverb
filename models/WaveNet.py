@@ -53,6 +53,12 @@ class WaveNet(nn.Module):
                  num_repeat, 
                  kernel_size):
         super(WaveNet, self).__init__()
+
+        self.n_channels = n_channels
+        self.dilation = dilation
+        self.num_repeat = num_repeat
+        self.kernel_size = kernel_size
+
         dilations = [2 ** d for d in range(dilation)] * num_repeat
         internal_channels = int(n_channels * 2)
         self.hidden = _conv_stack(dilations, n_channels, internal_channels, kernel_size)
@@ -95,8 +101,9 @@ class WaveNet(nn.Module):
         return out
 
     def compute_receptive_field(self):
-        receptive_field = 1
-        for hidden in self.hidden:
-            dilation, kernel_size = hidden.dilation[0], hidden.kernel_size[0]
-            receptive_field += (kernel_size - 1) * dilation
-        return receptive_field
+        # Compute the receptive field for each layer
+        layers_rf = [self.kernel_size * (2 ** d) for d in range(self.dilation)] * self.num_repeat
+        # The total receptive field is the sum of the receptive field of all layers
+        total_rf = sum(layers_rf)
+        return total_rf
+

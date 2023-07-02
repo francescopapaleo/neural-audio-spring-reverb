@@ -3,8 +3,8 @@
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Define the directory with the checkpoints
-checkpoints_dir="results/checkpoints/30"
-log_dir="results/runs/30C_test"
+checkpoints_dir="results/checkpoints/"
+log_dir="results/runs/"
 
 # Iterate over all .pt (PyTorch checkpoint) files in the directory
 for checkpoint in "$checkpoints_dir"/*.pt; do

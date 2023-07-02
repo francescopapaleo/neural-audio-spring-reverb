@@ -77,6 +77,15 @@ def main():
 
     # Initialize model
     model, rf, params = initialize_model(device, hparams)
+
+    # Initialize Tensorboard writer
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    writer = SummaryWriter(log_dir=log_dir)
+
+    model_str = str(model)
+    writer.add_text('Model Architecture', model_str, 0)
+    writer.close()
     
     # Define loss function and optimizer
     criterion = auraloss.freq.STFTLoss().to(device)  
@@ -95,11 +104,6 @@ def main():
         gamma=0.1,
         verbose=False,
     )
-
-    # Initialize Tensorboard writer
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
-    writer = SummaryWriter(log_dir=log_dir)
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
