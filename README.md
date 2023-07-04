@@ -136,9 +136,9 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 
 ```bibtex
 @article{Francesco Papaleo,
-  title={Modeling Spring Reverb with Neural Audio Effects},
-  author={},
-  journal={},
+  title={Neural Audio Effect Strategies for Spring Reverb Modelling},
+  author={Francesco Papaleo, Xavier Lizarraga},
+  journal={Master Thesis},
   year={2023}
 }
 ```  
