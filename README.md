@@ -1,4 +1,4 @@
-# Modeling Spring Reverb with Neural Audio Effects
+# Neural Audio Strategies for Spring Reverb Modelling
 
 Thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.
 
