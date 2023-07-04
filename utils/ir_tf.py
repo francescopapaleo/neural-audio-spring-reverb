@@ -6,19 +6,25 @@ from pathlib import Path
 from scipy.io import wavfile
 from scipy.fft import fft
 
-from signals import generate_reference
-from plotter import plot_impulse_response, plot_transfer_function
+from utils.signals import generate_reference
+from utils.plotter import plot_impulse_response, plot_transfer_function
+from utils.helpers import load_audio, load_model_checkpoint
 from inference import make_inference
 from configurations import parse_args
 
 
-def generate_impulse_response(load, sample_rate, device, duration):
+def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
     
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
+
     # Generate the reference signals
-    sweep, inverse_filter, reference = generate_reference(args.duration, args.sample_rate) 
+    sweep, inverse_filter, reference = generate_reference(duration, sample_rate) 
+
+    x_p, fs_x, input_name = load_audio(sweep, args.sample_rate)
+
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
-        args.load, sweep, args.sample_rate, args.device, max_length=None, stereo=False, tail=None, 
+        x_p, fs_x, model, device, max_length=None, stereo=False, tail=None, 
         width=50., c0=0., c1=0., gain_dB=0., mix=100.)
 
     # Assuming sweep_output is a torch.Tensor
@@ -40,7 +46,7 @@ def generate_impulse_response(load, sample_rate, device, duration):
     measured = np.convolve(sweep_output, inverse_filter)
 
     # Save and plot the measured impulse response
-    save_as = f"{Path(load).stem}_IR.wav"
+    save_as = f"{Path(checkpoint_path).stem}_IR.wav"
     wavfile.write(f"audio/processed/{save_as}", sample_rate, measured.astype(np.float32))
     print(f"Saved measured impulse response to {save_as}")
 
@@ -51,7 +57,7 @@ def generate_impulse_response(load, sample_rate, device, duration):
     # print(type(inverse_filter))
     # print(type(measured))
 
-    plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(load).stem)
+    plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint_path).stem)
 
     return measured, reference
 
@@ -92,10 +98,10 @@ if __name__ == "__main__":
     args = parse_args()
 
     if args.mode == 'ir':
-        generate_impulse_response(args.load, args.sample_rate, args.device, args.duration)
+        generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
 
     else: # mode == 'tf'
-        measured_ir, reference = generate_impulse_response(args.load, args.sample_rate, args.device, args.duration)
+        measured_ir, reference = generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
         magnitude, phase = generate_transfer_function(reference, measured_ir, args.sample_rate)
-        plot_transfer_function(magnitude, phase, args.sample_rate, file_name=Path(args.load).stem)
+        plot_transfer_function(magnitude, phase, args.sample_rate, file_name=Path(args.checkpoint_path).stem)
 

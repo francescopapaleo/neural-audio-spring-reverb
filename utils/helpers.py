@@ -110,7 +110,8 @@ def load_model_checkpoint(device, checkpoint_path):
         model, _, _ = initialize_model(device, hparams)
 
         model.load_state_dict(checkpoint['model_state_dict'])
-        
+        print(f"Model initialized: {hparams['model_type']}")
+            
     except Exception as e:
         raise RuntimeError(f"Failed to load model state from checkpoint: {e}")
     print(f"Model loaded from checkpoint: {checkpoint_path}")
