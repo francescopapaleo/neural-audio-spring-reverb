@@ -1,4 +1,4 @@
-# Neural Audio Strategies for Spring Reverb Modelling
+# Neural Audio Effect Strategies for Spring Reverb Modelling
 
 Thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.
 
@@ -135,10 +135,13 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 ### Citation
 
 ```bibtex
-@article{Francesco Papaleo,
-  title={Neural Audio Effect Strategies for Spring Reverb Modelling},
-  author={Francesco Papaleo, Xavier Lizarraga},
-  journal={Master Thesis},
-  year={2023}
+@misc{papaleo2023,
+  title   = {Neural Audio Effects Strategies for Spring Reverb Modelling},
+  author  = {Francesco Papaleo and Xavier Lizarraga},
+  school  = {Universitat Pompeu Fabra},
+  year    = {2023},
+  month   = {},
+  doi     = {},
+  url     = {}
 }
 ```  
