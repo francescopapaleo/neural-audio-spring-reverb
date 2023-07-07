@@ -76,7 +76,7 @@ class WaveNet(nn.Module):
         )
         self.n_channels = n_channels
 
-    def forward(self, x, c=None):
+    def forward(self, x, c = None):
         out = x
         skips = []
         out = self.input_layer(out)

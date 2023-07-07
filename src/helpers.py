@@ -92,18 +92,18 @@ def initialize_model(device, hparams):
     elif hparams['model_type'] == 'LSTM':
         model = LSTMModel(
             input_size=hparams['input_size'], 
-            hidden_sizes=hparams['hidden_sizes'], 
-            output_size=hparams['output_size'], 
-            n_layers=hparams['n_layers']
+            hidden_size=hparams['hidden_size'], 
+            output_size=hparams['output_size'],
+            num_layers=hparams['num_layers'],
         ).to(device)
-    elif hparams['model_type'] == 'cWaveNet':
-        model = ConditionedWaveNet(
-            n_channels = hparams['n_channels'],
-            dilation=hparams['dilation'],
-            num_repeat=hparams['num_repeat'],
-            kernel_size = hparams['kernel_size'],
-            cond_dim = hparams['cond_dim'],
-        ).to(device)
+    # elif hparams['model_type'] == 'cWaveNet':
+    #     model = ConditionedWaveNet(
+    #         n_channels = hparams['n_channels'],
+    #         dilation=hparams['dilation'],
+    #         num_repeat=hparams['num_repeat'],
+    #         kernel_size = hparams['kernel_size'],
+    #         cond_dim = hparams['cond_dim'],
+    #     ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
     print(f"Model initialized: {hparams['conf_name']}")

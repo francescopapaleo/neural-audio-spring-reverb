@@ -96,13 +96,15 @@ def main():
     log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     
-    with torch.no_grad():
-        inputs = torch.randn(args.batch_size, 1, 32000).to(device)
-        dummy_c = torch.randn(1, 1, 2).to(device)
-        model_summary = summary(model, input_data=[inputs, dummy_c])
-        writer.add_text('model_summary', str(model_summary), global_step=0)
+    writer.add_text('model_summary', str(model), global_step=0)
 
-        del inputs, dummy_c
+    # with torch.no_grad():
+    #     inputs = torch.randn(args.batch_size, 1, 32000).to(device)
+    #     dummy_c = torch.randn(1, 1, 2).to(device)
+    #     model_summary = summary(model, input_data=[inputs, dummy_c])
+    #     writer.add_text('model_summary', str(model_summary), global_step=0)
+
+        # del inputs, dummy_c
     torch.cuda.empty_cache()
 
     # Define loss function and optimizer
@@ -115,9 +117,9 @@ def main():
     
 
     alpha = 0.5
-    criterion_a = mrstft
+    criterion_a = mae
     criterion_b = esr
-    criterion_str = f"mrstft+esr"
+    criterion_str = f"mae+esr"
     metrics = {'training/esr': [],'validation/esr': []}
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)

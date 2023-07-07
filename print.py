@@ -28,7 +28,12 @@ with open('results/model_summary.txt', 'w') as f:
         f.write("\n")
         f.write(f"Model name: {model_name}")
         f.write("\n")
-        f.write(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms")   
+        if hparams['model_type'] in ["TCN", "WaveNet"]:
+                rf = model.compute_receptive_field()
+                f.write(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms")   
+        else:
+            rf = None
+        
         f.write("\n")
         f.write(f"Number of parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
         f.write("\n")

@@ -12,7 +12,7 @@ from configurations import parse_args
 
 torch.manual_seed(42)
 
-def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
+def evaluate_model(model, device, model_name, hparams, test_loader, writer, sample_rate):
     mae = torch.nn.L1Loss()
     mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
@@ -39,9 +39,16 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
             c = c.to(device)
 
             # pad input and target to match receptive field
-            rf = model.compute_receptive_field()
-            input_pad = torch.nn.functional.pad(input, (rf-1, 0))
-            target_pad = torch.nn.functional.pad(target, (rf-1, 0))
+            # Conditionally compute the receptive field for certain model types
+            if hparams['model_type'] in ["TCN", "WaveNet"]:
+                rf = model.compute_receptive_field()
+                print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')
+                input_pad = torch.nn.functional.pad(input, (rf-1, 0))
+                target_pad = torch.nn.functional.pad(target, (rf-1, 0))
+            else:
+                rf = None
+                input_pad = input
+                target_pad = target
 
             # forward pass
             output = model(input_pad, c)
@@ -99,7 +106,7 @@ def main():
 
     _, _, test_loader = load_data(args.datadir, batch_size)
 
-    test_results, global_step = evaluate_model(model, device, model_name, test_loader, writer, args.sample_rate)
+    test_results, global_step = evaluate_model(model, device, model_name, hparams, test_loader, writer, args.sample_rate)
 
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])
