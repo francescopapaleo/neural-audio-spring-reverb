@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
-from utils.helpers import load_data, select_device, initialize_model, save_model_checkpoint
+from src.helpers import load_data, select_device, initialize_model, save_model_checkpoint
 from configurations import parse_args, configs
 
 torch.manual_seed(42)
@@ -36,6 +36,9 @@ def training_loop(model, criterion_a, criterion_b, alpha, esr, optimizer, train_
         optimizer.step()                            
         train_loss += loss.item()
         train_metric += metric.item()
+
+        lr = optimizer.param_groups[0]['lr']
+        writer.add_scalar('training/learning_rate', lr, global_step=global_step)
 
     avg_train_loss = train_loss / len(train_loader)
     avg_train_metric = train_metric / len(train_loader)
@@ -96,8 +99,8 @@ def main():
     with torch.no_grad():
         inputs = torch.randn(args.batch_size, 1, 32000).to(device)
         dummy_c = torch.randn(1, 1, 2).to(device)
-        writer.add_graph(model, (inputs, dummy_c))
-        summary(model, input_data=[inputs, dummy_c])
+        model_summary = summary(model, input_data=[inputs, dummy_c])
+        writer.add_text('model_summary', str(model_summary), global_step=0)
 
         del inputs, dummy_c
     torch.cuda.empty_cache()
@@ -172,9 +175,9 @@ def main():
             else:
                 patience_counter += 1  # increase the counter if performance did not improve
 
-            # Early stopping if performance did not improve after 5 epochs
-            if patience_counter >= 10:
-                print("Early stopping triggered after 10 epochs without improvement in validation loss.")
+            # Early stopping if performance did not improve after n epochs
+            if patience_counter >= 20:
+                print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
                 break
 
     finally:

@@ -5,10 +5,11 @@ import numpy as np
 from pathlib import Path
 from scipy.io import wavfile
 from scipy.fft import fft
+from scipy import signal
 
-from utils.signals import generate_reference
-from utils.plotter import plot_impulse_response, plot_transfer_function
-from utils.helpers import load_audio, load_model_checkpoint
+from src.signals import generate_reference
+from src.plotter import plot_impulse_response
+from src.helpers import load_audio, load_model_checkpoint
 from inference import make_inference
 from configurations import parse_args
 
@@ -26,21 +27,9 @@ def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
     sweep_output = make_inference(
         x_p, fs_x, model, device, max_length=None, stereo=False, tail=None, 
         width=50., c0=0., c1=0., gain_dB=0., mix=100.)
-
-    # Assuming sweep_output is a torch.Tensor
-    print("Before operation:")
-    print("sweep_output shape:", sweep_output.shape)
-    print("sweep_output dtype:", sweep_output.dtype)
-    print("sweep_output device:", sweep_output.device)
-    print("sweep_output data:\n", sweep_output)
-
+    
     # Perform the operation
     sweep_output = sweep_output[0].cpu().numpy()
-
-    print("\nAfter operation:")
-    print("sweep_output shape:", sweep_output.shape)
-    print("sweep_output dtype:", sweep_output.dtype)
-    print("sweep_output data:\n", sweep_output)
 
     # Convolve the sweep tone with the inverse filter
     measured = np.convolve(sweep_output, inverse_filter)
@@ -49,13 +38,6 @@ def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
     save_as = f"{Path(checkpoint_path).stem}_IR.wav"
     wavfile.write(f"audio/processed/{save_as}", sample_rate, measured.astype(np.float32))
     print(f"Saved measured impulse response to {save_as}")
-
-    # print(len(sweep))
-    # print(len(inverse_filter))
-    # print(len(measured))
-    # print(type(sweep))
-    # print(type(inverse_filter))
-    # print(type(measured))
 
     plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint_path).stem)
 
@@ -79,15 +61,36 @@ def fft_scipy(x: np.ndarray, fft_size: int, axis: int = -1) -> np.ndarray:
         return fft(fft_buffer, fft_size, axis=axis)[:hN]
 
 
-def transfer_function(x: np.ndarray, y: np.ndarray):
-    X = fft_scipy(x, len(y))
-    Y = fft_scipy(y, len(y))
+# def transfer_function(x: np.ndarray, y: np.ndarray):
+#     X = fft_scipy(x, len(y))
+#     Y = fft_scipy(y, len(y))
+#     tf = Y / X
+#     return tf
+
+# def generate_transfer_function(reference, measured_ir, sample_rate):
+#     tf = transfer_function(reference, measured_ir)
+#     magnitude = 20 * np.log10(np.abs(tf))
+#     phase = np.angle(tf) * 180 / np.pi
+#     return magnitude, phase
+
+def transfer_function(x: np.ndarray, y: np.ndarray, n_fft: int, hop_length: int):
+    len_x = len(x)
+    len_y = len(y)
+    
+    # Ensure both signals have the same length
+    if len_x > len_y:
+        x = x[:len_y]
+    elif len_y > len_x:
+        y = y[:len_x]
+    
+    _, _, X = signal.stft(x, nperseg=n_fft, noverlap=hop_length)
+    _, _, Y = signal.stft(y, nperseg=n_fft, noverlap=hop_length)
     tf = Y / X
     return tf
 
-def generate_transfer_function(reference, measured_ir, sample_rate):
-    tf = transfer_function(reference, measured_ir)
-    magnitude = 20 * np.log10(np.abs(tf))
+def generate_transfer_function(reference, measured_ir, n_fft: int, hop_length: int):
+    tf = transfer_function(reference, measured_ir, n_fft, hop_length)
+    magnitude = 20 * np.log10(np.abs(tf) + 1e-10)
     phase = np.angle(tf) * 180 / np.pi
     return magnitude, phase
 
@@ -97,11 +100,40 @@ if __name__ == "__main__":
 
     args = parse_args()
 
+    n_fft = 1024  # or any desired FFT size
+    hop_length = n_fft // 2  # or any desired hop length
+
     if args.mode == 'ir':
         generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
 
     else: # mode == 'tf'
         measured_ir, reference = generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
-        magnitude, phase = generate_transfer_function(reference, measured_ir, args.sample_rate)
-        plot_transfer_function(magnitude, phase, args.sample_rate, file_name=Path(args.checkpoint_path).stem)
+        magnitude, phase = generate_transfer_function(reference, measured_ir, n_fft, hop_length)
+        # plot_transfer_function(magnitude, phase, args.sample_rate, file_name=Path(args.checkpoint_path).stem)
+    
+    import matplotlib.pyplot as plt
+    import numpy as np
 
+    def plot_tf(tf, sample_rate, n_fft, hop_length, file_name):
+        fig, ax = plt.subplots(figsize=(15, 7))
+
+        # Compute the frequencies for each FFT bin
+        freqs = np.linspace(0, sample_rate / 2, tf.shape[0])
+
+        # Compute the times for each frame
+        times = np.arange(tf.shape[1]) * hop_length / sample_rate
+
+        # Compute 10 * log10 of the absolute value of the transfer function to convert to dB
+        tf_dB = 10 * np.log10(np.abs(tf))
+
+        im = ax.imshow(tf_dB, aspect='auto', origin='lower', extent=[times.min(), times.max(), freqs.min(), freqs.max()])
+        ax.set_title('Spectrogram')
+        ax.set_ylabel('Frequency [Hz]')
+        ax.set_xlabel('Time [sec]')
+        fig.colorbar(im, ax=ax, format='%+2.0f dB')
+
+        plt.tight_layout()
+        plt.savefig(f"{file_name}_spectrogram.png")
+        plt.show()
+
+    plot_tf(magnitude, args.sample_rate, n_fft, hop_length, file_name=Path(args.checkpoint_path).stem)

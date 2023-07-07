@@ -4,11 +4,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+from matplotlib.colors import LogNorm
 import torch
 import torchaudio.transforms as T
 import librosa
 from pathlib import Path
 from configurations import parse_args
+from scipy.signal import spectrogram
 
 def save_plot(plt, file_name):
     args = parse_args()
@@ -58,13 +60,39 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     save_plot(fig, file_name + "_IR")
 
 
-def plot_transfer_function(magnitude: np.ndarray, phase: np.ndarray, sample_rate: int, file_name: str):
-    freqs = np.linspace(0, sample_rate / 2, len(magnitude))
-    fig, ax = plt.subplots(2, 1, figsize=(15, 7))
-    plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
-    plot_data(freqs, phase, ax[1], " ", "Frequency [Hz]", "Phase [degrees]")
+# def plot_transfer_function(magnitude: np.ndarray, phase: np.ndarray, sample_rate: int, file_name: str):
+#     freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+#     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
+#     plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
+#     plt.imshow(magnitude, origin='lower', aspect='auto', extent=[0, 1, 0, 1])
+#     plot_data(freqs, phase, ax[1], " ", "Frequency [Hz]", "Phase [degrees]")
+#     plt.suptitle(f"{file_name} - Transfer Function H(w)")
+#     save_plot(fig, file_name + "_TF")
+
+# def plot_transfer_function(magnitude: np.ndarray, phase, sample_rate: int, file_name: str):
+#     freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+
+#     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
+
+#     # Plot the magnitude
+#     plt.imshow(20*np.log10(np.abs(magnitude))+1e-8), ax[0], origin='lower', aspect='auto', extent=[t.min(), t.max(), f.min(), f.max()/1000])
+#     plt.colorbar(format='%+2.0f dB')
+#     plt.title('Spectrogram')
+#     plt.xlabel('Time [sec]')
+#     plt.ylabel('Frequency [kHz]')
+#     plt.tight_layout()
+    # plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
+
+    # Plot the spectrogram
+    # plot_data(freqs, phase, ax[1], "Phase", "Frequency [Hz]", "Phase [degrees]")
+    # ax[1].set_title('Spectrogram')
+    # ax[1].set_ylabel('Frequency [Hz]')
+    # ax[1].set_xlabel('Time [sec]')
+
     plt.suptitle(f"{file_name} - Transfer Function H(w)")
+
     save_plot(fig, file_name + "_TF")
+
 
 
 def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
@@ -125,32 +153,6 @@ def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=No
 def bin_to_freq(bin, sample_rate, n_fft):
     return bin * sample_rate / n_fft
 
-# def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None):
-
-#     spectrogram = T.Spectrogram(n_fft=400, win_length=None, hop_length=None, center=True, pad_mode="reflect", power=2.0)
-#     target_spec = spectrogram(target)
-#     output_spec = spectrogram(output)
-
-#     # Create the figure and subplots
-#     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-    
-#     # Plot target spectrogram
-#     axs[0].set_title(t_label or "Target Spectrogram (db)")
-#     axs[0].set_ylabel("freq bin")
-#     axs[0].set_xlabel("frame")
-#     im_target = axs[0].imshow(librosa.power_to_db(target_spec[0]), origin="lower", aspect="auto")
-#     fig.colorbar(im_target, ax=axs[0])
-    
-#     # Plot output spectrogram
-#     axs[1].set_title(o_label or "Output Spectrogram (db)")
-#     axs[1].set_ylabel("freq bin")
-#     axs[1].set_xlabel("frame")
-#     im_output = axs[1].imshow(librosa.power_to_db(output_spec[0]), origin="lower", aspect="auto")
-#     fig.colorbar(im_output, ax=axs[1])
-    
-#     plt.show(block=False)
-
-#     return fig
 
 def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None): 
     hop_size = 512

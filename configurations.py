@@ -24,9 +24,9 @@ def parse_args():
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
     parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
     parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
-    parser.add_argument('--c0', type=float, default=0, help='c0 parameter for the model')
-    parser.add_argument('--c1', type=float, default=0, help='c1 parameter for the model')
+    parser.add_argument('--width', type=float, default=100, help='width parameter for the model')
+    parser.add_argument('--c0', type=float, default=0.5, help='c0 parameter for the model')
+    parser.add_argument('--c1', type=float, default=1.5, help='c1 parameter for the model')
     parser.add_argument('--gain_dB', type=float, default=0, help='gain in dB for the model')
     parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
     
@@ -64,16 +64,16 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'TCN-10',
+    'conf_name': 'TCN-2k',
     'model_type': 'TCN',
-    'n_channels': 16,
-    'dilation': 10,
-    'n_blocks': 10,
-    'kernel_size': 3,
+    'n_channels': 32,
+    'dilation': 8,
+    'n_blocks': 5,
+    'kernel_size': 9,
     'cond_dim': 2,
     },
     {
-    'conf_name': 'TCN-2k',
+    'conf_name': 'TCN-test',
     'model_type': 'TCN',
     'n_channels': 32,
     'dilation': 8,
@@ -97,14 +97,6 @@ configs = [{
     'num_repeat': 18,
     'kernel_size': 1,
     },
-    # {
-    # 'conf_name': 'WN-22k',
-    # 'model_type': 'WaveNet',
-    # 'n_channels': 16,
-    # 'dilation': 8,
-    # 'num_repeat': 18,
-    # 'kernel_size': 5,
-    # },
     {
     'conf_name': 'WN-1500',
     'model_type': 'WaveNet',
@@ -113,8 +105,18 @@ configs = [{
     'num_repeat': 5,
     'kernel_size': 5,
     },
+    {
+    'conf_name': 'cWaveNet',
+    'model_type': 'cWaveNet',
+    'n_channels': 16,
+    'dilation': 8,
+    'num_repeat': 5,
+    'kernel_size': 5,
+    'cond_dim': 1,
+    },
+
     # {
-    # 'conf_name': 'WN-2',
+    # 'conf_name': 'WN-22k',
     # 'model_type': 'WaveNet',
     # 'n_channels': 16,
     # 'dilation': 4,

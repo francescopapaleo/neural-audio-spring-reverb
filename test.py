@@ -6,8 +6,8 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 
-from utils.plotter import plot_compare_waveform, plot_compare_spectrogram
-from utils.helpers import load_data, select_device, load_model_checkpoint
+from src.plotter import plot_compare_waveform, plot_compare_spectrogram
+from src.helpers import load_data, select_device, load_model_checkpoint
 from configurations import parse_args
 
 torch.manual_seed(42)

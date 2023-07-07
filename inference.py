@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 import time
 
-from utils.helpers import load_audio, select_device, load_model_checkpoint
+from src.helpers import load_audio, select_device, load_model_checkpoint
 from configurations import parse_args
 
 torch.manual_seed(42)
@@ -94,7 +94,7 @@ def main():
 
     # Save the output using torchaudio
     y_hat = y_hat.cpu()
-    torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=16)
+    torchaudio.save(str(output_file_path), y_hat, sample_rate=fs_x, channels_first=True, bits_per_sample=16)
     print(f"Saved processed file to {output_file_path}")
 
 

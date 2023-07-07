@@ -8,7 +8,7 @@ from scipy.io import wavfile
 from typing import Tuple
 from pathlib import Path
 
-from utils.plotter import plot_impulse_response
+from src.plotter import plot_impulse_response
 from configurations import parse_args
 
 

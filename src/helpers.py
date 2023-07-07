@@ -5,9 +5,10 @@ import torchaudio
 import numpy as np
 from pathlib import Path
 
-from utils.dataset import SpringDataset
+from src.dataset import SpringDataset
 from models.TCN import TCN
 from models.WaveNet import WaveNet
+from models.condWaveNet import ConditionedWaveNet
 from models.LSTM import LSTMModel
 from configurations import parse_args
 
@@ -94,6 +95,14 @@ def initialize_model(device, hparams):
             hidden_sizes=hparams['hidden_sizes'], 
             output_size=hparams['output_size'], 
             n_layers=hparams['n_layers']
+        ).to(device)
+    elif hparams['model_type'] == 'cWaveNet':
+        model = ConditionedWaveNet(
+            n_channels = hparams['n_channels'],
+            dilation=hparams['dilation'],
+            num_repeat=hparams['num_repeat'],
+            kernel_size = hparams['kernel_size'],
+            cond_dim = hparams['cond_dim'],
         ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")

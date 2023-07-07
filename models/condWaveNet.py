@@ -1,8 +1,3 @@
-"""
-WaveNet model implementation from:
-https://github.com/GuitarML/PedalNetRT/blob/master/model.py
-"""
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -42,7 +37,7 @@ def _conv_stack(dilations, in_channels, out_channels, kernel_size, cond_dim=None
                     out_channels=out_channels,
                     dilation=d,
                     kernel_size=kernel_size,
-                    num_conditions=cond_dim,
+                    cond_dim=cond_dim,
                 )
                 for i, d in enumerate(dilations)
             ]
@@ -124,17 +119,31 @@ class WaveNet(nn.Module):
 
 class ConditionedCausalConv1d(CausalConv1d):
     def __init__(self, in_channels, out_channels, kernel_size, cond_dim, stride=1, dilation=1, groups=1, bias=True):
-        super(ConditionedCausalConv1d, self).__init__(in_channels, out_channels, kernel_size, stride, dilation, groups, bias)
-        self.conditioning_layer = nn.Linear(cond_dim, out_channels)
+        super(ConditionedCausalConv1d, self).__init__(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+            groups=groups,
+            bias=bias,
+        )
+        self.cond_dim = cond_dim
+        self.conditioning_layer = torch.nn.Conv1d(in_channels=cond_dim, out_channels=out_channels, kernel_size=1)
 
     def forward(self, input, conditions):
         result = super(ConditionedCausalConv1d, self).forward(input)
-        condition_effect = self.conditioning_layer(conditions).unsqueeze(-1)
+        condition_effect = condition_effect.squeeze(-1)
+        
+        # Expand condition_effect to match the size of result
+        condition_effect = condition_effect.expand_as(result)
+        
         result += condition_effect
 
         if self.__padding != 0:
             return result[:, :, : -self.__padding]
         return result
+
 
 class ConditionedWaveNet(WaveNet):
     def __init__(self, n_channels, dilation, num_repeat, kernel_size, cond_dim):
