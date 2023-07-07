@@ -8,6 +8,7 @@ from pathlib import Path
 from utils.dataset import SpringDataset
 from models.TCN import TCN
 from models.WaveNet import WaveNet
+from models.LSTM import LSTMModel
 from configurations import parse_args
 
 
@@ -87,19 +88,29 @@ def initialize_model(device, hparams):
             num_repeat=hparams['num_repeat'],
             kernel_size = hparams['kernel_size'],
         ).to(device)
+    elif hparams['model_type'] == 'LSTM':
+        model = LSTMModel(
+            input_size=hparams['input_size'], 
+            hidden_sizes=hparams['hidden_sizes'], 
+            output_size=hparams['output_size'], 
+            n_layers=hparams['n_layers']
+        ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
-    print(f"Model initialized: {hparams['model_type']}")
+    print(f"Model initialized: {hparams['conf_name']}")
     model.to(device)
     
-    rf = model.compute_receptive_field()
-    params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    # Conditionally compute the receptive field for certain model types
+    if hparams['model_type'] in ["TCN", "WaveNet"]:
+        rf = model.compute_receptive_field()
+        print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')    
+    else:
+        rf = None
 
+    params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"Parameters: {params*1e-3:0.3f} k")
-    print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')    
 
     return model, rf , params
-
 
 def load_model_checkpoint(device, checkpoint_path):
     try:
@@ -110,7 +121,7 @@ def load_model_checkpoint(device, checkpoint_path):
         model, _, _ = initialize_model(device, hparams)
 
         model.load_state_dict(checkpoint['model_state_dict'])
-        print(f"Model initialized: {hparams['model_type']}")
+        print(f"Model initialized: {model_name}")
             
     except Exception as e:
         raise RuntimeError(f"Failed to load model state from checkpoint: {e}")
@@ -122,14 +133,19 @@ def load_model_checkpoint(device, checkpoint_path):
 def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp):
     args = parse_args()
     model_type = hparams['model_type']
-    save_to = Path(args.checkpoint_path) / f'{model_type}_{n_epochs}_{batch_size}_{lr}_{timestamp}.pt'
+    model_name = hparams['conf_name']
+
+    save_path = Path(args.checkpoint_path)
+    save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
+    
+    save_to = Path(args.checkpoint_path) / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'
     torch.save({
         'model_type': model_type,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
         'state_epoch': n_epochs,          
-        'name': f'TCN{n_epochs}_{batch_size}_{lr}_{timestamp}',
+        'name': f'{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}',
         'hparams': hparams,
         'criterion': str(criterion)
     }, save_to)

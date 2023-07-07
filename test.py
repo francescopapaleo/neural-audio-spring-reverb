@@ -16,10 +16,12 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
     mae = torch.nn.L1Loss()
     mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
-    snr = auraloss.time.SNRLoss()
+    stft = auraloss.freq.STFTLoss()
+    dc = auraloss.time.DCLoss()
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
-    criterions = [mae, mse, esr, snr]
-    test_results = {"mae": [], "mse": [], "esr": [], "snr": []}
+    criterions = [mae, mse, esr, dc, mrstft]
+    test_results = {"mae": [], "mse": [], "esr": [], "dc": [], "mrstft": []}
 
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
 
@@ -79,6 +81,7 @@ def evaluate_model(model, device, model_name, test_loader, writer, sample_rate):
     
 
 def main():
+    print("Testing model...")
     args = parse_args()
     torch.cuda.empty_cache()
     
@@ -86,12 +89,12 @@ def main():
 
     model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
     
-    batch_size = 16
+    batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']
     lr = hparams['lr']
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
+    log_dir = Path(args.logdir) /f"test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     _, _, test_loader = load_data(args.datadir, batch_size)

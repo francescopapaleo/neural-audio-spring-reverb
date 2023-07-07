@@ -5,12 +5,12 @@ import torchaudio
 import torchaudio.functional as F
 from pathlib import Path
 from datetime import datetime
+import time
 
 from utils.helpers import load_audio, select_device, load_model_checkpoint
 from configurations import parse_args
 
 torch.manual_seed(42)
-
 
 def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, tail: float, width: float, c0: float, c1: float, gain_dB: float, mix: float) -> torch.Tensor:
     
@@ -33,6 +33,7 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
     gain_ln = 10 ** (gain_dB / 20.0)
 
     # Process audio with the pre-trained model
+    start_time = time.time()
     with torch.no_grad():
         y_wet = torch.zeros((chs, x_p_pad.shape[1]))
 
@@ -49,6 +50,9 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
             y_wet_ch = F.lowpass_biquad(y_wet_ch.view(-1), fs_x, 20000.0)
 
             y_wet[n, :] = y_wet_ch
+    
+    inference_time = time.time() - start_time
+    print(f"Inference Time: {inference_time:.2f} seconds")
 
     x_dry = x_p_pad.to(device)
 

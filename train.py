@@ -15,7 +15,7 @@ from configurations import parse_args, configs
 torch.manual_seed(42)
 torch.cuda.empty_cache()            
 
-def training_loop(model, criterion, esr, optimizer, train_loader, device, writer, global_step):
+def training_loop(model, criterion_a, criterion_b, alpha, esr, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
     train_loss = 0.0
     train_metric = 0.0
@@ -26,7 +26,11 @@ def training_loop(model, criterion, esr, optimizer, train_loader, device, writer
         input, target = input.to(device), target.to(device)
         # print(input.shape)
         output = model(input, c)
-        loss = criterion(output, target)             
+        
+        loss_a = criterion_a(output, target)
+        loss_b = criterion_b(output, target)             
+        loss = alpha * loss_a + (1 - alpha) * loss_b
+        
         metric = esr(output, target)
         loss.backward()                             
         optimizer.step()                            
@@ -36,12 +40,12 @@ def training_loop(model, criterion, esr, optimizer, train_loader, device, writer
     avg_train_loss = train_loss / len(train_loader)
     avg_train_metric = train_metric / len(train_loader)
 
-    writer.add_scalar('training/stft', avg_train_loss, global_step = global_step)
+    writer.add_scalar('training/loss', avg_train_loss, global_step = global_step)
     writer.add_scalar('training/esr', avg_train_metric, global_step = global_step)
 
     return model, avg_train_loss, avg_train_metric
 
-def validation_loop(model, criterion, esr, valid_loader, device, writer, global_step):
+def validation_loop(model, criterion_a, criterion_b, alpha, esr, valid_loader, device, writer, global_step):
     """Validation loop for one epoch"""
     model.eval()
     valid_loss = 0.0
@@ -51,7 +55,11 @@ def validation_loop(model, criterion, esr, valid_loader, device, writer, global_
         for step, (input, target) in enumerate(valid_loader):
             input, target = input.to(device), target.to(device)
             output = model(input, c)
-            loss = criterion(output, target)
+
+            loss_a = criterion_a(output, target)
+            loss_b = criterion_b(output, target)             
+            loss = alpha * loss_a + (1 - alpha) * loss_b
+
             metric = esr(output, target)
             valid_loss += loss.item()                   
             valid_metric += metric.item()
@@ -59,7 +67,7 @@ def validation_loop(model, criterion, esr, valid_loader, device, writer, global_
     avg_valid_loss = valid_loss / len(valid_loader)    
     avg_valid_metric = valid_metric / len(valid_loader)
 
-    writer.add_scalar('validation/stft', avg_valid_loss, global_step = global_step)
+    writer.add_scalar('validation/loss', avg_valid_loss, global_step = global_step)
     writer.add_scalar('validation/esr', avg_valid_metric, global_step = global_step)
     
     return avg_valid_loss, avg_valid_metric
@@ -82,7 +90,7 @@ def main():
 
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.logdir) / f"{hparams['model_type']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     
     with torch.no_grad():
@@ -94,11 +102,19 @@ def main():
         del inputs, dummy_c
     torch.cuda.empty_cache()
 
-   
-
     # Define loss function and optimizer
-    criterion = auraloss.freq.STFTLoss().to(device)  
+    mae = torch.nn.L1Loss().to(device)
     esr = auraloss.time.ESRLoss().to(device)
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+        fft_sizes=[32, 128, 512, 2048],
+        win_lengths=[32, 128, 512, 2048],
+        hop_sizes=[16, 64, 256, 1024]).to(device)
+    
+
+    alpha = 0.5
+    criterion_a = mrstft
+    criterion_b = esr
+    criterion_str = f"mrstft+esr"
     metrics = {'training/esr': [],'validation/esr': []}
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
@@ -119,6 +135,7 @@ def main():
     
     # Initialize minimum validation loss with infinity
     min_valid_loss = np.inf
+    patience_counter = 0
 
     hparams.update({
         'n_epochs': args.n_epochs,
@@ -126,36 +143,46 @@ def main():
         'lr': args.lr,
         'receptive_field': rf,
         'params': params,
+        'criterion': criterion_str,
     })
 
     print(f"Training model for {args.n_epochs} epochs, with batch size {args.batch_size} and learning rate {args.lr}")
-    
-    for epoch in range(args.n_epochs):
-        # Train model
-        model, train_loss, train_metric = training_loop(
-            model, criterion, esr, optimizer, train_loader, device, writer, epoch)
-        metrics['training/esr'].append(train_metric)
-        
-        # Validate model
-        valid_loss, valid_metric = validation_loop(
-            model, criterion, esr, valid_loader, device, writer, epoch)
-        metrics['validation/esr'].append(valid_metric)
+    try:
+        for epoch in range(args.n_epochs):
+            # Train model
+            model, train_loss, train_metric = training_loop(
+                model, criterion_a, criterion_b, alpha, esr, optimizer, train_loader, device, writer, epoch)
+            metrics['training/esr'].append(train_metric)
+            
+            # Validate model
+            valid_loss, valid_metric = validation_loop(
+                model, criterion_a, criterion_b, alpha, esr, valid_loader, device, writer, epoch)
+            metrics['validation/esr'].append(valid_metric)
 
-        # Update learning rate
-        scheduler.step()
+            # Update learning rate
+            scheduler.step()
 
-        # Save the model if it improved
-        if valid_loss < min_valid_loss:
-            min_valid_loss = valid_loss
-            save_model_checkpoint(
-                model, hparams, criterion, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
-            )
+            # Save the model if it improved
+            if valid_loss < min_valid_loss:
+                min_valid_loss = valid_loss
+                save_model_checkpoint(
+                    model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
+                )
+                patience_counter = 0  # reset the counter if performance improved
+            else:
+                patience_counter += 1  # increase the counter if performance did not improve
 
-    final_train_metric = metrics['training/esr'][-1]
-    final_valid_metric = metrics['validation/esr'][-1]
-    writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
+            # Early stopping if performance did not improve after 5 epochs
+            if patience_counter >= 10:
+                print("Early stopping triggered after 10 epochs without improvement in validation loss.")
+                break
 
-    writer.close()
+    finally:
+        final_train_metric = metrics['training/esr'][-1]
+        final_valid_metric = metrics['validation/esr'][-1]
+        writer.add_hparams(hparams, {'Final Training ESR': final_train_metric, 'Final Validation ESR': final_valid_metric})
+
+        writer.close()
 
 if __name__ == "__main__":
     main()
