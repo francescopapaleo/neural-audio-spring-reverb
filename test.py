@@ -60,7 +60,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
                 test_results[name].append(batch_score)
 
             # Plot and save audios every 4 batches
-            if step % 4 ==0:
+            if step % 8 ==0:
                 single_target = target_pad[0]
                 single_output = output_trim[0]
 
