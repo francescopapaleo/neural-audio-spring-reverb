@@ -8,7 +8,7 @@ from pathlib import Path
 from src.dataset import SpringDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, BiLSTM
+from src.networks.LSTM import LSTM, BiLSTM, skipLSTM
 from configurations import parse_args
 
 
@@ -97,6 +97,13 @@ def initialize_model(device, hparams):
         ).to(device)
     elif hparams['model_type'] == 'BiLSTM':
         model = BiLSTM(
+            input_size=hparams['input_size'], 
+            hidden_size=hparams['hidden_size'], 
+            output_size=hparams['output_size'],
+            num_layers=hparams['num_layers'],
+        ).to(device)
+    elif hparams['model_type'] == 'skipLSTM':
+        model = skipLSTM(
             input_size=hparams['input_size'], 
             hidden_size=hparams['hidden_size'], 
             output_size=hparams['output_size'],

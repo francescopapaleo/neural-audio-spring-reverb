@@ -95,6 +95,7 @@ def main():
 
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
+    mse = torch.nn.MSELoss().to(device)
     esr = auraloss.time.ESRLoss().to(device)
     mrstft = auraloss.freq.MultiResolutionSTFTLoss(
         fft_sizes=[32, 128, 512, 2048],
@@ -103,7 +104,7 @@ def main():
 
     alpha = 0.5
     criterion_a = mae
-    criterion_b = esr
+    criterion_b = mse
 
     if criterion_a == mrstft and criterion_b == esr:
         criterion_str = "mrstft+esr"
@@ -111,13 +112,15 @@ def main():
         criterion_str = "mrstft+mae"
     elif criterion_a == mae and criterion_b == esr:
         criterion_str = "mae+esr"
+    elif criterion_a == mae and criterion_b == mse:
+        criterion_str = "mae+mse"
     else:
         criterion_str = "unknown"
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    ms1 = int(args.n_epochs * 0.8)
-    ms2 = int(args.n_epochs * 0.95)
+    ms1 = int(args.n_epochs * 0.6)
+    ms2 = int(args.n_epochs * 0.8)
     milestones = [ms1, ms2]
     
     scheduler = torch.optim.lr_scheduler.MultiStepLR(

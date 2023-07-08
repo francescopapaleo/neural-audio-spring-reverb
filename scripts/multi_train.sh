@@ -1,11 +1,11 @@
 #!/bin/bash
 
-configs=("LSTM-BL" "LSTM-32-4" "BiLSTM" "BiLSTM-8" "BiLSTM-96" "LSTM-96" "LSTM-96-gated")
+configs=("LSTM-96-1" "LSTM-96-2" "LSTM-32-4" "BiLSTM-96-1" "BiLSTM-96-2")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(100)
+n_epochs=(50)
 batch_size=(8)
 
 for epoch in "${n_epochs[@]}"; do
