@@ -101,7 +101,7 @@ def main():
     lr = hparams['lr']
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = f"results/test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
+    log_dir = Path(args.logdir) / f"test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     _, _, test_loader = load_data(args.datadir, batch_size)
