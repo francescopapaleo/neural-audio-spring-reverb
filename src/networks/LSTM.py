@@ -40,7 +40,7 @@ class LSTM(nn.Module):
         out = out.permute(1, 2, 0) # put shape back (batch, channel, seq)
         
         return out
-    
+
 
 # Bidirectional LSTM
 
@@ -71,9 +71,6 @@ class BiLSTM(nn.Module):
         c0 = torch.rand(self.num_layers * 2, x.shape[0], self.hidden_size).requires_grad_().to(x.device)
 
         out, (hn, cn) = self.lstm(x, (h0, c0))
-
-        # Concatenate the hidden states from the last layer of both directions.
-        # hn = torch.cat((hn[-2,:,:], hn[-1,:,:]), dim = 1) 
 
         out = self.linear(out)
         out = self.tanh(out)

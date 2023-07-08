@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("LSTM-BL" "LSTM-32-4")
+configs=("LSTM-BL" "LSTM-32-4" "BiLSTM" "BiLSTM-8" "BiLSTM-96" "LSTM-96" "LSTM-96-gated")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
