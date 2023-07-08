@@ -76,6 +76,9 @@ def validation_loop(model, criterion_a, criterion_b, alpha, esr, valid_loader, d
     return avg_valid_loss, avg_valid_metric
 
 
+
+
+
 def main():
     args = parse_args()
 
@@ -114,12 +117,20 @@ def main():
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
         hop_sizes=[16, 64, 256, 1024]).to(device)
-    
 
     alpha = 0.5
-    criterion_a = mae
+    criterion_a = mrstft
     criterion_b = esr
-    criterion_str = f"mae+esr"
+
+    if criterion_a == mrstft and criterion_b == esr:
+        criterion_str = "mrstft+esr"
+    elif criterion_a == mrstft and criterion_b == mae:
+        criterion_str = "mrstft+mae"
+    elif criterion_a == mae and criterion_b == esr:
+        criterion_str = "mae+esr"
+    else:
+        criterion_str = "unknown"
+
     metrics = {'training/esr': [],'validation/esr': []}
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
@@ -169,6 +180,8 @@ def main():
 
             # Save the model if it improved
             if valid_loss < min_valid_loss:
+                print(f"Validation loss improved from {min_valid_loss} to {valid_loss}. Saving model.")
+                
                 min_valid_loss = valid_loss
                 save_model_checkpoint(
                     model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp

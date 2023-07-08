@@ -24,10 +24,10 @@ def parse_args():
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
     parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
     parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=100, help='width parameter for the model')
-    parser.add_argument('--c0', type=float, default=0.5, help='c0 parameter for the model')
-    parser.add_argument('--c1', type=float, default=1.5, help='c1 parameter for the model')
-    parser.add_argument('--gain_dB', type=float, default=0, help='gain in dB for the model')
+    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
+    parser.add_argument('--c0', type=float, default=0.0, help='c0 parameter for the model')
+    parser.add_argument('--c1', type=float, default=0.0, help='c1 parameter for the model')
+    parser.add_argument('--gain_dB', type=float, default=0.0, help='gain in dB for the model')
     parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
     
     # Measurements
@@ -113,30 +113,38 @@ configs = [{
     'hidden_size': 32,
     'num_layers': 2,
     },
-    # {
-    # 'conf_name': 'WN-22k',
-    # 'model_type': 'WaveNet',
-    # 'n_channels': 16,
-    # 'dilation': 4,
-    # 'num_repeat': 24,
-    # 'kernel_size': 5,
-    # },
-    # {
-    # 'conf_name': 'WN-5',
-    # 'model_type': 'WaveNet',
-    # 'n_channels': 32,
-    # 'dilation': 8,
-    # 'num_repeat': 10,
-    # 'kernel_size': 3,
-    # },
-    # {
-    # 'conf_name': 'WN-6',
-    # 'model_type': 'WaveNet',
-    # 'n_channels': 16,
-    # 'dilation': 4,
-    # 'num_repeat': 18,
-    # 'kernel_size': 3,
-    # },
+    {
+    'conf_name': 'LSTM-32-4',
+    'model_type': 'LSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 32,
+    'num_layers': 4,
+    },
+    {
+    'conf_name': 'BiLSTM',
+    'model_type': 'BiLSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 64,
+    'num_layers': 2,
+    },
+    {
+    'conf_name': 'BiLSTM-8',
+    'model_type': 'BiLSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 64,
+    'num_layers': 8,
+    },
+    {
+    'conf_name': 'BiLSTM-96',
+    'model_type': 'BiLSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 96,
+    'num_layers': 1,
+    },
     # {
     # 'conf_name': 'WN-7',
     # 'model_type': 'WaveNet',

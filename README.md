@@ -102,16 +102,20 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 │   ├── generated
 │   ├── processed
 │   └── raw
-├── data
 ├── models
 ├── notebooks
 ├── results
 │   ├── checkpoints         # saved models
 │   ├── plots
-│   └── runs                # tensorboard logs
+│   ├── train               # tensorboard training logs        
+│   └── test                # tensorboard testing logs
 ├── scripts                 # bash scripts
-├── utils                   # IR, TF and RT60 measurements
-├── config.py               # CLI arguments
+├── src
+│   ├── data                # data processing
+│   ├── models              # model architectures
+│   ├── utils               # utility functions
+│   └── visualization       # visualization functions
+├── configurations.py       # CLI arguments and hparams
 ├── inference.py          
 ├── test.py
 ├── train.py

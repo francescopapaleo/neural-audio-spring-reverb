@@ -6,10 +6,9 @@ import numpy as np
 from pathlib import Path
 
 from src.dataset import SpringDataset
-from models.TCN import TCN
-from models.WaveNet import WaveNet
-from models.condWaveNet import ConditionedWaveNet
-from models.LSTM import LSTMModel
+from src.networks.TCN import TCN
+from src.networks.WaveNet import WaveNet
+from src.networks.LSTM import LSTM, BiLSTM
 from configurations import parse_args
 
 
@@ -90,20 +89,19 @@ def initialize_model(device, hparams):
             kernel_size = hparams['kernel_size'],
         ).to(device)
     elif hparams['model_type'] == 'LSTM':
-        model = LSTMModel(
+        model = LSTM(
             input_size=hparams['input_size'], 
             hidden_size=hparams['hidden_size'], 
             output_size=hparams['output_size'],
             num_layers=hparams['num_layers'],
         ).to(device)
-    # elif hparams['model_type'] == 'cWaveNet':
-    #     model = ConditionedWaveNet(
-    #         n_channels = hparams['n_channels'],
-    #         dilation=hparams['dilation'],
-    #         num_repeat=hparams['num_repeat'],
-    #         kernel_size = hparams['kernel_size'],
-    #         cond_dim = hparams['cond_dim'],
-    #     ).to(device)
+    elif hparams['model_type'] == 'BiLSTM':
+        model = BiLSTM(
+            input_size=hparams['input_size'], 
+            hidden_size=hparams['hidden_size'], 
+            output_size=hparams['output_size'],
+            num_layers=hparams['num_layers'],
+        ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
     print(f"Model initialized: {hparams['conf_name']}")
@@ -159,5 +157,5 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
         'criterion': str(criterion)
     }, save_to)
 
-    print(f"Checkpoint saved: {save_to}")
+    # print(f"Checkpoint saved: {save_to}")
 

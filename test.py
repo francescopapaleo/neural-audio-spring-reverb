@@ -42,7 +42,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
             # Conditionally compute the receptive field for certain model types
             if hparams['model_type'] in ["TCN", "WaveNet"]:
                 rf = model.compute_receptive_field()
-                print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')
+
                 input_pad = torch.nn.functional.pad(input, (rf-1, 0))
                 target_pad = torch.nn.functional.pad(target, (rf-1, 0))
             else:
@@ -101,7 +101,7 @@ def main():
     lr = hparams['lr']
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) /f"test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
+    log_dir = f"results/test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     _, _, test_loader = load_data(args.datadir, batch_size)
