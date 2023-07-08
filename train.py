@@ -103,8 +103,8 @@ def main():
         hop_sizes=[16, 64, 256, 1024]).to(device)
 
     alpha = 0.5
-    criterion_a = mae
-    criterion_b = mse
+    criterion_a = mrstft
+    criterion_b = mae
 
     if criterion_a == mrstft and criterion_b == esr:
         criterion_str = "mrstft+esr"
@@ -147,40 +147,41 @@ def main():
     })
 
     print(f"Training model for {args.n_epochs} epochs, with batch size {args.batch_size} and learning rate {args.lr}")
-    for epoch in range(args.n_epochs):
-        # Train model
-        model, train_loss = training_loop(
-            model, criterion_a, criterion_b, alpha, optimizer, train_loader, device, writer, epoch)
-        
-        # Validate model
-        valid_loss = validation_loop(
-            model, criterion_a, criterion_b, alpha, valid_loader, device, writer, epoch)
-
-        # Update learning rate
-        scheduler.step()
-
-        # Save the model if it improved
-        if valid_loss < min_valid_loss:
-            print(f"Validation loss improved from {min_valid_loss} to {valid_loss}. Saving model.")
+    try:
+        for epoch in range(args.n_epochs):
+            # Train model
+            model, train_loss = training_loop(
+                model, criterion_a, criterion_b, alpha, optimizer, train_loader, device, writer, epoch)
             
-            min_valid_loss = valid_loss
-            save_model_checkpoint(
-                model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
-            )
-            patience_counter = 0  # reset the counter if performance improved
-        else:
-            patience_counter += 1  # increase the counter if performance did not improve
+            # Validate model
+            valid_loss = validation_loop(
+                model, criterion_a, criterion_b, alpha, valid_loader, device, writer, epoch)
 
-        # Early stopping if performance did not improve after n epochs
-        if patience_counter >= 20:
-            print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
-            break
+            # Update learning rate
+            scheduler.step()
 
+            # Save the model if it improved
+            if valid_loss < min_valid_loss:
+                print(f"Validation loss improved from {min_valid_loss} to {valid_loss}. Saving model.")
+                
+                min_valid_loss = valid_loss
+                save_model_checkpoint(
+                    model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
+                )
+                patience_counter = 0  # reset the counter if performance improved
+            else:
+                patience_counter += 1  # increase the counter if performance did not improve
+
+            # Early stopping if performance did not improve after n epochs
+            if patience_counter >= 20:
+                print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
+                break
+    finally:
         final_train_loss = train_loss
         final_valid_loss = valid_loss
         writer.add_hparams(hparams, {'Final Training ESR': final_train_loss, 'Final Validation ESR': final_valid_loss})
 
-        writer.close()
+    writer.close()
 
 if __name__ == "__main__":
     main()

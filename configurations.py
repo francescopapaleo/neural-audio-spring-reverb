@@ -87,6 +87,14 @@ configs = [{
     'num_layers': 2,
     },
     {
+    'conf_name': 'LSTM-96-4',
+    'model_type': 'LSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 96,
+    'num_layers': 4,
+    },
+    {
     'conf_name': 'LSTM-32-4',
     'model_type': 'LSTM',
     'input_size': 1,
@@ -109,13 +117,5 @@ configs = [{
     'output_size': 1,
     'hidden_size': 96,
     'num_layers': 2,
-    },
-    {
-    'conf_name': 'skipLSTM-96-1',
-    'model_type': 'BiLSTM',
-    'input_size': 1,
-    'output_size': 1,
-    'hidden_size': 96,
-    'num_layers': 1,
     },
     ]
