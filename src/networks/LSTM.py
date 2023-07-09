@@ -12,7 +12,6 @@ class GatedActivation(nn.Module):
         return self.tanh(x) * self.sigmoid(x)
 
 
-
 class LSTM(nn.Module):
     def __init__(self, input_size=1, output_size=1, hidden_size=32, num_layers=2):
         super(LSTM, self).__init__()
@@ -39,7 +38,8 @@ class LSTM(nn.Module):
         c0 = Variable(torch.rand(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device))
 
         output, (hidden, cell) = self.lstm(x, (h0, c0))
-        out = nn.functional.softmax(self.lin(output)) # [num_layers, batch, hidden_size]
+        linear_output = self.lin(output) # [seq, batch, hidden_size]
+        out = torch.nn.functional.softmax(linear_output, dim=0)  
         
         # out = self.act(out)
         # print(out.shape)
@@ -86,9 +86,9 @@ class BiLSTM(nn.Module):
         return out
     
 
-class skipLSTM(nn.Module):
-    def __init__(self, input_size=1, output_size=1, hidden_size=32, skip=1, bias_fl=True, num_layers=1):
-        super(skipLSTM, self).__init__()
+class LSTMskip(nn.Module):
+    def __init__(self, input_size=1, output_size=1, hidden_size=32, skip=1, num_layers=1, bias=True):
+        super(LSTMskip, self).__init__()
 
         self.input_size = input_size
         self.output_size = output_size
@@ -100,9 +100,7 @@ class skipLSTM(nn.Module):
                             batch_first=True)
         
         self.lin = nn.Linear(hidden_size, output_size)
-        self.bias_fl = bias_fl
         self.skip = skip
-        self.hidden = None
         
     def forward(self, x, p=None):
         x = x.permute(2,0,1) # input shape for LSTM: [seq, batch, channel]
@@ -112,12 +110,13 @@ class skipLSTM(nn.Module):
 
         if self.skip:
             res = x[:,:,0:self.skip]
-            x, self.hidden = self.lstm(x, self.hidden)
-            out = self.lin(x) + res        
-        
-        else:
-            x, self.hidden = self.lstm(x, self.hidden)
-            out = self.lin(x)
+            output, (hidden, cell) = self.lstm(x, (h0, c0))
+            out = self.lin(output) + res
+            # out = torch.cat((res, out), dim=2)
+            # out = torch.nn.functional.softmax(out, dim=0)        
+        else:         
+            output, (hidden, cell) = self.lstm(x, (h0, c0))
+            out = self.lin(output) # [seq, batch, hidden_size]
         
         out = out.permute(1,2,0) 
         return out

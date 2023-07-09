@@ -105,7 +105,7 @@ def main():
 
     alpha = 0.5
     criterion_a = mrstft
-    criterion_b = esr
+    criterion_b = mae
 
     if criterion_a == mrstft and criterion_b == esr:
         criterion_str = "mrstft+esr"
@@ -182,7 +182,7 @@ def main():
     finally:
         final_train_loss = train_loss
         final_valid_loss = valid_loss
-        writer.add_hparams(hparams, {'Final Training ESR': final_train_loss, 'Final Validation ESR': final_valid_loss})
+        writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
 
     writer.close()
 

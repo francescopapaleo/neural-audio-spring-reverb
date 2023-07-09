@@ -33,9 +33,10 @@ with open('model_summary.txt', 'w') as f:
                 f.write(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms")   
         else:
             rf = None
-        
         f.write("\n")
         f.write(f"Number of parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
+        f.write(f'hyperparameters: \n')
+        f.write(str(hparams))
         f.write("\n")
         
         # Print the model summary
