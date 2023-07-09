@@ -101,10 +101,11 @@ def main():
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
         hop_sizes=[16, 64, 256, 1024]).to(device)
+    dc = auraloss.time.DCLoss().to(device)
 
     alpha = 0.5
-    criterion_a = mrstft
-    criterion_b = mae
+    criterion_a = dc
+    criterion_b = esr
 
     if criterion_a == mrstft and criterion_b == esr:
         criterion_str = "mrstft+esr"
@@ -114,6 +115,8 @@ def main():
         criterion_str = "mae+esr"
     elif criterion_a == mae and criterion_b == mse:
         criterion_str = "mae+mse"
+    elif criterion_a == dc and criterion_b == esr:
+        criterion_str = "dc+esr"
     else:
         criterion_str = "unknown"
 

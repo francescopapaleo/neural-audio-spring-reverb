@@ -35,11 +35,11 @@ class LSTM(nn.Module):
     def forward(self, x, p=None):
         x = x.permute(2,0,1) # input shape for LSTM: [seq, batch, channel]
 
-        h_0 = Variable(torch.rand(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device))
-        c_0 = Variable(torch.rand(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device))
+        h0 = Variable(torch.rand(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device))
+        c0 = Variable(torch.rand(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device))
 
-        output, (hidden, cell) = self.lstm(x, (h_0, c_0))
-        out = torch.tanh(self.lin(output)) # [num_layers, batch, hidden_size]
+        output, (hidden, cell) = self.lstm(x, (h0, c0))
+        out = nn.functional.softmax(self.lin(output)) # [num_layers, batch, hidden_size]
         
         # out = self.act(out)
         # print(out.shape)
@@ -69,7 +69,7 @@ class BiLSTM(nn.Module):
         
         # The linear layer input size is now 2 * hidden_size because the LSTM is bidirectional
         self.lin = nn.Linear(2 * hidden_size, output_size)
-        self.act = GatedActivation()
+        # self.act = GatedActivation()
 
     def forward(self, x, p=None):
         x = x.permute(2,0,1) 
@@ -80,10 +80,9 @@ class BiLSTM(nn.Module):
 
         out, (hn, cn) = self.lstm(x, (h0, c0))
 
-        out = self.lin(out)
-        out = self.act(out)
+        out = torch.tanh(self.lin(out))
+        # out = self.act(out)
         out = out.permute(1,2,0) 
-        
         return out
     
 

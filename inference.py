@@ -16,7 +16,7 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
     
     x_p = x_p.to(device)
     
-    rf = model.compute_receptive_field()
+    # rf = model.compute_receptive_field()
     
     chs = x_p.shape[0]
     # If mono and stereo requested
@@ -25,7 +25,7 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
         chs = 2
 
     # Pad the input signal 
-    front_pad = rf - 1
+    front_pad = 1024 - 1
     back_pad = 0 if not tail else front_pad
     x_p_pad = torch.nn.functional.pad(x_p, (front_pad, back_pad))
 
