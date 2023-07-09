@@ -1,27 +1,4 @@
 
-Configuration name: LSTM-96-1
-Model name: LSTM-96-1_50_8_0.001_20230708-193210
-
-Number of parameters: 38113hyperparameters: 
-{'conf_name': 'LSTM-96-1', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 96, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 38113, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 96]            38,016
-├─Linear: 1-2                            [32000, 8, 1]             97
-==========================================================================================
-Total params: 38,113
-Trainable params: 38,113
-Non-trainable params: 0
-Total mult-adds (G): 9.74
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 198.66
-Params size (MB): 0.15
-Estimated Total Size (MB): 199.83
-==========================================================================================
-
 Configuration name: WN-1500
 Model name: WN-1500_50_8_0.001_20230708-212938
 Receptive field: 25575 samples or 1598.4 ms
@@ -307,75 +284,6 @@ Params size (MB): 0.16
 Estimated Total Size (MB): 1383.58
 ==========================================================================================
 
-Configuration name: LSTM-128-smax
-Model name: LSTM-128-smax_50_8_0.001_20230709-114606
-
-Number of parameters: 67201hyperparameters: 
-{'conf_name': 'LSTM-128-smax', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 128, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 67201, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 128]           67,072
-├─Linear: 1-2                            [32000, 8, 1]             129
-==========================================================================================
-Total params: 67,201
-Trainable params: 67,201
-Non-trainable params: 0
-Total mult-adds (G): 17.17
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 264.19
-Params size (MB): 0.27
-Estimated Total Size (MB): 265.48
-==========================================================================================
-
-Configuration name: LSTM-128-smax
-Model name: LSTM-128-smax_50_8_0.001_20230709-111037
-
-Number of parameters: 67201hyperparameters: 
-{'conf_name': 'LSTM-128-smax', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 128, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 67201, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 128]           67,072
-├─Linear: 1-2                            [32000, 8, 1]             129
-==========================================================================================
-Total params: 67,201
-Trainable params: 67,201
-Non-trainable params: 0
-Total mult-adds (G): 17.17
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 264.19
-Params size (MB): 0.27
-Estimated Total Size (MB): 265.48
-==========================================================================================
-
-Configuration name: LSTM-smax
-Model name: LSTM-smax_50_8_0.001_20230709-101828
-
-Number of parameters: 38113hyperparameters: 
-{'conf_name': 'LSTM-smax', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 96, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 38113, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 96]            38,016
-├─Linear: 1-2                            [32000, 8, 1]             97
-==========================================================================================
-Total params: 38,113
-Trainable params: 38,113
-Non-trainable params: 0
-Total mult-adds (G): 9.74
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 198.66
-Params size (MB): 0.15
-Estimated Total Size (MB): 199.83
-==========================================================================================
-
 Configuration name: WN-150
 Model name: WN-150_50_8_0.001_20230706-190852
 Receptive field: 150 samples or 9.4 ms
@@ -479,6 +387,29 @@ Params size (MB): 0.23
 Estimated Total Size (MB): 2002.15
 ==========================================================================================
 
+Configuration name: LSTM-96-smax
+Model name: LSTM-96-smax_150_8_0.001_20230709-152352
+
+Number of parameters: 38113hyperparameters: 
+{'conf_name': 'LSTM-96-smax', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 96, 'num_layers': 1, 'n_epochs': 150, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 38113, 'criterion': 'mrstft+mae'}
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LSTM                                     [8, 1, 32000]             --
+├─LSTM: 1-1                              [32000, 8, 96]            38,016
+├─Linear: 1-2                            [32000, 8, 1]             97
+==========================================================================================
+Total params: 38,113
+Trainable params: 38,113
+Non-trainable params: 0
+Total mult-adds (G): 9.74
+==========================================================================================
+Input size (MB): 1.02
+Forward/backward pass size (MB): 198.66
+Params size (MB): 0.15
+Estimated Total Size (MB): 199.83
+==========================================================================================
+
 Configuration name: TCN-4k
 Model name: TCN-4k_50_8_0.001_20230706-190005
 Receptive field: 66667 samples or 4166.7 ms
@@ -571,29 +502,6 @@ Input size (MB): 1.02
 Forward/backward pass size (MB): 792.58
 Params size (MB): 0.13
 Estimated Total Size (MB): 793.73
-==========================================================================================
-
-Configuration name: LSTM-128
-Model name: LSTM-128_50_8_0.001_20230709-102132
-
-Number of parameters: 67201hyperparameters: 
-{'conf_name': 'LSTM-128', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 128, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 67201, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 128]           67,072
-├─Linear: 1-2                            [32000, 8, 1]             129
-==========================================================================================
-Total params: 67,201
-Trainable params: 67,201
-Non-trainable params: 0
-Total mult-adds (G): 17.17
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 264.19
-Params size (MB): 0.27
-Estimated Total Size (MB): 265.48
 ==========================================================================================
 
 Configuration name: LSTM-128-skip
@@ -888,50 +796,4 @@ Input size (MB): 1.02
 Forward/backward pass size (MB): 792.58
 Params size (MB): 0.13
 Estimated Total Size (MB): 793.73
-==========================================================================================
-
-Configuration name: LSTM-128-smax
-Model name: LSTM-128-smax_50_8_0.001_20230709-112338
-
-Number of parameters: 67201hyperparameters: 
-{'conf_name': 'LSTM-128-smax', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 128, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 67201, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 128]           67,072
-├─Linear: 1-2                            [32000, 8, 1]             129
-==========================================================================================
-Total params: 67,201
-Trainable params: 67,201
-Non-trainable params: 0
-Total mult-adds (G): 17.17
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 264.19
-Params size (MB): 0.27
-Estimated Total Size (MB): 265.48
-==========================================================================================
-
-Configuration name: LSTM-test
-Model name: LSTM-test_50_8_0.001_20230709-104741
-
-Number of parameters: 38113hyperparameters: 
-{'conf_name': 'LSTM-test', 'model_type': 'LSTM', 'input_size': 1, 'output_size': 1, 'hidden_size': 96, 'num_layers': 1, 'n_epochs': 50, 'batch_size': 8, 'lr': 0.001, 'receptive_field': None, 'params': 38113, 'criterion': 'mrstft+mae'}
-==========================================================================================
-Layer (type:depth-idx)                   Output Shape              Param #
-==========================================================================================
-LSTM                                     [8, 1, 32000]             --
-├─LSTM: 1-1                              [32000, 8, 96]            38,016
-├─Linear: 1-2                            [32000, 8, 1]             97
-==========================================================================================
-Total params: 38,113
-Trainable params: 38,113
-Non-trainable params: 0
-Total mult-adds (G): 9.74
-==========================================================================================
-Input size (MB): 1.02
-Forward/backward pass size (MB): 198.66
-Params size (MB): 0.15
-Estimated Total Size (MB): 199.83
 ==========================================================================================

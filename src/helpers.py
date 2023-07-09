@@ -12,6 +12,8 @@ from src.networks.LSTM import LSTM, LSTMskip
 from configurations import parse_args
 
 
+import librosa
+
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
     if isinstance(input, str):
@@ -20,6 +22,10 @@ def load_audio(input, sample_rate):
         x_p = x_p.float()
         input_name = Path(input).stem
     elif isinstance(input, np.ndarray):  # <-- change here
+        # Resample numpy array if necessary
+        if input.shape[1] / sample_rate != len(input) / sample_rate:
+            input = librosa.resample(input, input.shape[1], sample_rate)
+
         # Convert numpy array to tensor and ensure it's float32
         x_p = torch.from_numpy(input).float()
         # Add an extra dimension if necessary to simulate channel dimension
@@ -29,8 +35,15 @@ def load_audio(input, sample_rate):
         input_name = 'sweep'
     else:
         raise ValueError('input must be either a file path or a numpy array')
-    
+
+    # Ensure the audio is at the desired sample rate
+    if fs_x != sample_rate:
+        resampler = torchaudio.transforms.Resample(orig_freq=fs_x, new_freq=sample_rate)
+        x_p = resampler(x_p)
+        fs_x = sample_rate
+
     return x_p, fs_x, input_name
+
 
 
 def peak_normalize(tensor):

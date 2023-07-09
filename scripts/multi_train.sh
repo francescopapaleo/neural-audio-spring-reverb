@@ -1,11 +1,11 @@
 #!/bin/bash
 
-configs=("LSTM-smax")
+configs=("LSTM-96-smax" "WN-1500" "TCN-4k")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(50)
+n_epochs=(150)
 batch_size=(8)
 
 for epoch in "${n_epochs[@]}"; do

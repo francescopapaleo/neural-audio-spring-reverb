@@ -87,6 +87,18 @@ class SpringDataset(torch.utils.data.Dataset):
             self.dry_data = f_dry[dry_key][:].astype(np.float32)
             self.wet_data = f_wet[wet_key][:].astype(np.float32)
 
+    def normalize_data(self):
+        # Concatenate dry and wet data along the first dimension (assuming the data shape is [n_samples, n_features])
+        all_data = np.concatenate([self.dry_data, self.wet_data], axis=0)
+
+        # Compute the maximum absolute value across all data
+        max_val = np.max(np.abs(all_data))
+
+        # Normalize the dry and wet data using the maximum value
+        self.dry_data = self.dry_data / max_val
+        self.wet_data = self.wet_data / max_val
+
+
     def print_info(self):
         print(f"Dry File: {self.dry_file}")
         print(f"Wet File: {self.wet_file}")

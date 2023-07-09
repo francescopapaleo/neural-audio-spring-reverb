@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=50, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     parser.add_argument('--crop', type=int, default=3200, help='crop size')
         
@@ -24,11 +24,11 @@ def parse_args():
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
     parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
     parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
-    parser.add_argument('--c0', type=float, default=0.0, help='c0 parameter for the model')
-    parser.add_argument('--c1', type=float, default=0.0, help='c1 parameter for the model')
+    parser.add_argument('--width', type=float, default=100, help='width parameter for the model')
+    parser.add_argument('--c0', type=float, default=0, help='c0 parameter for the model')
+    parser.add_argument('--c1', type=float, default=0, help='c1 parameter for the model')
     parser.add_argument('--gain_dB', type=float, default=0.0, help='gain in dB for the model')
-    parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
+    parser.add_argument('--mix', type=float, default=100, help='mix parameter for the model')
     
     # Measurements
     parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
@@ -80,7 +80,7 @@ configs = [{
     'kernel_size': 5,
     },
     {
-    'conf_name': 'LSTM-128-smax',
+    'conf_name': 'LSTM-128',
     'model_type': 'LSTM',
     'input_size': 1,
     'output_size': 1,

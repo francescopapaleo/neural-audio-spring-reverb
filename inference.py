@@ -25,7 +25,7 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
         chs = 2
 
     # Pad the input signal 
-    front_pad = 1024 - 1
+    front_pad = 256 - 1
     back_pad = 0 if not tail else front_pad
     x_p_pad = torch.nn.functional.pad(x_p, (front_pad, back_pad))
 
@@ -34,6 +34,7 @@ def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, ta
 
     # Process audio with the pre-trained model
     start_time = time.time()
+    model.eval()
     with torch.no_grad():
         y_wet = torch.zeros((chs, x_p_pad.shape[1]))
 

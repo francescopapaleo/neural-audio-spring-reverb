@@ -44,7 +44,7 @@ def main():
 
             # Create formatted filename
             now = datetime.now()
-            filename = f"{input_name}_{model_path.stem}.wav"  # Use the model filename without extension
+            filename = f"{input_name}_{hparams['conf_name']}.wav"  # Use the model filename without extension
 
             # Output file path
             output_file_path = Path(args.audiodir) / filename
