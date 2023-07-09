@@ -46,12 +46,12 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'TCN-2k',
+    'conf_name': 'TCN-5k4',
     'model_type': 'TCN',
     'n_channels': 32,
-    'dilation': 8,
-    'n_blocks': 5,
-    'kernel_size': 9,
+    'dilation': 4,
+    'n_blocks': 8,
+    'kernel_size': 5,
     'cond_dim': 2,
     },
     {
@@ -111,11 +111,11 @@ configs = [{
     'num_layers': 2,
     },
     {
-    'conf_name': 'BiLSTM-96-2',
+    'conf_name': 'LSTM-196-1',
     'model_type': 'BiLSTM',
     'input_size': 1,
     'output_size': 1,
     'hidden_size': 96,
-    'num_layers': 2,
+    'num_layers': 1,
     },
     ]

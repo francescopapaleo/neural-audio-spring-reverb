@@ -104,7 +104,7 @@ def main():
     dc = auraloss.time.DCLoss().to(device)
 
     alpha = 0.5
-    criterion_a = dc
+    criterion_a = mrstft
     criterion_b = esr
 
     if criterion_a == mrstft and criterion_b == esr:
