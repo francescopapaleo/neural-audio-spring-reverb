@@ -61,8 +61,8 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
 
             # Plot and save audios every 4 batches
             if step % 8 ==0:
-                single_target = target_pad[0]
-                single_output = output_trim[0]
+                single_target = target_pad[1]
+                single_output = output_trim[1]
 
                 waveform_fig = plot_compare_waveform(single_target.detach().cpu(), 
                                                     single_output.detach().cpu(),

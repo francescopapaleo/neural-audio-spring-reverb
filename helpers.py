@@ -65,7 +65,7 @@ def load_data(datadir, batch_size):
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
 
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=True, drop_last=True)
 
     testset = SpringDataset(root_dir=datadir, split="test", transform=peak_normalize)
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
