@@ -2,6 +2,7 @@
 
 import torch
 import torchaudio
+import librosa
 import numpy as np
 from pathlib import Path
 
@@ -11,8 +12,6 @@ from src.networks.WaveNet import WaveNet
 from src.networks.LSTM import LSTM, LSTMskip, BiLSTM
 from configurations import parse_args
 
-
-import librosa
 
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input

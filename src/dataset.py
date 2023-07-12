@@ -4,6 +4,10 @@ from pathlib import Path
 import h5py
 import torch
 import numpy as np
+import torchaudio
+import glob
+import os
+
 
 class SpringDataset(torch.utils.data.Dataset):
     """
@@ -131,3 +135,50 @@ File: wet_train.h5, Total Length: 2244.00 seconds, 35904000 samples
 File: dry_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
 File: wet_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
 """
+
+
+class EgfxDataset(torch.utils.data.Dataset):
+    def __init__(self,
+                 root_dir,
+                 random_start=True,
+                 random_seed=42
+                ):
+        self.root_dir = root_dir
+        self.random_start = random_start
+        self.dry_dir = os.path.join(self.root_dir, 'Clean')
+        self.wet_dir = os.path.join(self.root_dir, 'Spring Reverb')
+        self.positions = ['Bridge', 'Bridge-Middle', 'Middle', 'Middle-Neck', 'Neck']
+
+        self.dry_files = []
+        self.wet_files = []
+
+        for position in self.positions:
+            dry_path = os.path.join(self.dry_dir, position)
+            wet_path = os.path.join(self.wet_dir, position)
+            print(f"Dry path: {dry_path}")
+            print(f"Wet path: {wet_path}")
+            dry_files_position = sorted(glob.glob(os.path.join(dry_path, '*.wav')))
+            wet_files_position = sorted(glob.glob(os.path.join(wet_path, '*.wav')))
+
+            if dry_files_position and wet_files_position:
+                self.dry_files.extend(dry_files_position)
+                self.wet_files.extend(wet_files_position)
+            else:
+                print(f"No files found in {position}")
+
+    def __getitem__(self, index):
+        dry_file = self.dry_files[index]
+        wet_file = self.wet_files[index]
+        print(f"Loading dry file: {dry_file} and wet file: {wet_file}")
+        
+        dry_audio, dry_sr = torchaudio.load(dry_file)
+        wet_audio, wet_sr = torchaudio.load(wet_file)
+
+        print(f"Loaded dry audio of shape {dry_audio.shape} and wet audio of shape {wet_audio.shape}")
+        
+        assert dry_sr == wet_sr, "Mismatch in sample rates between dry and wet files."
+
+        return {"dry": dry_audio, "wet": wet_audio, "sr": dry_sr, "dry_file": dry_file, "wet_file": wet_file}
+
+    def __len__(self):
+        return len(self.dry_files)
