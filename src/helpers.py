@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 from pathlib import Path
 
-from src.dataset import SpringDataset
+from src.dataset import SpringDataset, EgfxDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
 from src.networks.LSTM import LSTM, LSTMskip, BiLSTM
@@ -59,7 +59,7 @@ def peak_normalize(tensor):
 
 def load_data(datadir, batch_size):
     """Load and split the dataset"""
-    trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
+    trainset = EgfxDataset(root_dir=datadir)
     train_size = int(0.8 * len(trainset))
     val_size = len(trainset) - train_size
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
@@ -67,7 +67,7 @@ def load_data(datadir, batch_size):
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
-    testset = SpringDataset(root_dir=datadir, split="test", transform=peak_normalize)
+    testset = EgfxDataset(root_dir=datadir)
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, valid_loader, test_loader

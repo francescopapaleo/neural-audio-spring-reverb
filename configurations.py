@@ -4,7 +4,7 @@ def parse_args():
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
 
     # Paths
-    parser.add_argument('--datadir', type=str, default='../datasets/plate-spring/spring/', help='Path (rel) to the dataset ')
+    parser.add_argument('--datadir', type=str, default='../datasets/egfxset/', help='Path (rel) to the dataset ')
     parser.add_argument('--audiodir', type=str, default='audio/processed/', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
@@ -14,11 +14,11 @@ def parse_args():
     # Model
     parser.add_argument('--config', type=str, default='TCN_Baseline', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
+    parser.add_argument('--sample_rate', type=int, default=44100, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=50, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
-    parser.add_argument('--crop', type=int, default=3200, help='crop size')
+    # parser.add_argument('--crop', type=int, default=240000, help='crop size')
         
     # Inference
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
