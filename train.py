@@ -105,7 +105,7 @@ def main():
 
     alpha = 0.5
     criterion_a = mrstft
-    criterion_b = mae
+    criterion_b = esr
 
     if criterion_a == mrstft and criterion_b == esr:
         criterion_str = "mrstft+esr"
