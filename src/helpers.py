@@ -24,8 +24,8 @@ def load_audio(input, sample_rate):
         input_name = Path(input).stem
     elif isinstance(input, np.ndarray):  # <-- change here
         # Resample numpy array if necessary
-        if input.shape[1] / sample_rate != len(input) / sample_rate:
-            input = librosa.resample(input, input.shape[1], sample_rate)
+        # if input.shape[1] / sample_rate != len(input) / sample_rate:
+        #     input = librosa.resample(input, input.shape[1], sample_rate)
 
         # Convert numpy array to tensor and ensure it's float32
         x_p = torch.from_numpy(input).float()
