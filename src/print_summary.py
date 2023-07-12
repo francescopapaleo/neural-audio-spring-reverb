@@ -34,9 +34,9 @@ with open('model_summary.txt', 'w') as f:
         else:
             rf = None
         f.write("\n")
-        f.write(f"Number of parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}")
-        f.write(f'hyperparameters: \n')
-        f.write(str(hparams))
+        f.write(f"Number of parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)} \n")
+        f.write(f'criterion:')
+        f.write(str(hparams['criterion']))
         f.write("\n")
         
         # Print the model summary

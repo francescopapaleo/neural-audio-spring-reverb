@@ -8,7 +8,7 @@ from pathlib import Path
 from src.dataset import SpringDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, LSTMskip
+from src.networks.LSTM import LSTM, LSTMskip, BiLSTM
 from configurations import parse_args
 
 
@@ -20,6 +20,7 @@ def load_audio(input, sample_rate):
         # Load audio file
         x_p, fs_x = torchaudio.load(input)
         x_p = x_p.float()
+        print("sample rate: ", fs_x)
         input_name = Path(input).stem
     elif isinstance(input, np.ndarray):  # <-- change here
         # Resample numpy array if necessary
@@ -32,6 +33,7 @@ def load_audio(input, sample_rate):
         if len(x_p.shape) == 1:
             x_p = x_p.unsqueeze(0)
         fs_x = sample_rate
+        print("sample rate: ", fs_x)
         input_name = 'sweep'
     else:
         raise ValueError('input must be either a file path or a numpy array')
@@ -41,6 +43,8 @@ def load_audio(input, sample_rate):
         resampler = torchaudio.transforms.Resample(orig_freq=fs_x, new_freq=sample_rate)
         x_p = resampler(x_p)
         fs_x = sample_rate
+
+        print("sample rate: ", fs_x)
 
     return x_p, fs_x, input_name
 
@@ -110,6 +114,13 @@ def initialize_model(device, hparams):
         ).to(device)
     elif hparams['model_type'] == 'LSTMskip':
         model = LSTMskip(
+            input_size=hparams['input_size'], 
+            hidden_size=hparams['hidden_size'], 
+            output_size=hparams['output_size'],
+            num_layers=hparams['num_layers'],
+        ).to(device)
+    elif hparams['model_type'] == 'BiLSTM':
+        model = BiLSTM(
             input_size=hparams['input_size'], 
             hidden_size=hparams['hidden_size'], 
             output_size=hparams['output_size'],

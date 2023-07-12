@@ -39,7 +39,7 @@ class LSTM(nn.Module):
 
         output, (hidden, cell) = self.lstm(x, (h0, c0))
         linear_output = self.lin(output) # [seq, batch, hidden_size]
-        out = torch.nn.functional.tanh(linear_output)  
+        out = torch.tanh(linear_output)  
         
         # out = self.act(out)
         # print(out.shape)

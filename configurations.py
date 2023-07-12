@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('--audiodir', type=str, default='audio/processed/', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--checkpoint_path', type=str, default='results/checkpoints', help='Path (rel) to checkpoint to load')
+    parser.add_argument('--checkpoint_path', type=str, default='results/checkpoint/', help='Path (rel) to checkpoint to load')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
     # Model
@@ -24,11 +24,11 @@ def parse_args():
     parser.add_argument('--max_length', type=float, default=None, help='maximum length of the output audio')
     parser.add_argument('--stereo', action='store_true', help='flag to indicate if the audio is stereo or mono')
     parser.add_argument('--tail', action='store_true', help='flag to indicate if tail padding is required')
-    parser.add_argument('--width', type=float, default=100, help='width parameter for the model')
+    parser.add_argument('--width', type=float, default=50, help='width parameter for the model')
     parser.add_argument('--c0', type=float, default=0, help='c0 parameter for the model')
     parser.add_argument('--c1', type=float, default=0, help='c1 parameter for the model')
     parser.add_argument('--gain_dB', type=float, default=0.0, help='gain in dB for the model')
-    parser.add_argument('--mix', type=float, default=100, help='mix parameter for the model')
+    parser.add_argument('--mix', type=float, default=50, help='mix parameter for the model')
     
     # Measurements
     parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
