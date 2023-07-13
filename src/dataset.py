@@ -136,7 +136,6 @@ File: dry_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
 File: wet_val_test.h5, Total Length: 128.00 seconds, 2048000 samples
 """
 
-
 class EgfxDataset(torch.utils.data.Dataset):
     def __init__(self,
                  root_dir,
@@ -155,8 +154,8 @@ class EgfxDataset(torch.utils.data.Dataset):
         for position in self.positions:
             dry_path = os.path.join(self.dry_dir, position)
             wet_path = os.path.join(self.wet_dir, position)
-            print(f"Dry path: {dry_path}")
-            print(f"Wet path: {wet_path}")
+            # print(f"Dry path: {dry_path}")
+            # print(f"Wet path: {wet_path}")
             dry_files_position = sorted(glob.glob(os.path.join(dry_path, '*.wav')))
             wet_files_position = sorted(glob.glob(os.path.join(wet_path, '*.wav')))
 
@@ -165,20 +164,35 @@ class EgfxDataset(torch.utils.data.Dataset):
                 self.wet_files.extend(wet_files_position)
             else:
                 print(f"No files found in {position}")
-
+    
+    
     def __getitem__(self, index):
+        MAX_LENGTH = 240000  # define the max length for your audio samples
+
         dry_file = self.dry_files[index]
         wet_file = self.wet_files[index]
-        print(f"Loading dry file: {dry_file} and wet file: {wet_file}")
         
         dry_audio, dry_sr = torchaudio.load(dry_file)
         wet_audio, wet_sr = torchaudio.load(wet_file)
-
-        print(f"Loaded dry audio of shape {dry_audio.shape} and wet audio of shape {wet_audio.shape}")
         
-        assert dry_sr == wet_sr, "Mismatch in sample rates between dry and wet files."
+        # Ensure that audio tensors are of size MAX_LENGTH
+        if dry_audio.size(-1) > MAX_LENGTH:
+            # If the audio is longer than MAX_LENGTH, we trim it
+            dry_audio = dry_audio[..., :MAX_LENGTH]
+        elif dry_audio.size(-1) < MAX_LENGTH:
+            # If the audio is shorter than MAX_LENGTH, we pad it with zeros
+            padding = torch.zeros(1, MAX_LENGTH - dry_audio.size(-1))
+            dry_audio = torch.cat([dry_audio, padding], dim=-1)
+
+        # Do the same for wet_audio
+        if wet_audio.size(-1) > MAX_LENGTH:
+            wet_audio = wet_audio[..., :MAX_LENGTH]
+        elif wet_audio.size(-1) < MAX_LENGTH:
+            padding = torch.zeros(1, MAX_LENGTH - wet_audio.size(-1))
+            wet_audio = torch.cat([wet_audio, padding], dim=-1)
 
         return {"dry": dry_audio, "wet": wet_audio, "sr": dry_sr, "dry_file": dry_file, "wet_file": wet_file}
+
 
     def __len__(self):
         return len(self.dry_files)

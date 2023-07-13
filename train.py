@@ -21,8 +21,9 @@ def training_loop(model, criterion_a, criterion_b, alpha, optimizer, train_loade
 
     model.train()
     c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
-    for batch_idx, (input, target) in enumerate(train_loader):
+    for batch_idx, data in enumerate(train_loader):
         optimizer.zero_grad()
+        input, target = data['dry'], data['wet']
         input, target = input.to(device), target.to(device)
         # print(input.shape)
         output = model(input, c)
@@ -51,7 +52,8 @@ def validation_loop(model, criterion_a, criterion_b, alpha, valid_loader, device
     valid_loss = 0.0
     c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
     with torch.no_grad():
-        for step, (input, target) in enumerate(valid_loader):
+        for step, data in enumerate(valid_loader):
+            input, target = data['dry'], data['wet']            
             input, target = input.to(device), target.to(device)
             output = model(input, c)
 
@@ -103,22 +105,26 @@ def main():
         hop_sizes=[16, 64, 256, 1024]).to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    alpha = 0.5
+    alpha = 1.0
     criterion_a = mrstft
-    criterion_b = mae
+    criterion_b = mrstft
 
-    if criterion_a == mrstft and criterion_b == esr:
-        criterion_str = "mrstft+esr"
-    elif criterion_a == mrstft and criterion_b == mae:
-        criterion_str = "mrstft+mae"
-    elif criterion_a == mae and criterion_b == esr:
-        criterion_str = "mae+esr"
-    elif criterion_a == mae and criterion_b == mse:
-        criterion_str = "mae+mse"
-    elif criterion_a == dc and criterion_b == esr:
-        criterion_str = "dc+esr"
-    else:
-        criterion_str = "unknown"
+    criterion_str = f"{str(criterion_a)}+{str(criterion_b)}"
+
+    # if criterion_a == mrstft and criterion_b == esr:
+    #     criterion_str = "mrstft+esr"
+    # elif criterion_a == mrstft and criterion_b == mae:
+    #     criterion_str = "mrstft+mae"
+    # elif criterion_a == mae and criterion_b == esr:
+    #     criterion_str = "mae+esr"
+    # elif criterion_a == mae and criterion_b == mse:
+    #     criterion_str = "mae+mse"
+    # elif criterion_a == dc and criterion_b == esr:
+    #     criterion_str = "dc+esr"
+    # elif criterion_a == mrstft and criterion_b == None:
+    #     criterion_str = "mrstft"
+    # else:
+    #     criterion_str = "unknown"
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 

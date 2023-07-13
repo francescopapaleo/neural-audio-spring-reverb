@@ -9,7 +9,7 @@ from pathlib import Path
 from src.dataset import SpringDataset, EgfxDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, LSTMskip, BiLSTM
+from src.networks.LSTM import LSTM, LSTMskip
 from configurations import parse_args
 
 
@@ -118,13 +118,13 @@ def initialize_model(device, hparams):
             output_size=hparams['output_size'],
             num_layers=hparams['num_layers'],
         ).to(device)
-    elif hparams['model_type'] == 'BiLSTM':
-        model = BiLSTM(
-            input_size=hparams['input_size'], 
-            hidden_size=hparams['hidden_size'], 
-            output_size=hparams['output_size'],
-            num_layers=hparams['num_layers'],
-        ).to(device)
+    # elif hparams['model_type'] == 'BiLSTM':
+    #     model = BiLSTM(
+    #         input_size=hparams['input_size'], 
+    #         hidden_size=hparams['hidden_size'], 
+    #         output_size=hparams['output_size'],
+    #         num_layers=hparams['num_layers'],
+    #     ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
     print(f"Model initialized: {hparams['conf_name']}")

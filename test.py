@@ -29,7 +29,8 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
 
     model.eval()
     with torch.no_grad():
-        for step, (input, target) in enumerate(test_loader):
+        for step, data in enumerate(test_loader):
+            input, target = data['dry'], data['wet']            
             global_step = step + 1
             print(f"Batch {global_step}/{num_batches}")
 
@@ -60,21 +61,22 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
                 test_results[name].append(batch_score)
 
             # Plot and save audios every 4 batches
-            if step % 8 ==0:
+            if step % 16 ==0:
+                single_input = input_pad[0]
                 single_target = target_pad[0]
                 single_output = output_trim[0]
 
-                waveform_fig = plot_compare_waveform(single_target.detach().cpu(), 
+                waveform_fig = plot_compare_waveform(single_input.detach().cpu(),
+                                                    single_target.detach().cpu(), 
                                                     single_output.detach().cpu(),
                                                     sample_rate,
-                                                    title=f"Waveform_{model_name}_{global_step}"
-                                                    )
-                spectrogram_fig = plot_compare_spectrogram(single_target.cpu(), 
-                                                        single_output.cpu(), 
-                                                        sample_rate,
-                                                        title=f"Spectra_{model_name}_{global_step}",
-                                                        t_label=f"Target_{global_step}", o_label=f"Output_{global_step}"
-                                                        )
+                                                    title=f"Waveform_{model_name}_{global_step}")
+                
+                spectrogram_fig = plot_compare_spectrogram(single_target.cpu(),
+                                                           single_output.cpu(),
+                                                           sample_rate,
+                                                           title=f"Spectra_{model_name}_{global_step}",
+                                                           t_label=f"Target_{global_step}", o_label=f"Output_{global_step}")
 
                 writer.add_figure(f"test/Waveform_{model_name}_{global_step}", waveform_fig, global_step)
                 writer.add_figure(f"test/Spectra_{model_name}_{global_step}", spectrogram_fig, global_step)
