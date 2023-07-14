@@ -52,7 +52,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
                 target_pad = target
 
             # forward pass
-            output = model(input_pad, c)
+            output = model(input_pad)
             output_trim = output[:,:,:target_pad.size(2)]
 
             # Compute metrics means for current batch
@@ -66,21 +66,20 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
                 single_target = target_pad[0]
                 single_output = output_trim[0]
 
-                waveform_fig = plot_compare_waveform(single_input.detach().cpu(),
-                                                    single_target.detach().cpu(), 
-                                                    single_output.detach().cpu(),
-                                                    sample_rate,
-                                                    title=f"Waveform_{model_name}_{global_step}")
+                waveform_fig = plot_compare_waveform(
+                    single_target.detach().cpu(),single_output.detach().cpu(),
+                    sample_rate,title=f"Waveform_{model_name}_{global_step}")
                 
-                spectrogram_fig = plot_compare_spectrogram(single_target.cpu(),
-                                                           single_output.cpu(),
-                                                           sample_rate,
-                                                           title=f"Spectra_{model_name}_{global_step}",
-                                                           t_label=f"Target_{global_step}", o_label=f"Output_{global_step}")
+                spectrogram_fig = plot_compare_spectrogram(
+                    single_target.cpu(),single_output.cpu(),
+                    sample_rate,title=f"Spectra_{model_name}_{global_step}",
+                    t_label=f"Target_{global_step}", o_label=f"Output_{global_step}")
 
                 writer.add_figure(f"test/Waveform_{model_name}_{global_step}", waveform_fig, global_step)
                 writer.add_figure(f"test/Spectra_{model_name}_{global_step}", spectrogram_fig, global_step)
-
+                
+                writer.add_audio(f"test/Input_{model_name}_{global_step}", 
+                                single_input.detach().cpu(), global_step, sample_rate=sample_rate)
                 writer.add_audio(f"test/Target_{model_name}_{global_step}", 
                                 single_target.detach().cpu(), global_step, sample_rate=sample_rate)
                 writer.add_audio(f"test/Output_{model_name}_{global_step}", 

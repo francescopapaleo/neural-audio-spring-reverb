@@ -1,12 +1,12 @@
 #!/bin/bash
 
-configs=("WN-8-4-5" "LSTM-64")
+configs=("WN-8-10-4" "LSTM-96")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(250)
-batch_size=(16)
+n_epochs=(50)
+batch_size=(4)
 
 for epoch in "${n_epochs[@]}"; do
     for batch in "${batch_size[@]}"; do

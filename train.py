@@ -1,6 +1,7 @@
 # train.py
 
 import torch
+import torchaudio
 import auraloss
 import numpy as np
 from torchinfo import summary
@@ -15,25 +16,27 @@ from configurations import parse_args, configs
 torch.manual_seed(42)
 torch.cuda.empty_cache()            
 
-def training_loop(model, criterion_a, criterion_b, alpha, optimizer, train_loader, device, writer, global_step):
+def training_loop(model, criterion, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
     train_loss = 0.0
 
     model.train()
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
+    # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
     for batch_idx, data in enumerate(train_loader):
-        optimizer.zero_grad()
         input, target = data['dry'], data['wet']
         input, target = input.to(device), target.to(device)
-        # print(input.shape)
-        output = model(input, c)
         
-        loss_a = criterion_a(output, target)
-        loss_b = criterion_b(output, target)             
-        loss = alpha * loss_a + (1 - alpha) * loss_b
+        # print('input:', input.shape)
+        # print('target:', target.shape)
+        
+        output = model(input)
+        
+        output = torchaudio.functional.preemphasis(output, 0.95)
+        loss = criterion(output, target)        
         
         loss.backward()                             
-        optimizer.step()                            
+        optimizer.step()
+        optimizer.zero_grad()                            
         train_loss += loss.item()
         
         lr = optimizer.param_groups[0]['lr']
@@ -46,21 +49,20 @@ def training_loop(model, criterion_a, criterion_b, alpha, optimizer, train_loade
 
     return model, avg_train_loss
 
-def validation_loop(model, criterion_a, criterion_b, alpha, valid_loader, device, writer, global_step):
+def validation_loop(model, criterion, valid_loader, device, writer, global_step):
     """Validation loop for one epoch"""
     model.eval()
     valid_loss = 0.0
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
+    # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
     with torch.no_grad():
         for step, data in enumerate(valid_loader):
             input, target = data['dry'], data['wet']            
             input, target = input.to(device), target.to(device)
-            output = model(input, c)
-
-            loss_a = criterion_a(output, target)
-            loss_b = criterion_b(output, target)             
-            loss = alpha * loss_a + (1 - alpha) * loss_b
-
+            output = model(input)
+            
+            output = torchaudio.functional.preemphasis(output, 0.95)
+            loss = criterion(output, target)
+            
             valid_loss += loss.item()                   
 
     avg_valid_loss = valid_loss / len(valid_loader)    
@@ -68,8 +70,6 @@ def validation_loop(model, criterion_a, criterion_b, alpha, valid_loader, device
     writer.add_scalar('validation/loss', avg_valid_loss, global_step = global_step)
     
     return avg_valid_loss
-
-
 
 def main():
     args = parse_args()
@@ -99,37 +99,16 @@ def main():
     mae = torch.nn.L1Loss().to(device)
     mse = torch.nn.MSELoss().to(device)
     esr = auraloss.time.ESRLoss().to(device)
-    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
-        fft_sizes=[32, 128, 512, 2048],
-        win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024]).to(device)
+    stft = auraloss.freq.STFTLoss().to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    alpha = 1.0
-    criterion_a = mrstft
-    criterion_b = mrstft
-
-    criterion_str = f"{str(criterion_a)}+{str(criterion_b)}"
-
-    # if criterion_a == mrstft and criterion_b == esr:
-    #     criterion_str = "mrstft+esr"
-    # elif criterion_a == mrstft and criterion_b == mae:
-    #     criterion_str = "mrstft+mae"
-    # elif criterion_a == mae and criterion_b == esr:
-    #     criterion_str = "mae+esr"
-    # elif criterion_a == mae and criterion_b == mse:
-    #     criterion_str = "mae+mse"
-    # elif criterion_a == dc and criterion_b == esr:
-    #     criterion_str = "dc+esr"
-    # elif criterion_a == mrstft and criterion_b == None:
-    #     criterion_str = "mrstft"
-    # else:
-    #     criterion_str = "unknown"
+    criterion = esr
+    criterion_str = 'esr'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
-    ms1 = int(args.n_epochs * 0.6)
-    ms2 = int(args.n_epochs * 0.8)
+    ms1 = int(args.n_epochs * 0.8)
+    ms2 = int(args.n_epochs * 0.95)
     milestones = [ms1, ms2]
     
     scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -160,11 +139,11 @@ def main():
         for epoch in range(args.n_epochs):
             # Train model
             model, train_loss = training_loop(
-                model, criterion_a, criterion_b, alpha, optimizer, train_loader, device, writer, epoch)
+                model, criterion, optimizer, train_loader, device, writer, epoch)
             
             # Validate model
             valid_loss = validation_loop(
-                model, criterion_a, criterion_b, alpha, valid_loader, device, writer, epoch)
+                model, criterion, valid_loader, device, writer, epoch)
 
             # Update learning rate
             scheduler.step()

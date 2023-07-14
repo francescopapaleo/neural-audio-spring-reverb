@@ -164,6 +164,10 @@ class EgfxDataset(torch.utils.data.Dataset):
                 self.wet_files.extend(wet_files_position)
             else:
                 print(f"No files found in {position}")
+
+    def peak_normalize(self, audio):
+        max_val = audio.abs().max()
+        return audio / max_val if max_val > 0 else audio
     
     
     def __getitem__(self, index):
@@ -190,9 +194,15 @@ class EgfxDataset(torch.utils.data.Dataset):
         elif wet_audio.size(-1) < MAX_LENGTH:
             padding = torch.zeros(1, MAX_LENGTH - wet_audio.size(-1))
             wet_audio = torch.cat([wet_audio, padding], dim=-1)
+        
+        # Normalize the audio tensors
+        dry_audio = self.peak_normalize(dry_audio)
+        wet_audio = self.peak_normalize(wet_audio)
 
         return {"dry": dry_audio, "wet": wet_audio, "sr": dry_sr, "dry_file": dry_file, "wet_file": wet_file}
 
 
     def __len__(self):
         return len(self.dry_files)
+    
+

@@ -57,20 +57,26 @@ def peak_normalize(tensor):
     return tensor
 
 
-def load_data(datadir, batch_size):
+def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
     """Load and split the dataset"""
-    trainset = EgfxDataset(root_dir=datadir)
-    train_size = int(0.8 * len(trainset))
-    val_size = len(trainset) - train_size
-    train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
+    dataset = EgfxDataset(root_dir=datadir)
 
-    train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    # Calculate the sizes of train, validation, and test sets
+    total_size = len(dataset)
+    train_size = int(train_ratio * total_size)
+    val_size = int(val_ratio * total_size)
+    test_size = total_size - train_size - val_size
 
-    testset = EgfxDataset(root_dir=datadir)
-    test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
+    # Split the dataset into train, validation, and test sets
+    train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
-    return train_loader, valid_loader, test_loader
+    # Create data loaders for train, validation, and test sets
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
+
+    return train_loader, val_loader, test_loader
+
 
 
 def select_device(device):

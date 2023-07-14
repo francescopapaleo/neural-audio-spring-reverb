@@ -93,7 +93,7 @@ class TCN(torch.nn.Module):
                  kernel_size=9,
                  n_channels=32, 
                  dilation=4, 
-                 cond_dim=0):
+                 cond_dim=None):
         
         super(TCN, self).__init__()
         self.kernel_size = kernel_size

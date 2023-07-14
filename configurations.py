@@ -14,9 +14,9 @@ def parse_args():
     # Model
     parser.add_argument('--config', type=str, default='TCN_Baseline', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=44100, help='sample rate of the audio')    
+    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=50, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate')
     # parser.add_argument('--crop', type=int, default=240000, help='crop size')
         
@@ -64,11 +64,11 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'WN-8-10-4',
+    'conf_name': 'WN-8-10-1',
     'model_type': 'WaveNet',
     'n_channels': 8,
     'dilation': 10,
-    'num_repeat': 4,
+    'num_repeat': 1,
     'kernel_size': 5,
     },
     {
