@@ -29,8 +29,9 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
 
     model.eval()
     with torch.no_grad():
-        for step, data in enumerate(test_loader):
-            input, target = data['dry'], data['wet']            
+        for step, (dry, wet) in enumerate(test_loader):
+            input = dry
+            target = wet            
             global_step = step + 1
             print(f"Batch {global_step}/{num_batches}")
 
@@ -38,33 +39,23 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
             input = input.to(device)                    
             target = target.to(device)
             c = c.to(device)
-
-            # pad input and target to match receptive field
-            # Conditionally compute the receptive field for certain model types
-            if hparams['model_type'] in ["TCN", "WaveNet"]:
-                rf = model.compute_receptive_field()
-
-                input_pad = torch.nn.functional.pad(input, (rf-1, 0))
-                target_pad = torch.nn.functional.pad(target, (rf-1, 0))
-            else:
-                rf = None
-                input_pad = input
-                target_pad = target
-
+            
+            # pad input and target
+            
             # forward pass
-            output = model(input_pad)
-            output_trim = output[:,:,:target_pad.size(2)]
+            output = model(input)
+            # output_trim = output[:,:,:target.size(2)]
 
             # Compute metrics means for current batch
             for metric, name in zip(criterions, test_results.keys()):
-                batch_score = metric(output_trim, target_pad).item()
+                batch_score = metric(output, target).item()
                 test_results[name].append(batch_score)
 
             # Plot and save audios every 4 batches
             if step % 16 ==0:
-                single_input = input_pad[0]
-                single_target = target_pad[0]
-                single_output = output_trim[0]
+                single_input = input[0]
+                single_target = target[0]
+                single_output = output[0]
 
                 waveform_fig = plot_compare_waveform(
                     single_target.detach().cpu(),single_output.detach().cpu(),

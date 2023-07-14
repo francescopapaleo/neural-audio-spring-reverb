@@ -123,8 +123,12 @@ class TCN(torch.nn.Module):
 
     # iterate over blocks passing conditioning
     def forward(self, x, c = None):
-        for block in self.blocks:
-            x = block(x, c)
+        if c is not None:
+            for block in self.blocks:
+                x = block(x, c)
+        else:
+            for block in self.blocks:
+                x = block(x)
         return x
     
     def compute_receptive_field(self):

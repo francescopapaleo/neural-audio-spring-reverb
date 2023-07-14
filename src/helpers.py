@@ -47,14 +47,19 @@ def load_audio(input, sample_rate):
 
     return x_p, fs_x, input_name
 
+def collate_fn(batch):
+    # Find the audio file in the batch with the maximum length
+    max_length = max(audio.shape[1] for audio, _ in batch)
 
+    # Create tensors to hold padded audio and targets
+    audios = torch.zeros(len(batch), 1, max_length)
+    targets = torch.zeros(len(batch), 1, max_length)
 
-def peak_normalize(tensor):
-    # max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
-    # normalized_tensor = tensor / max_values
-    # return normalized_tensor
-    torch.nn.functional.normalize(tensor, p=2, dim=1)
-    return tensor
+    for i, (audio, target) in enumerate(batch):
+        audios[i, :, :audio.shape[1]] = audio
+        targets[i, :, :target.shape[1]] = target
+
+    return audios, targets
 
 
 def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
@@ -71,9 +76,9 @@ def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.
     train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
     # Create data loaders for train, validation, and test sets
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True, collate_fn=collate_fn)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True, collate_fn=collate_fn)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True, collate_fn=collate_fn)
 
     return train_loader, val_loader, test_loader
 
@@ -82,7 +87,7 @@ def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.
 def select_device(device):
     if device is None: 
         if torch.cuda.is_available():
-            device = torch.device("cuda")
+            device = torch.device("cuda:0")
         else:
             device = torch.device("cpu")
     else:

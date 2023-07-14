@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("WN-8-10-4" "LSTM-96")
+configs=("WN-8-10-2" "LSTM-96" "LSTM-96-skip")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."

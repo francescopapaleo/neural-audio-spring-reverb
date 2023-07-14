@@ -14,7 +14,6 @@ from src.helpers import load_data, select_device, initialize_model, save_model_c
 from configurations import parse_args, configs
 
 torch.manual_seed(42)
-torch.cuda.empty_cache()            
 
 def training_loop(model, criterion, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
@@ -22,12 +21,9 @@ def training_loop(model, criterion, optimizer, train_loader, device, writer, glo
 
     model.train()
     # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
-    for batch_idx, data in enumerate(train_loader):
-        input, target = data['dry'], data['wet']
-        input, target = input.to(device), target.to(device)
-        
-        # print('input:', input.shape)
-        # print('target:', target.shape)
+    for batch_idx, (dry, wet) in enumerate(train_loader):
+        input = dry.to(device)
+        target = wet.to(device)
         
         output = model(input)
         
@@ -55,9 +51,10 @@ def validation_loop(model, criterion, valid_loader, device, writer, global_step)
     valid_loss = 0.0
     # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
     with torch.no_grad():
-        for step, data in enumerate(valid_loader):
-            input, target = data['dry'], data['wet']            
-            input, target = input.to(device), target.to(device)
+        for step, (dry, wet) in enumerate(valid_loader):
+            input = dry.to(device)
+            target = wet.to(device)
+        
             output = model(input)
             
             output = torchaudio.functional.preemphasis(output, 0.95)
@@ -75,8 +72,9 @@ def main():
     args = parse_args()
 
     device = select_device(args.device)
-
-     # Find the configuration in the list
+    torch.cuda.empty_cache()
+    
+    # Find the configuration in the list
     print(f"Using configuration {args.config}")
     sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
     if sel_config is None:
@@ -102,8 +100,8 @@ def main():
     stft = auraloss.freq.STFTLoss().to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    criterion = esr
-    criterion_str = 'esr'
+    criterion = mse
+    criterion_str = 'mse'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 

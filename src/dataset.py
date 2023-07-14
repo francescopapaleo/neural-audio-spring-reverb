@@ -8,7 +8,6 @@ import torchaudio
 import glob
 import os
 
-
 class SpringDataset(torch.utils.data.Dataset):
     """
     Attributes:
@@ -146,7 +145,9 @@ class EgfxDataset(torch.utils.data.Dataset):
         self.random_start = random_start
         self.dry_dir = os.path.join(self.root_dir, 'Clean')
         self.wet_dir = os.path.join(self.root_dir, 'Spring Reverb')
-        self.positions = ['Bridge', 'Bridge-Middle', 'Middle', 'Middle-Neck', 'Neck']
+        # self.positions = ['Bridge', 'Bridge-Middle', 'Middle', 'Middle-Neck', 'Neck']
+        self.positions = ['Middle']
+
 
         self.dry_files = []
         self.wet_files = []
@@ -154,8 +155,6 @@ class EgfxDataset(torch.utils.data.Dataset):
         for position in self.positions:
             dry_path = os.path.join(self.dry_dir, position)
             wet_path = os.path.join(self.wet_dir, position)
-            # print(f"Dry path: {dry_path}")
-            # print(f"Wet path: {wet_path}")
             dry_files_position = sorted(glob.glob(os.path.join(dry_path, '*.wav')))
             wet_files_position = sorted(glob.glob(os.path.join(wet_path, '*.wav')))
 
@@ -165,44 +164,25 @@ class EgfxDataset(torch.utils.data.Dataset):
             else:
                 print(f"No files found in {position}")
 
-    def peak_normalize(self, audio):
-        max_val = audio.abs().max()
-        return audio / max_val if max_val > 0 else audio
-    
-    
+    def load_and_normalize(self, audio_file):
+        audio, sample_rate = torchaudio.load(audio_file, normalize=True)
+        # Normalize audio
+        normalized_audio = audio / torch.abs(audio).max()
+        # Convert to PyTorch tensor and add channel dimension
+        return normalized_audio
+
+
     def __getitem__(self, index):
-        MAX_LENGTH = 240000  # define the max length for your audio samples
 
         dry_file = self.dry_files[index]
         wet_file = self.wet_files[index]
-        
-        dry_audio, dry_sr = torchaudio.load(dry_file)
-        wet_audio, wet_sr = torchaudio.load(wet_file)
-        
-        # Ensure that audio tensors are of size MAX_LENGTH
-        if dry_audio.size(-1) > MAX_LENGTH:
-            # If the audio is longer than MAX_LENGTH, we trim it
-            dry_audio = dry_audio[..., :MAX_LENGTH]
-        elif dry_audio.size(-1) < MAX_LENGTH:
-            # If the audio is shorter than MAX_LENGTH, we pad it with zeros
-            padding = torch.zeros(1, MAX_LENGTH - dry_audio.size(-1))
-            dry_audio = torch.cat([dry_audio, padding], dim=-1)
 
-        # Do the same for wet_audio
-        if wet_audio.size(-1) > MAX_LENGTH:
-            wet_audio = wet_audio[..., :MAX_LENGTH]
-        elif wet_audio.size(-1) < MAX_LENGTH:
-            padding = torch.zeros(1, MAX_LENGTH - wet_audio.size(-1))
-            wet_audio = torch.cat([wet_audio, padding], dim=-1)
-        
-        # Normalize the audio tensors
-        dry_audio = self.peak_normalize(dry_audio)
-        wet_audio = self.peak_normalize(wet_audio)
+        # Load and normalize the audio files
+        dry_tensor = self.load_and_normalize(dry_file)
+        wet_tensor = self.load_and_normalize(wet_file)
 
-        return {"dry": dry_audio, "wet": wet_audio, "sr": dry_sr, "dry_file": dry_file, "wet_file": wet_file}
-
+        # Return the audio data
+        return dry_tensor, wet_tensor
 
     def __len__(self):
         return len(self.dry_files)
-    
-
