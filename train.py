@@ -99,8 +99,8 @@ def main():
         hop_sizes=[16, 64, 256, 1024]).to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    criterion = mrstft
-    criterion_str = "mrstft"
+    criterion = esr
+    criterion_str = "esr"
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 

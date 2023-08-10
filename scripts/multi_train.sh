@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("")
+configs=("TCN-BL" "WN-1k5" "LSTM-96" "LSTM-96-skip-bn-conv")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."

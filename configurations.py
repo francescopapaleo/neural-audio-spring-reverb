@@ -95,7 +95,6 @@ configs = [{
     'hidden_size': 96,
     'num_layers': 1,
     },
-    
     {
     'conf_name': 'LSTM-96-2',
     'model_type': 'LSTM',
