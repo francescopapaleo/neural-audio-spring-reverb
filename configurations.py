@@ -80,28 +80,28 @@ configs = [{
     'kernel_size': 5,
     },
     {
-    'conf_name': 'LSTM-128',
-    'model_type': 'LSTM',
-    'input_size': 1,
-    'output_size': 1,
-    'hidden_size': 128,
-    'num_layers': 1,
-    },
-    {
-    'conf_name': 'LSTM-128-skip-bn-conv',
-    'model_type': 'LSTMskip',
-    'input_size': 1,
-    'output_size': 1,
-    'hidden_size': 128,
-    'num_layers': 1,
-    },
-    
-    {
-    'conf_name': 'LSTM-96-smax',
+    'conf_name': 'LSTM-96',
     'model_type': 'LSTM',
     'input_size': 1,
     'output_size': 1,
     'hidden_size': 96,
     'num_layers': 1,
+    },
+    {
+    'conf_name': 'LSTM-96-skip-bn-conv',
+    'model_type': 'LSTMskip',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 96,
+    'num_layers': 1,
+    },
+    
+    {
+    'conf_name': 'LSTM-96-2',
+    'model_type': 'LSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 96,
+    'num_layers': 2,
     },
     ]

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("LSTM-96-smax" "WN-1500" "TCN-4k")
+configs=("")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
