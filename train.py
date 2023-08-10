@@ -100,7 +100,7 @@ def main():
     stft = auraloss.freq.STFTLoss().to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    criterion = mse
+    criterion = stft
     criterion_str = 'mse'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
