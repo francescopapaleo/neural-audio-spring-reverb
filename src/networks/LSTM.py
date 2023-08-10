@@ -41,13 +41,8 @@ class LSTM(nn.Module):
         c0 = torch.zeros(self.num_layers, x.shape[0], self.hidden_size).requires_grad_().to(x.device)
 
         output, (hidden, cell) = self.lstm(x, (h0, c0))
-<<<<<<< HEAD
-        linear_output = self.lin(output) # [seq, batch, hidden_size]
-        out = torch.tanh(linear_output)  
-=======
 
         lin_output = self.lin(output) # [seq, batch, hidden_size]
->>>>>>> dc7d7e457058d97e68971c213e9cad7fdd6b23f6
         
         out = lin_output
         # out = self.bn(activated_output)
@@ -66,7 +61,7 @@ class LSTMskip(nn.Module):
         self.input_size = input_size
         self.output_size = output_size
         self.num_layers = num_layers
-        self.hidden_size = hidden_sizesaz
+        self.hidden_size = hidden_size
         self.conv1d = nn.Conv1d(input_size, hidden_size, kernel_size=5, padding=2)
         self.lstm = nn.LSTM(hidden_size, 
                             hidden_size,
