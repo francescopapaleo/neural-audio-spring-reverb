@@ -93,7 +93,7 @@ class TCN(torch.nn.Module):
                  kernel_size=9,
                  n_channels=32, 
                  dilation=4, 
-                 cond_dim=None):
+                 cond_dim=0):
         
         super(TCN, self).__init__()
         self.kernel_size = kernel_size
@@ -123,12 +123,8 @@ class TCN(torch.nn.Module):
 
     # iterate over blocks passing conditioning
     def forward(self, x, c = None):
-        if c is not None:
-            for block in self.blocks:
-                x = block(x, c)
-        else:
-            for block in self.blocks:
-                x = block(x)
+        for block in self.blocks:
+            x = block(x, c)
         return x
     
     def compute_receptive_field(self):

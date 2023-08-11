@@ -20,12 +20,12 @@ def training_loop(model, criterion, optimizer, train_loader, device, writer, glo
     train_loss = 0.0
 
     model.train()
-    # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
     for batch_idx, (dry, wet) in enumerate(train_loader):
         input = dry.to(device)
         target = wet.to(device)
         
-        output = model(input)
+        output = model(input, c)
         
         output = torchaudio.functional.preemphasis(output, 0.95)
         loss = criterion(output, target)        
@@ -49,13 +49,13 @@ def validation_loop(model, criterion, valid_loader, device, writer, global_step)
     """Validation loop for one epoch"""
     model.eval()
     valid_loss = 0.0
-    # c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device) 
     with torch.no_grad():
         for step, (dry, wet) in enumerate(valid_loader):
             input = dry.to(device)
             target = wet.to(device)
         
-            output = model(input)
+            output = model(input, c)
             
             output = torchaudio.functional.preemphasis(output, 0.95)
             loss = criterion(output, target)

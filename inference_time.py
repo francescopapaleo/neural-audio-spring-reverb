@@ -18,7 +18,7 @@ def main():
     # New code to iterate over models in a directory
     model_directory = Path(args.checkpoint_path)
     model_paths = [p for p in model_directory.iterdir() if p.is_file() and p.suffix == '.pt']
-    saving_path = Path(args.resultsdir)
+    saving_path = Path(args.audiodir)
 
     x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
 
