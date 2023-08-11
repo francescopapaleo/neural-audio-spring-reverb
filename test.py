@@ -12,6 +12,9 @@ from configurations import parse_args
 
 torch.manual_seed(42)
 
+def soft_clip(tensor, limit=0.95):
+    return limit * torch.tanh(tensor / limit)
+
 def evaluate_model(model, device, model_name, hparams, test_loader, writer, sample_rate):
     mae = torch.nn.L1Loss()
     mse = torch.nn.MSELoss()
@@ -44,6 +47,8 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
             
             # forward pass
             output = model(input, c)
+            output = soft_clip(output)
+
             # output_trim = output[:,:,:target.size(2)]
 
             # Compute metrics means for current batch

@@ -168,6 +168,7 @@ class EgfxDataset(torch.utils.data.Dataset):
         audio, sample_rate = torchaudio.load(audio_file, normalize=True)
         # Normalize audio
         normalized_audio = audio / torch.abs(audio).max()
+        # normalized_audio = audio
         # Convert to PyTorch tensor and add channel dimension
         return normalized_audio
 

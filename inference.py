@@ -12,67 +12,32 @@ from configurations import parse_args
 
 torch.manual_seed(42)
 
-def make_inference(x_p, fs_x, model, device, max_length: float, stereo: bool, tail: float, width: float, c0: float, c1: float, gain_dB: float, mix: float) -> torch.Tensor:
+def make_inference(x_p, model, device, c0: float, c1: float) -> torch.Tensor:
+    print(f"Input shape: {x_p.shape}")
     
-    x_p = x_p.to(device)
-    
-    # rf = model.compute_receptive_field()
-    
-    chs = x_p.shape[0]
-    # If mono and stereo requested
-    if chs == 1 and stereo:
-        x_p = x_p.repeat(2, 1)
-        chs = 2
+    x_p_mono = x_p.mean(dim=0, keepdim=True)
+    x_p_mono = x_p_mono.unsqueeze(0)  # Add batch dimension
+    print(f"Shape of mono audio: {x_p_mono.shape}")
+
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1)  
+
+    x_p = x_p_mono.to(device)
+    c = c.to(device)
 
     # Pad the input signal 
     front_pad = 256 - 1
-    back_pad = 0 if not tail else front_pad
+    back_pad = front_pad
     x_p_pad = torch.nn.functional.pad(x_p, (front_pad, back_pad))
 
-    # Compute linear gain
-    gain_ln = 10 ** (gain_dB / 20.0)
-
     # Process audio with the pre-trained model
-    start_time = time.time()
     model.eval()
     with torch.no_grad():
-        y_wet = torch.zeros((chs, x_p_pad.shape[1]))
-
-        for n in range(chs):
-            if n == 0:
-                factor = (width * 5e-3)
-            elif n == 1:
-                factor = -(width * 5e-3)
-            c = torch.tensor([float(c0 + factor), float(c1 + factor)]).view(1, 1, -1).to(device)
-        
-            y_wet_ch = model(gain_ln * x_p_pad[n, :].view(1, 1, -1), c)
-
-            y_wet_ch = F.highpass_biquad(y_wet_ch.view(-1), fs_x, 20.0)
-            y_wet_ch = F.lowpass_biquad(y_wet_ch.view(-1), fs_x, 20000.0)
-
-            y_wet[n, :] = y_wet_ch
+        y_wet = model(x_p_pad, c)
     
-    inference_time = time.time() - start_time
-    print(f"Inference Time: {inference_time:.2f} seconds")
-
-    x_dry = x_p_pad.to(device)
-
-    # Normalize each first
+    # Normalize for safe measure
     y_wet /= y_wet.abs().max()
-    x_dry /= x_p_pad.abs().max()
 
-    y_wet = y_wet.to(device)
-    x_dry = x_dry.to(device)
-
-    # Mix
-    mix = mix / 100.0
-    y_hat = (mix * y_wet) + ((1 - mix) * x_dry)
-
-    # # Remove transient
-    y_hat = y_hat[..., 8192:]
-    y_hat /= y_hat.abs().max().item()
-
-    return y_hat
+    return y_wet
 
 
 def main():
@@ -84,7 +49,8 @@ def main():
 
     x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
 
-    y_hat = make_inference(x_p, fs_x, model, device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
+    y_hat = make_inference(x_p, model, device, args.c0, args.c1)
+
 
     # Create formatted filename
     now = datetime.now()

@@ -25,11 +25,13 @@ def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
 
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
-        x_p, fs_x, model, device, max_length=None, stereo=False, tail=None, 
-        width=50., c0=0., c1=0., gain_dB=0., mix=100.)
-    
+        x_p, model, device, args.c0, args.c1)
+
     # Perform the operation
     sweep_output = sweep_output[0].cpu().numpy()
+    sweep_output = sweep_output.squeeze()
+    print("sweep_output shape:", sweep_output.shape)
+    print("inverse_filter shape:", inverse_filter.shape)
 
     # Convolve the sweep tone with the inverse filter
     measured = np.convolve(sweep_output, inverse_filter)

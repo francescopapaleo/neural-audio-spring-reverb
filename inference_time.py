@@ -33,7 +33,7 @@ def main():
 
             model, model_name, hparams = load_model_checkpoint(device, str(model_path))
 
-            y_hat = make_inference(x_p, fs_x, model, device, args.max_length, args.stereo, args.tail, args.width, args.c0, args.c1, args.gain_dB, args.mix)
+            y_hat = make_inference(x_p, model, device, args.c0, args.c1)
 
             # Record end time for inference and calculate duration
             end_time = time.time()
@@ -51,7 +51,7 @@ def main():
             output_file_path = Path(args.audiodir) / filename
 
             # Save the output using torchaudio
-            y_hat = y_hat.cpu()
+            y_hat = y_hat.squeeze(0).cpu()
             torchaudio.save(str(output_file_path), y_hat, sample_rate=fs_x, channels_first=True, bits_per_sample=16)
             print(f"Saved processed file to {output_file_path}")
 
