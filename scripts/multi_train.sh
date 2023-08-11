@@ -5,7 +5,7 @@ configs=("TCN-BL" "WN-8-10-2" "LSTM-96")
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(50)
+n_epochs=(1000)
 batch_size=(4)
 
 for epoch in "${n_epochs[@]}"; do
