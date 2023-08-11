@@ -12,9 +12,9 @@ def parse_args():
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
     # Model
-    parser.add_argument('--config', type=str, default='TCN_Baseline', help='The configuration to use')
+    parser.add_argument('--config', type=str, default='TCN-BL', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
+    parser.add_argument('--sample_rate', type=int, default=44100, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=25, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')

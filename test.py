@@ -20,7 +20,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
     dc = auraloss.time.DCLoss()
     mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
-    criterions = [mae, mse, esr, dc, mrstft]
+    criterions = [mae, mse, esr, dc, stft]
     test_results = {"mae": [], "mse": [], "esr": [], "dc": [], "mrstft": []}
 
     c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
@@ -43,7 +43,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
             # pad input and target
             
             # forward pass
-            output = model(input)
+            output = model(input, c)
             # output_trim = output[:,:,:target.size(2)]
 
             # Compute metrics means for current batch
