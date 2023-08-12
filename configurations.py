@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--sample_rate', type=int, default=44100, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=1000, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
-    parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
+    parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
     # parser.add_argument('--crop', type=int, default=240000, help='crop size')
         
     # Inference

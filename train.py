@@ -104,17 +104,8 @@ def main():
     criterion_str = 'stft'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-
-    ms1 = int(args.n_epochs * 0.8)
-    ms2 = int(args.n_epochs * 0.95)
-    milestones = [ms1, ms2]
     
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(
-        optimizer,
-        milestones,
-        gamma=0.1,
-        verbose=False,
-    )
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, verbose=True)
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
@@ -144,7 +135,7 @@ def main():
                 model, criterion, valid_loader, device, writer, epoch)
 
             # Update learning rate
-            scheduler.step()
+            scheduler.step(valid_loss)
 
             # Save the model if it improved
             if valid_loss < min_valid_loss:
