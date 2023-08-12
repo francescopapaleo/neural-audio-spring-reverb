@@ -13,8 +13,6 @@ from pathlib import Path
 from src.helpers import load_data, select_device, initialize_model, save_model_checkpoint
 from configurations import parse_args, configs
 
-torch.manual_seed(42)
-
 def training_loop(model, criterion, optimizer, train_loader, device, writer, global_step):
     """Train the model for one epoch"""
     train_loss = 0.0
@@ -70,7 +68,9 @@ def validation_loop(model, criterion, valid_loader, device, writer, global_step)
 
 def main():
     args = parse_args()
-
+    torch.manual_seed(42)
+    torch.backends.cudnn.benchmark = True
+    
     device = select_device(args.device)
     torch.cuda.empty_cache()
     
@@ -82,7 +82,7 @@ def main():
     hparams = sel_config
 
     # Initialize model
-    model, rf, params = initialize_model(device, hparams)
+    model, rf, params = initialize_model(device, hparams, args)
 
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -143,14 +143,14 @@ def main():
                 
                 min_valid_loss = valid_loss
                 save_model_checkpoint(
-                    model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp
+                    model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp, args
                 )
                 patience_counter = 0  # reset the counter if performance improved
             else:
                 patience_counter += 1  # increase the counter if performance did not improve
 
             # Early stopping if performance did not improve after n epochs
-            if patience_counter >= 20:
+            if patience_counter >= 25:
                 print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
                 break
     finally:
@@ -161,4 +161,5 @@ def main():
     writer.close()
 
 if __name__ == "__main__":
+
     main()

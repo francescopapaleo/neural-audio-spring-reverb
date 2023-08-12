@@ -14,7 +14,7 @@ def parse_args():
     # Model
     parser.add_argument('--config', type=str, default='TCN-BL', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=44100, help='sample rate of the audio')    
+    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=1000, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
     parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
@@ -55,11 +55,11 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'WN-16-10-3',
+    'conf_name': 'WN-16-10-2',
     'model_type': 'WaveNet',
     'n_channels': 16,
     'dilation': 10,
-    'num_repeat': 3,
+    'num_repeat': 2,
     'kernel_size': 5,
     },
     {

@@ -11,6 +11,7 @@ from src.helpers import load_data, select_device, load_model_checkpoint
 from configurations import parse_args
 
 torch.manual_seed(42)
+torch.backends.cudnn.enabled = True
 
 def soft_clip(tensor, limit=0.95):
     return limit * torch.tanh(tensor / limit)
@@ -57,7 +58,7 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
                 test_results[name].append(batch_score)
 
             # Plot and save audios every 4 batches
-            if step % 16 ==0:
+            if step % 4 ==0:
                 single_input = input[0]
                 single_target = target[0]
                 single_output = output[0]
@@ -91,7 +92,7 @@ def main():
     
     device = select_device(args.device)
 
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path, args)
     
     batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']

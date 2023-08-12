@@ -1,4 +1,4 @@
-# helpers.py
+# src/helpers.py
 
 import torch
 import torchaudio
@@ -6,12 +6,13 @@ import librosa
 import numpy as np
 from pathlib import Path
 
-from src.dataset import SpringDataset, EgfxDataset
+from src.dataset_egfxset import EgfxDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
 from src.networks.LSTM import LSTM, LSTMskip
 from configurations import parse_args
 
+args = parse_args()
 
 def load_audio(input, sample_rate):
     print(f"Input type: {type(input)}")  # add this line to check the type of the input
@@ -48,18 +49,18 @@ def load_audio(input, sample_rate):
     return x_p, fs_x, input_name
 
 def collate_fn(batch):
-    # Find the audio file in the batch with the maximum length
-    max_length = max(audio.shape[1] for audio, _ in batch)
+    # Assuming batch is a list of (dry, wet) pairs
+    max_length = max([wet.shape[1] for _, wet in batch])  # Find the max length tensor
+    # Initialize tensors with zeros and max_length
+    dry_tensors = torch.zeros(len(batch), 1, max_length)
+    wet_tensors = torch.zeros(len(batch), 1, max_length)
+    
+    for i, (dry, wet) in enumerate(batch):
+        dry_tensors[i, :, :dry.shape[1]] = dry
+        wet_tensors[i, :, :wet.shape[1]] = wet
+        
+    return dry_tensors, wet_tensors
 
-    # Create tensors to hold padded audio and targets
-    audios = torch.zeros(len(batch), 1, max_length)
-    targets = torch.zeros(len(batch), 1, max_length)
-
-    for i, (audio, target) in enumerate(batch):
-        audios[i, :, :audio.shape[1]] = audio
-        targets[i, :, :target.shape[1]] = target
-
-    return audios, targets
 
 
 def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
@@ -76,9 +77,9 @@ def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.
     train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
     # Create data loaders for train, validation, and test sets
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True, collate_fn=collate_fn)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True, collate_fn=collate_fn)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True, collate_fn=collate_fn)
 
     return train_loader, val_loader, test_loader
 
@@ -97,8 +98,7 @@ def select_device(device):
     return device
 
 
-def initialize_model(device, hparams):
-    args = parse_args()
+def initialize_model(device, hparams, args):
     sample_rate = args.sample_rate
     if hparams['model_type'] == "TCN":
         model = TCN(
@@ -129,13 +129,6 @@ def initialize_model(device, hparams):
             output_size=hparams['output_size'],
             num_layers=hparams['num_layers'],
         ).to(device)
-    # elif hparams['model_type'] == 'BiLSTM':
-    #     model = BiLSTM(
-    #         input_size=hparams['input_size'], 
-    #         hidden_size=hparams['hidden_size'], 
-    #         output_size=hparams['output_size'],
-    #         num_layers=hparams['num_layers'],
-    #     ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
     print(f"Model initialized: {hparams['conf_name']}")
@@ -153,13 +146,13 @@ def initialize_model(device, hparams):
 
     return model, rf , params
 
-def load_model_checkpoint(device, checkpoint_path):
+def load_model_checkpoint(device, checkpoint_path, args):
     try:
         checkpoint = torch.load(checkpoint_path, map_location=device)
         model_name = checkpoint['name']
 
         hparams = checkpoint['hparams']
-        model, _, _ = initialize_model(device, hparams)
+        model, _, _ = initialize_model(device, hparams, args)
 
         model.load_state_dict(checkpoint['model_state_dict'])
         print(f"Model initialized: {model_name}")
@@ -171,7 +164,7 @@ def load_model_checkpoint(device, checkpoint_path):
     return model, model_name, hparams
 
 
-def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp):
+def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp, args):
     args = parse_args()
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
@@ -179,7 +172,7 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
     save_path = Path(args.checkpoint_path)
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
-    save_to = Path(args.checkpoint_path) / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'
+    save_to = save_path / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'
     torch.save({
         'model_type': model_type,
         'model_state_dict': model.state_dict(),
