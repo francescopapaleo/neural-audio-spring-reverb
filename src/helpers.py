@@ -76,9 +76,9 @@ def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.
     train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
     # Create data loaders for train, validation, and test sets
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True, collate_fn=collate_fn)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True, collate_fn=collate_fn)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True, collate_fn=collate_fn)
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, val_loader, test_loader
 

@@ -60,7 +60,9 @@ def main():
     output_file_path = Path(args.audiodir) / filename
 
     # Save the output using torchaudio
+    y_hat = y_hat.squeeze(0)
     y_hat = y_hat.cpu()
+    print(y_hat.shape)
     torchaudio.save(str(output_file_path), y_hat, sample_rate=fs_x, channels_first=True, bits_per_sample=16)
     print(f"Saved processed file to {output_file_path}")
 
