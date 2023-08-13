@@ -19,7 +19,7 @@ def make_inference(x_p, model, device, c0: float, c1: float) -> torch.Tensor:
     x_p_mono = x_p_mono.unsqueeze(0)  # Add batch dimension
     print(f"Shape of mono audio: {x_p_mono.shape}")
 
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1)  
+    c = torch.tensor([1.0, 1.0]).view(1,1,-1)  
 
     x_p = x_p_mono.to(device)
     c = c.to(device)

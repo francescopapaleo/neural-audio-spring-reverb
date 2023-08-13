@@ -31,7 +31,7 @@ def main():
         for model_path in model_paths:
             start_time = time.time()  # Record start time for inference
 
-            model, model_name, hparams = load_model_checkpoint(device, str(model_path))
+            model, model_name, hparams = load_model_checkpoint(device, str(model_path), args)
 
             y_hat = make_inference(x_p, model, device, args.c0, args.c1)
 
