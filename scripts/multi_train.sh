@@ -1,11 +1,11 @@
 #!/bin/bash
 
-configs=("TCN-BL" "TCN-64-10-5-7" "WN-16-10-3" "LSTM-32-4")
+configs=("TCN-BL" "WN-16-10-2" "LSTM-32-4")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(1000)
+n_epochs=(50)
 batch_size=(8)
 
 for epoch in "${n_epochs[@]}"; do

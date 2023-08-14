@@ -19,8 +19,6 @@ def training_loop(model, criterion, optimizer, train_loader, device, writer, glo
 
     model.train()
     c = torch.tensor([1.0, 1.0]).view(1,1,-1).to(device)
-    print(c.shape)
-    print(c)
     for batch_idx, (dry, wet) in enumerate(train_loader):
         input = dry.to(device)
         target = wet.to(device)
@@ -102,8 +100,8 @@ def main():
     stft = auraloss.freq.STFTLoss().to(device)
     dc = auraloss.time.DCLoss().to(device)
 
-    criterion = stft
-    criterion_str = 'stft'
+    criterion = mae
+    criterion_str = 'mae'
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     
