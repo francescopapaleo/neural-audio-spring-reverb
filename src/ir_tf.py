@@ -1,4 +1,5 @@
-""" Impulse response and transfer function generator.
+""" 
+Impulse response and transfer function generator.
 """
 
 import numpy as np
@@ -6,6 +7,8 @@ from pathlib import Path
 from scipy.io import wavfile
 from scipy.fft import fft
 from scipy import signal
+import matplotlib.pyplot as plt
+
 
 from src.signals import generate_reference
 from src.plotter import plot_impulse_response
@@ -14,14 +17,14 @@ from inference import make_inference
 from configurations import parse_args
 
 
-def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
+def generate_impulse_response(checkpoint, sample_rate, device, duration, args):
     
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
+    model, model_name, hparams = load_model_checkpoint(device, checkpoint, args)
 
     # Generate the reference signals
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate) 
 
-    x_p, fs_x, input_name = load_audio(sweep, args.sample_rate)
+    x_p, fs_x, input_name = load_audio(sweep, sample_rate)
 
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
@@ -37,11 +40,11 @@ def generate_impulse_response(checkpoint_path, sample_rate, device, duration):
     measured = np.convolve(sweep_output, inverse_filter)
 
     # Save and plot the measured impulse response
-    save_as = f"{Path(checkpoint_path).stem}_IR.wav"
+    save_as = f"{Path(checkpoint).stem}_IR.wav"
     wavfile.write(f"audio/processed/{save_as}", sample_rate, measured.astype(np.float32))
     print(f"Saved measured impulse response to {save_as}")
 
-    plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint_path).stem)
+    plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint).stem)
 
     return measured, reference
 
@@ -96,27 +99,7 @@ def generate_transfer_function(reference, measured_ir, n_fft: int, hop_length: i
     phase = np.angle(tf) * 180 / np.pi
     return magnitude, phase
 
-
-if __name__ == "__main__":
-    print('Generate impulse response or transfer function from a trained model')
-
-    args = parse_args()
-
-    n_fft = 1024  # or any desired FFT size
-    hop_length = n_fft // 2  # or any desired hop length
-
-    if args.mode == 'ir':
-        generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
-
-    else: # mode == 'tf'
-        measured_ir, reference = generate_impulse_response(args.checkpoint_path, args.sample_rate, args.device, args.duration)
-        magnitude, phase = generate_transfer_function(reference, measured_ir, n_fft, hop_length)
-        # plot_transfer_function(magnitude, phase, args.sample_rate, file_name=Path(args.checkpoint_path).stem)
-    
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    def plot_tf(tf, sample_rate, n_fft, hop_length, file_name):
+def plot_tf(tf, sample_rate, n_fft, hop_length, file_name):
         fig, ax = plt.subplots(figsize=(15, 7))
 
         # Compute the frequencies for each FFT bin
@@ -138,4 +121,23 @@ if __name__ == "__main__":
         plt.savefig(f"{file_name}_spectrogram.png")
         plt.show()
 
-    plot_tf(magnitude, args.sample_rate, n_fft, hop_length, file_name=Path(args.checkpoint_path).stem)
+
+
+if __name__ == "__main__":
+    print('Generate impulse response or transfer function from a trained model')
+
+    args = parse_args()
+
+    n_fft = 1024  # or any desired FFT size
+    hop_length = n_fft // 2  # or any desired hop length
+
+    if args.mode == 'ir':
+        generate_impulse_response(args.checkpoint, args.sample_rate, args.device, args.duration, args)
+
+    else: # mode == 'tf'
+        measured_ir, reference = generate_impulse_response(args.checkpoint, args.sample_rate, args.device, args.duration, args)
+        magnitude, phase = generate_transfer_function(reference, measured_ir, n_fft, hop_length)
+        plot_tf(magnitude, args.sample_rate, n_fft, hop_length, file_name=Path(args.checkpoint).stem)
+
+    
+    

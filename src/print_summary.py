@@ -11,7 +11,7 @@ args = parse_args()
 device = select_device(args.device)
 
 # Path to the checkpoints
-path_to_checkpoints = Path(args.checkpoint_path)
+path_to_checkpoints = Path(args.checkpoint)
 
 # List all files in the directory
 model_files = path_to_checkpoints.glob("*.pt")

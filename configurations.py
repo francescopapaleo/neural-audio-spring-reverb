@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('--audiodir', type=str, default='audio/processed/', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--checkpoint_path', type=str, default='results/checkpoints/', help='Path (rel) to checkpoint to load')
+    parser.add_argument('--checkpoint', type=str, default='results/checkpoints/', help='Path (rel) to checkpoint to load')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
     # Model
@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument('--mix', type=float, default=100, help='mix parameter for the model')
     
     # Measurements
-    parser.add_argument("--duration", type=float, default=0.5, help="duration in seconds")
+    parser.add_argument("--duration", type=float, default=5.0, help="duration in seconds")
     parser.add_argument("--mode", type=str, choices=['ir', 'tf'], default='ir', help="Mode to run: 'ir' for impulse response or 'tf' for transfer function")
     
     return parser.parse_args()

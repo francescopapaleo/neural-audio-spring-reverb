@@ -146,9 +146,9 @@ def initialize_model(device, hparams, args):
 
     return model, rf , params
 
-def load_model_checkpoint(device, checkpoint_path, args):
+def load_model_checkpoint(device, checkpoint, args):
     try:
-        checkpoint = torch.load(checkpoint_path, map_location=device)
+        checkpoint = torch.load(checkpoint, map_location=device)
         model_name = checkpoint['name']
 
         hparams = checkpoint['hparams']
@@ -159,7 +159,7 @@ def load_model_checkpoint(device, checkpoint_path, args):
             
     except Exception as e:
         raise RuntimeError(f"Failed to load model state from checkpoint: {e}")
-    print(f"Model loaded from checkpoint: {checkpoint_path}")
+    print(f"Model loaded from checkpoint: {checkpoint['name']}")
     
     return model, model_name, hparams
 
@@ -169,7 +169,7 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
 
-    save_path = Path(args.checkpoint_path)
+    save_path = Path(args.checkpoint)
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
     save_to = save_path / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'

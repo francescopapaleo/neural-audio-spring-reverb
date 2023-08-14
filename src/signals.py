@@ -124,10 +124,10 @@ def main(duration: float, sample_rate: int, audiodir: str):
     single_impulse = impulse(sample_rate, duration, decibels=-18)
 
     # Save as .wav files
-    save_audio(audiodir, "sweep", sample_rate, sweep)
-    save_audio(audiodir, "inverse_filter", sample_rate, inverse_filter)
-    save_audio(audiodir, "generator_reference", sample_rate, reference)
-    save_audio(audiodir, "single_impulse", sample_rate, single_impulse)
+    save_audio(audiodir, "sweep_gen", sample_rate, sweep)
+    save_audio(audiodir, "invfilt_gen", sample_rate, inverse_filter)
+    save_audio(audiodir, "reference_gen", sample_rate, reference)
+    save_audio(audiodir, "impulse_gen", sample_rate, single_impulse)
 
     # Plot them
     plot_impulse_response(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")

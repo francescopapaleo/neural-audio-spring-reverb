@@ -30,6 +30,9 @@ def apply_decorations(ax, legend=False, location="upper right"):
 
 
 def plot_data(x, y, subplot, title, x_label, y_label, legend=False):
+    min_length = min(len(x), len(y))
+    x = x[:min_length]
+    y = y[:min_length]
     subplot.plot(x, y)
     subplot.set_xlim([0, x[-1]])
     subplot.set_title(title)
@@ -48,7 +51,7 @@ def plot_data(x, y, subplot, title, x_label, y_label, legend=False):
 
 
 def get_time_stamps_np(signal_length, sample_rate):
-    return np.arange(0, signal_length / sample_rate, 1 / sample_rate)
+    return np.linspace(0, (signal_length-1) / sample_rate, signal_length)
 
 
 def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
