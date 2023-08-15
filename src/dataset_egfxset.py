@@ -1,7 +1,6 @@
 # src/egfxset.py
 
 from pathlib import Path
-import h5py
 import torch
 import numpy as np
 import torchaudio

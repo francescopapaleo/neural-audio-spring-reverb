@@ -92,7 +92,7 @@ def main():
     
     device = select_device(args.device)
 
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path, args)
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint, args)
     
     batch_size = hparams['batch_size']
     n_epochs = hparams['n_epochs']
