@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import torch
-import numpy as np
 import torchaudio
 import glob
 import os
@@ -39,21 +38,17 @@ class EgfxDataset(torch.utils.data.Dataset):
             else:
                 print(f"No files found in {position}")
 
-    def load_and_normalize(self, audio_file):
+    def load(self, audio_file):
         audio, sample_rate = torchaudio.load(audio_file)
-        # Normalize audio
-        # normalized_audio = audio / torch.abs(audio).max()
-        normalized_audio = audio
-        # Convert to PyTorch tensor and add channel dimension
-        return normalized_audio
+        return audio
 
     def __getitem__(self, index):
         dry_file = self.dry_files[index]
         wet_file = self.wet_files[index]
 
         # Load and normalize the audio files
-        dry_tensor = self.load_and_normalize(dry_file)
-        wet_tensor = self.load_and_normalize(wet_file)
+        dry_tensor = self.load(dry_file)
+        wet_tensor = self.load(wet_file)
 
         # Get the lengths of the two tensors
         dry_length = dry_tensor.size(1)
