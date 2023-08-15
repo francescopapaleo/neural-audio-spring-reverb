@@ -19,7 +19,7 @@ def make_inference(x_p, model, device, c0: float, c1: float) -> torch.Tensor:
     x_p_mono = x_p_mono.unsqueeze(0)  # Add batch dimension
     print(f"Shape of mono audio: {x_p_mono.shape}")
 
-    c = torch.tensor([1.0, 1.0]).view(1,1,-1)  
+    c = torch.tensor([0.0, 0.0]).view(1,1,-1)  
 
     x_p = x_p_mono.to(device)
     c = c.to(device)
@@ -45,7 +45,7 @@ def main():
 
     device = select_device(args.device)
 
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
+    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint, args)
 
     x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
 
@@ -63,7 +63,7 @@ def main():
     y_hat = y_hat.squeeze(0)
     y_hat = y_hat.cpu()
     print(y_hat.shape)
-    torchaudio.save(str(output_file_path), y_hat, sample_rate=fs_x, channels_first=True, bits_per_sample=16)
+    torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=24)
     print(f"Saved processed file to {output_file_path}")
 
 

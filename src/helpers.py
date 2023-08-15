@@ -6,7 +6,7 @@ import librosa
 import numpy as np
 from pathlib import Path
 
-from src.dataset_egfxset import EgfxDataset
+from src.dataset_egfxset import EgfxDataset, CustomDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
 from src.networks.LSTM import LSTM, LSTMskip
@@ -65,7 +65,7 @@ def collate_fn(batch):
 
 def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
     """Load and split the dataset"""
-    dataset = EgfxDataset(root_dir=datadir)
+    dataset = CustomDataset(root_dir=datadir)
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)
