@@ -12,9 +12,7 @@ from configurations import parse_args
 
 torch.manual_seed(42)
 
-def make_inference(x_p, model, device, c0: float, c1: float) -> torch.Tensor:
-    print(f"Input shape: {x_p.shape}")
-    
+def make_inference(x_p, sample_rate, model, device, c0: float, c1: float, mix: float, ) -> torch.Tensor:   
     x_p_mono = x_p.mean(dim=0, keepdim=True)
     x_p_mono = x_p_mono.unsqueeze(0)  # Add batch dimension
     print(f"Shape of mono audio: {x_p_mono.shape}")
@@ -32,10 +30,27 @@ def make_inference(x_p, model, device, c0: float, c1: float) -> torch.Tensor:
     # Process audio with the pre-trained model
     model.eval()
     with torch.no_grad():
+        
         y_wet = model(x_p_pad, c)
+        y_wet_hp = F.highpass_biquad(y_wet.view(-1), sample_rate, 20.0)
+        y_wet_lp = F.lowpass_biquad(y_wet_hp.view(-1), sample_rate, 20000.0)
     
     # Normalize for safe measure
-    y_wet /= y_wet.abs().max()
+    y_wet /= y_wet_lp.abs().max()
+    x_dry = x_p_pad.abs().max()
+    
+    y_wet = y_wet.to(device)
+    x_dry = x_dry.to(device)
+
+    # Mix
+    mix = mix / 100.0
+    y_hat = (mix * y_wet) + ((1 - mix) * x_dry)
+
+    # # Remove transient
+    # y_hat = y_hat[..., 8192:]
+    y_hat /= y_hat.abs().max().item()
+
+    return y_hat
 
     return y_wet
 
@@ -47,14 +62,13 @@ def main():
 
     model, model_name, hparams = load_model_checkpoint(device, args.checkpoint, args)
 
-    x_p, fs_x, input_name = load_audio(args.input, args.sample_rate)
+    x_p, fs_x, = torchaudio.load(args.input)
 
-    y_hat = make_inference(x_p, model, device, args.c0, args.c1)
-
+    y_hat = make_inference(x_p, args.sample_rate, model, device, args.c0, args.c1, args.mix)
 
     # Create formatted filename
     now = datetime.now()
-    filename = f"{input_name}_{model_name}.wav"
+    filename = f"{model_name}.wav"
 
     # Output file path
     output_file_path = Path(args.audiodir) / filename

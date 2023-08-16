@@ -49,23 +49,23 @@ def load_audio(input, sample_rate):
     return x_p, fs_x, input_name
 
 def collate_fn(batch):
-    # Assuming batch is a list of (dry, wet) pairs
-    max_length = max([wet.shape[1] for _, wet in batch])  # Find the max length tensor
-    # Initialize tensors with zeros and max_length
-    dry_tensors = torch.zeros(len(batch), 1, max_length)
-    wet_tensors = torch.zeros(len(batch), 1, max_length)
+    # Separate the dry and wet samples
+    dry_samples = [dry for dry, _ in batch]
+    wet_samples = [wet for _, wet in batch]
     
-    for i, (dry, wet) in enumerate(batch):
-        dry_tensors[i, :, :dry.shape[1]] = dry
-        wet_tensors[i, :, :wet.shape[1]] = wet
-        
-    return dry_tensors, wet_tensors
+    # Stack along the time dimension (dim=2 for 3D tensors)
+    dry_stacked = torch.cat(dry_samples, dim=1)
+    wet_stacked = torch.cat(wet_samples, dim=1)
 
+    # Add an extra batch dimension 
+    dry_stacked = dry_stacked.unsqueeze(0)
+    wet_stacked = wet_stacked.unsqueeze(0)
 
+    return dry_stacked, wet_stacked
 
-def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1):
+def load_data(datadir, batch_size, train_ratio=0.7, val_ratio=0.2, test_ratio=0.1):
     """Load and split the dataset"""
-    dataset = CustomDataset(root_dir=datadir)
+    dataset = EgfxDataset(root_dir=datadir)
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)
@@ -82,7 +82,6 @@ def load_data(datadir, batch_size, train_ratio=0.8, val_ratio=0.1, test_ratio=0.
     test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True, collate_fn=collate_fn)
 
     return train_loader, val_loader, test_loader
-
 
 
 def select_device(device):
