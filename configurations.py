@@ -31,7 +31,7 @@ def parse_args():
     parser.add_argument('--mix', type=float, default=100, help='mix parameter for the model')
     
     # Measurements
-    parser.add_argument("--duration", type=float, default=3.0, help="duration in seconds")
+    parser.add_argument("--duration", type=float, default=5.0, help="duration in seconds")
     parser.add_argument("--mode", type=str, choices=['ir', 'tf'], default='ir', help="Mode to run: 'ir' for impulse response or 'tf' for transfer function")
     
     return parser.parse_args()
@@ -55,15 +55,6 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'TCN-2k7',
-    'model_type': 'TCN',
-    'n_channels': 32,
-    'dilation': 4,
-    'n_blocks': 7,
-    'kernel_size': 9,
-    'cond_dim': 2,
-    },
-    {
     'conf_name': 'WN-1k5',
     'model_type': 'WaveNet',
     'n_channels': 8,
@@ -82,14 +73,6 @@ configs = [{
     {
     'conf_name': 'LSTM-96',
     'model_type': 'LSTM',
-    'input_size': 1,
-    'output_size': 1,
-    'hidden_size': 96,
-    'num_layers': 1,
-    },
-    {
-    'conf_name': 'LSTM-96-skip-bn-conv',
-    'model_type': 'LSTMskip',
     'input_size': 1,
     'output_size': 1,
     'hidden_size': 96,
