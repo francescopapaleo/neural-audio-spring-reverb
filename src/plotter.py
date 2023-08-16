@@ -92,9 +92,9 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     # ax[1].set_ylabel('Frequency [Hz]')
     # ax[1].set_xlabel('Time [sec]')
 
-    plt.suptitle(f"{file_name} - Transfer Function H(w)")
+    # plt.suptitle(f"{file_name} - Transfer Function H(w)")
 
-    save_plot(fig, file_name + "_TF")
+    # save_plot(fig, file_name + "_TF")
 
 
 

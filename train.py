@@ -53,8 +53,8 @@ def main():
     criterion_str = 'mrstft'
 
     # Optimizer and Scheduler
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.9, 0.999))    
-    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[30, 60, 90], gamma=0.1)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)    
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
@@ -81,6 +81,7 @@ def main():
             model.train()
             c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
             for batch_idx, (dry, wet) in enumerate(train_loader):
+                optimizer.zero_grad() 
                 input = dry.to(device)
                 target = wet.to(device)
             
@@ -91,7 +92,7 @@ def main():
                 
                 loss.backward()                             
                 optimizer.step()
-                optimizer.zero_grad()                            
+         
                 train_loss += loss.item()
                 
                 lr = optimizer.param_groups[0]['lr']
@@ -119,11 +120,11 @@ def main():
     
             writer.add_scalar('validation/loss', avg_valid_loss, global_step=epoch)
 
-            scheduler.step() # Update learning rate
+            scheduler.step(avg_valid_loss) # Update learning rate
 
             # Save the model if it improved
             if avg_valid_loss < min_valid_loss:
-                print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f}. Saving model.")
+                print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
@@ -134,13 +135,26 @@ def main():
                 patience_counter += 1  # increase the counter if performance did not improve
 
             # Early stopping if performance did not improve after n epochs
-            if patience_counter >= 10:
-                print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
-                break
+            # if patience_counter >= 10:
+            #     print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
+            #     break
+            
     finally:
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
+        print(f"Final Validation Loss: {final_valid_loss}")
+        single_output = output[0].detach().cpu()
+        abs_max = torch.max(torch.abs(single_output))
+        # Avoid division by zero: if abs_max is 0, just set it to 1
+        if abs_max == 0:
+            abs_max = 1
+        # Normalize waveform to range [-1, 1]
+        normalized_output = single_output / abs_max
+
+        # Save the normalized waveform
+        save_path = f"{log_dir}/{args.config}_output.wav"
+        torchaudio.save(save_path, normalized_output, args.sample_rate)
 
     writer.close()
 
