@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("WN-MRSTFT" "LSTM-32-2")
+configs=("LSTM-32")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
