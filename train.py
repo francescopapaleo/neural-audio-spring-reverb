@@ -1,7 +1,6 @@
-# train.py
-
 import torch
 import torchaudio
+import torchaudio.functional as F
 import auraloss
 import numpy as np
 from torchinfo import summary
@@ -28,7 +27,6 @@ def main():
         raise ValueError('Configuration not found')
     hparams = sel_config
 
-    # Initialize model
     model, rf, params = initialize_model(device, hparams, args)
 
     # Initialize Tensorboard writer
@@ -36,7 +34,6 @@ def main():
     log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     writer.add_text('model_summary', str(model), global_step=0)
-
     torch.cuda.empty_cache()
 
     # Define loss function and optimizer
@@ -47,13 +44,13 @@ def main():
     mrstft =  auraloss.freq.MultiResolutionSTFTLoss(
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024])
-
-    criterion = mrstft
+        hop_sizes=[16, 64, 256, 1024]).to(device)
+ 
     criterion_str = 'mrstft'
 
     # Optimizer and Scheduler
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)    
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)    
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     # Load data
@@ -87,8 +84,8 @@ def main():
             
                 output = model(input, c)
                 
-                output = torchaudio.functional.preemphasis(output, 0.95)
-                loss = criterion(output, target)        
+                # output = torchaudio.functional.preemphasis(output, 0.95)
+                loss = mrstft(output, target)
                 
                 loss.backward()                             
                 optimizer.step()
@@ -99,7 +96,6 @@ def main():
                 writer.add_scalar('training/learning_rate', lr, global_step=epoch)
 
             avg_train_loss = train_loss / len(train_loader)
-            
             writer.add_scalar('training/loss', avg_train_loss, global_step=epoch)
             
             # Validation
@@ -112,20 +108,21 @@ def main():
                 
                     output = model(input, c)
                     
-                    output = torchaudio.functional.preemphasis(output, 0.95)
-                    loss = criterion(output, target)
-                    
+                    # output = torchaudio.functional.preemphasis(output, 0.95)
+                    loss = mrstft(output, target)
+                    output = F.highpass_biquad(output, args.sample_rate, 20)
+
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     
             writer.add_scalar('validation/loss', avg_valid_loss, global_step=epoch)
-
-            scheduler.step(avg_valid_loss) # Update learning rate
+            
+            # Update learning rate
+            scheduler.step(avg_valid_loss)
 
             # Save the model if it improved
             if avg_valid_loss < min_valid_loss:
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
-                
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
                     model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp, args
@@ -144,17 +141,12 @@ def main():
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
         print(f"Final Validation Loss: {final_valid_loss}")
-        single_output = output[0].detach().cpu()
-        abs_max = torch.max(torch.abs(single_output))
-        # Avoid division by zero: if abs_max is 0, just set it to 1
-        if abs_max == 0:
-            abs_max = 1
-        # Normalize waveform to range [-1, 1]
-        normalized_output = single_output / abs_max
 
-        # Save the normalized waveform
+        single_output = output.squeeze(1).detach().cpu()
+        normalized_output /= torch.max(torch.abs(single_output))
+        
         save_path = f"{log_dir}/{args.config}_output.wav"
-        torchaudio.save(save_path, normalized_output, args.sample_rate)
+        torchaudio.save(save_path, normalized_output, args.sample_rate, bits_per_sample=24)
 
     writer.close()
 

@@ -39,7 +39,7 @@ configs = [{
     'cond_dim': 2,
     },
     {
-    'conf_name': 'TCN-3-MRSTFT',
+    'conf_name': 'TCN-3',
     'model_type': 'TCN',
     'n_channels': 32,
     'dilation': 10,
