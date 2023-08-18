@@ -64,3 +64,31 @@ configs = [{
     'num_layers': 1,
     },
     ]
+
+
+"""TODO: Add more configurations with the following format:
+{
+name='tcn-base',
+type='tcn',
+in_size=1,          # Number of input channels (mono = 1, stereo 2)
+out_size=1,         # Number of output channels (mono = 1, stereo 2)
+cond_dim=0,         # Number of conditioning parameters
+n_blocks=10,        # Number of total TCN blocks
+n_layers=1,         
+n_channels=32,
+kernel_size=3,      # Width of the convolutional kernels 
+dilation_growth=1,  # Compute the dilation factor at each block as dilation_growth ** (n % stack_size)
+channel_growth=1,   # Compute the output channels at each black as in_ch * channel_growth 
+channel_width=1,    # When channel_growth = 1 all blocks use convolutions with this many channels
+stack_size=1,       # Number of blocks that constitute a single stack of blocks
+grouped=False,      # Use grouped convolutions to reduce the total number of parameters
+causal=False,       # Causal TCN configuration does not consider future input values
+skip_connections=False,     # Skip connections from each block to the output
+loss_fn='mrstft',           # Loss function to use
+pre_filt="high_pass",       # Pre-filtering to apply to the input
+batch_size=1,               # Batch size
+n_epochs=1000,
+n_workers=0,
+lr=1e-3,
+}
+"""
