@@ -9,7 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
-from src.helpers import load_data, select_device, initialize_model, save_model_checkpoint
+from src.helpers import load_data, select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
 from configurations import parse_args, configs
 
 def main():
@@ -19,18 +19,27 @@ def main():
     
     device = select_device(args.device)
     
-    # Find the configuration in the list
-    print(f"Using configuration {args.config}")
-    sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
-    if sel_config is None:
-        raise ValueError('Configuration not found')
-    hparams = sel_config
-
-    model, rf, params = initialize_model(device, hparams, args)
+    # If there's a checkpoint, load it first
+    if args.checkpoint is not None:
+        model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch = load_model_checkpoint(device, args.checkpoint, args)
+        if optimizer_state_dict is not None:
+            optimizer.load_state_dict(optimizer_state_dict)
+        if scheduler_state_dict is not None:
+            scheduler.load_state_dict(scheduler_state_dict)
+    else:
+        # Else, get configuration from the args
+        print(f"Using configuration {args.config}")
+        sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
+        if sel_config is None:
+            raise ValueError('Configuration not found')
+        hparams = sel_config
+        model, rf, params = initialize_model(device, hparams, args)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)   
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{args.n_epochs}_{args.batch_size}_{args.lr}_{timestamp}"
+    log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     writer.add_text('model_summary', str(model), global_step=0)
     torch.cuda.empty_cache()
@@ -44,20 +53,13 @@ def main():
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
         hop_sizes=[16, 64, 256, 1024]).to(device)
- 
     criterion_str = 'mrstft'
-
-    # Optimizer and Scheduler
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    # optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)    
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
     
     # Initialize minimum validation loss with infinity
     min_valid_loss = np.inf
-    patience_counter = 0
 
     hparams.update({
         'n_epochs': args.n_epochs,
@@ -68,9 +70,11 @@ def main():
         'criterion': criterion_str,
     })
 
+    start_epoch = last_epoch + 1 if args.checkpoint is not None else 0
+
     print(f"Training model for {args.n_epochs} epochs, with batch size {args.batch_size} and learning rate {args.lr}")
     try:
-        for epoch in range(args.n_epochs):
+        for epoch in range(start_epoch, start_epoch + args.n_epochs):
             train_loss = 0.0
 
             # Training
@@ -109,7 +113,6 @@ def main():
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
                     loss = mrstft(output, target)
-                    output = F.highpass_biquad(output, args.sample_rate, 20)
 
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
@@ -124,17 +127,9 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, criterion_str, optimizer, scheduler, args.n_epochs, args.batch_size, args.lr, timestamp, args
+                    model, hparams, criterion_str, optimizer, scheduler, epoch, args.batch_size, args.lr, timestamp, args
                 )
-                patience_counter = 0  # reset the counter if performance improved
-            else:
-                patience_counter += 1  # increase the counter if performance did not improve
 
-            # Early stopping if performance did not improve after n epochs
-            # if patience_counter >= 10:
-            #     print(f"Early stopping triggered after {patience_counter} epochs without improvement in validation loss.")
-            #     break
-            
     finally:
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
@@ -152,4 +147,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-

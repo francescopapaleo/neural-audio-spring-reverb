@@ -8,14 +8,14 @@ def parse_args():
     parser.add_argument('--audiodir', type=str, default='audio/processed/', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--checkpoint', type=str, default='results/checkpoints/', help='Path (rel) to checkpoint to load')
+    parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint to load')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
 
     # Model
     parser.add_argument('--config', type=str, default='TCN-BL-MRSTFT', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=250, help='the total number of epochs')
+    parser.add_argument('--n_epochs', type=int, default=2, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=16, help='batch size')
     parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     
@@ -30,7 +30,7 @@ def parse_args():
     return parser.parse_args()
 
 configs = [{
-    'conf_name': 'TCN-no-cond',
+    'conf_name': 'tcn-no-cond',
     'model_type': 'TCN',
     'n_channels': 32,
     'dilation': 10,
