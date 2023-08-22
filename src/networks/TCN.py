@@ -66,7 +66,7 @@ class TCNBlock(torch.nn.Module):
         if cond_dim > 0:
             self.film = FiLM(cond_dim, out_channels, batch_norm=False)
         if activation:
-            #self.act = torch.nn.Tanh()
+            # self.act = torch.nn.Tanh()
             self.act = torch.nn.PReLU()
         self.res = torch.nn.Conv1d(in_channels, out_channels, 1, bias=False)
 

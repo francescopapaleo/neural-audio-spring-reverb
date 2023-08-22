@@ -18,7 +18,6 @@ def main():
     torch.backends.cudnn.benchmark = True
     
     device = select_device(args.device)
-    torch.cuda.empty_cache()
     
     # Find the configuration in the list
     print(f"Using configuration {args.config}")
@@ -82,7 +81,7 @@ def main():
                 input = dry.to(device)
                 target = wet.to(device)
             
-                output = model(input, c)
+                output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
                 loss = mrstft(output, target)
@@ -106,7 +105,7 @@ def main():
                     input = dry.to(device)
                     target = wet.to(device)
                 
-                    output = model(input, c)
+                    output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
                     loss = mrstft(output, target)
@@ -141,15 +140,16 @@ def main():
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
         print(f"Final Validation Loss: {final_valid_loss}")
-
-        single_output = output.squeeze(1).detach().cpu()
-        normalized_output /= torch.max(torch.abs(single_output))
+        
+        output /= torch.max(torch.abs(output))
+        output = output.squeeze(1).detach().cpu()
         
         save_path = f"{log_dir}/{args.config}_output.wav"
-        torchaudio.save(save_path, normalized_output, args.sample_rate, bits_per_sample=24)
+        torchaudio.save(save_path, output, args.sample_rate, bits_per_sample=24)
 
     writer.close()
 
 if __name__ == "__main__":
 
     main()
+

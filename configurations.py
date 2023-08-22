@@ -15,8 +15,8 @@ def parse_args():
     parser.add_argument('--config', type=str, default='TCN-BL-MRSTFT', help='The configuration to use')
     parser.add_argument('--device', type=str, default=None, help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=1000, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--n_epochs', type=int, default=250, help='the total number of epochs')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
     parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
     
     parser.add_argument('--c0', type=float, default=0.0, help='c0 parameter for the model')
@@ -30,13 +30,13 @@ def parse_args():
     return parser.parse_args()
 
 configs = [{
-    'conf_name': 'TCN-BL-MRSTFT',
+    'conf_name': 'TCN-no-cond',
     'model_type': 'TCN',
     'n_channels': 32,
     'dilation': 10,
     'n_blocks': 5,
     'kernel_size': 9,
-    'cond_dim': 2,
+    'cond_dim': 0,
     },
     {
     'conf_name': 'TCN-3',
@@ -56,11 +56,19 @@ configs = [{
     'kernel_size': 9,
     },
     {
-    'conf_name': 'LSTM-32',
+    'conf_name': 'LSTM',
     'model_type': 'LSTM',
     'input_size': 1,
     'output_size': 1,
-    'hidden_size': 32,
+    'hidden_size': 16,
+    'num_layers': 1,
+    },
+    {
+    'conf_name': 'LSTM-skip',
+    'model_type': 'LSTMskip',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 16,
     'num_layers': 1,
     },
     ]
