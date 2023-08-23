@@ -100,11 +100,11 @@ def initialize_model(device, hparams, args):
         ).to(device)
     elif hparams['model_type'] == 'GCN':
         model = GCN(
-            input_size = hparams['input_size'],
-            hidden_size = hparams['hidden_size'],
-            output_size = hparams['output_size'],
+            num_blocks = hparams['num_blocks'],
             num_layers = hparams['num_layers'],
-            dropout = hparams['dropout'],
+            num_channels = hparams['num_channels'],
+            kernel_size = hparams['kernel_size'],
+            dilation_depth = hparams['dilation_depth'],
         ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
@@ -112,7 +112,7 @@ def initialize_model(device, hparams, args):
     model.to(device)
     
     # Conditionally compute the receptive field for certain model types
-    if hparams['model_type'] in ["TCN", "WaveNetFF"]:
+    if hparams['model_type'] in ["TCN", "WaveNetFF", "GCN"]:
         rf = model.compute_receptive_field()
         print(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms", end='\n\n')    
     else:
@@ -146,7 +146,7 @@ def load_model_checkpoint(device, checkpoint, args):
     return model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params
 
 
-def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp, args):
+def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp, avg_valid_loss, args):
     args = parse_args()
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
@@ -163,7 +163,8 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
         'state_epoch': n_epochs,          
         'name': f'{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}',
         'hparams': hparams,
-        'criterion': str(criterion)
+        'criterion': str(criterion),
+        'avg_valid_loss': avg_valid_loss,
     }, save_to)
 
 def load_audio(input, sample_rate):

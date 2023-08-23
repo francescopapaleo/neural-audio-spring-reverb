@@ -62,7 +62,7 @@ def main():
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
         hop_sizes=[16, 64, 256, 1024]).to(device)
-    criterion_str = 'mrstft'
+    criterion_str = 'mse'
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
@@ -136,7 +136,7 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, criterion_str, optimizer, scheduler, epoch, args.batch_size, args.lr, timestamp, args
+                    model, hparams, criterion_str, optimizer, scheduler, epoch, args.batch_size, args.lr, timestamp, avg_valid_loss, args
                 )
 
     finally:

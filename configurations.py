@@ -30,7 +30,8 @@ def parse_args():
     
     return parser.parse_args()
 
-configs = [{
+configs = [
+    {
     'conf_name': 'tcn-baseline',
     'model_type': 'TCN',
     'n_blocks': 5,
@@ -69,7 +70,51 @@ configs = [{
     'conf_name': 'gcn',
     'model_type': 'GCN',
     'num_blocks': 2,
-    'num_layer': 9,
+    'num_layers': 9,
+    'num_channels': 8,
+    'kernel_size': 3,
+    'dilation_depth': 2,
+    },
+    {
+    'conf_name': 'tcn-baseline-mse',
+    'model_type': 'TCN',
+    'n_blocks': 5,
+    'kernel_size': 9,
+    'num_channels': 64,
+    'dilation': 10,
+    'cond_dim': 0,
+    },
+    {
+    'conf_name': 'wavenet-ff-mse',
+    'model_type': 'WaveNetFF',
+    'num_channels': 32,
+    'dilation_depth': 4,
+    'num_layers': 5,
+    'kernel_size': 9,
+    },
+    {
+    'conf_name': 'lstm-mse',
+    'model_type': 'LSTM',
+    'input_size': 1,
+    'output_size': 1,
+    'hidden_size': 64,
+    'num_layers': 1,
+    },
+    {
+    'conf_name': 'lstm-conv-skip-mse',
+    'model_type': 'LstmConvSkip',
+    'input_size': 1,
+    'hidden_size': 64,
+    'num_layers': 1,
+    'output_size': 1,
+    'use_skip': True,
+    'kernel_size': 3,
+    },
+    {
+    'conf_name': 'gcn-mse',
+    'model_type': 'GCN',
+    'num_blocks': 4,
+    'num_layers': 10,
     'num_channels': 8,
     'kernel_size': 3,
     'dilation_depth': 2,

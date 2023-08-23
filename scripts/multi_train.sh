@@ -1,12 +1,12 @@
 #!/bin/bash
 
-configs=("tcn-baseline" "wavenet" "lstm-skip")
+configs=("tcn-baseline-mse" "wavenet-ff-mse" "lstm-mse" "lstm-conv-skip-mse" "gcn-mse")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-n_epochs=(25)
-batch_size=(32)
+n_epochs=(50)
+batch_size=(4)
 
 for epoch in "${n_epochs[@]}"; do
     for batch in "${batch_size[@]}"; do
