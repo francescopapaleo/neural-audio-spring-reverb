@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+import torch.nn as nn
 
 class CausalConv1d(torch.nn.Conv1d):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, dilation=1, groups=1, bias=True):
@@ -8,8 +8,8 @@ class CausalConv1d(torch.nn.Conv1d):
         super(CausalConv1d, self).__init__(
             in_channels,
             out_channels,
-            kernel_size,
-            stride,
+            kernel_size=kernel_size,
+            stride=stride,
             padding=self.__padding,
             dilation=dilation,
             groups=groups,
@@ -19,55 +19,73 @@ class CausalConv1d(torch.nn.Conv1d):
     def forward(self, input):
         result = super(CausalConv1d, self).forward(input)
         if self.__padding != 0:
-            return result[:, :, :-self.__padding]
+            return result[:, :, : -self.__padding]
         return result
 
-class WaveNetFF(nn.Module):
-    """Feed-forward WaveNEt: a causal feedforward model, as such each output sample predicted by the model, depends only on the N previous input samples. 
-    The receptive field depends on the number of convolutional layers, and the lengths of the filters in the layers. 
-    with residual connections"""
+def _conv_stack(dilations, in_channels, out_channels, kernel_size):
+    """ Create stack of dilated convolutional layers, outlined in WaveNet paper:
+    https://arxiv.org/pdf/1609.03499.pdf """
+    return nn.ModuleList([
+            CausalConv1d(
+                in_channels=in_channels,
+                out_channels=out_channels,
+                dilation=d,
+                kernel_size=kernel_size,
+            ) for i, d in enumerate(dilations)
+        ]
+    )
 
-    def __init__(self, num_channels=8, dilation_depth=4, num_layers=10, kernel_size=9):
-        super(WaveNetFF, self).__init__()
-        dilations = [2 ** d for d in range(dilation_depth)] * num_layers
+class PedalNetWaveNet(nn.Module):
+    def __init__(self, num_channels=16, dilation_depth=10, num_repeat=0, kernel_size=3):
+        super(PedalNetWaveNet, self).__init__()
 
-        self.layers = nn.ModuleList([CausalConv1d(num_channels if i > 0 else 1, num_channels, kernel_size, dilation=d) for i, d in enumerate(dilations)])
-        self.prelus = nn.ModuleList([nn.PReLU() for _ in dilations])
+        self.kernel_size = kernel_size
+        self.num_channels = num_channels
+        self.dilations = [2 ** d for d in range(dilation_depth)] * num_repeat
+        internal_channels = int(num_channels * 2)
+        self.hidden = _conv_stack(self.dilations, num_channels, internal_channels, kernel_size)
+        self.residuals = _conv_stack(self.dilations, num_channels, num_channels, 1)
+        self.input_layer = CausalConv1d(
+            in_channels=1,
+            out_channels=num_channels,
+            kernel_size=1,
+        )
 
-        self.linear_mix = nn.Conv1d(in_channels=num_channels *len(self.layers), out_channels=1, kernel_size=1)
+        self.linear_mix = nn.Conv1d(
+            in_channels=num_channels * dilation_depth * num_repeat,
+            out_channels=1,
+            kernel_size=1,
+        )
 
     def forward(self, x):
-        out_list = [x]
+        out = x
+        skips = []
+        out = self.input_layer(out)
 
-        for layer, prelu in zip(self.layers, self.prelus):
-            out = layer(out_list[-1])  # Use the last output as the input for the next layer
-            out = prelu(out)
-            out_list.append(out)
+        for hidden, residual in zip(self.hidden, self.residuals):
+            x = out
+            out_hidden = hidden(x)
 
-        # Discard the original x from the list
-        out_list = out_list[1:]
-        
-        # Concatenate outputs for the linear mixer
-        out_combined = torch.cat(out_list, dim=1)
+            # gated activation
+            # split (32,16,3) into two (16,16,3) for tanh and sigm calculations
+            out_hidden_split = torch.split(out_hidden, self.num_channels, dim=1)
+            out = torch.tanh(out_hidden_split[0]) * torch.sigmoid(out_hidden_split[1])
 
-        # Use the 1x1 convolution as linear mixer
-        out_mixed = self.linear_mix(out_combined)
+            skips.append(out)
 
-        return out_mixed
+            out = residual(out)
+            out = out + x[:, :, -out.size(2) :]
+
+        # modified "postprocess" step:
+        out = torch.cat([s[:, :, -out.size(2) :] for s in skips], dim=1)
+        out = self.linear_mix(out)
+        return out
     
     def compute_receptive_field(self):
-        # Initialize receptive field with the kernel size of the first layer
-        total_rf = self.layers[0].kernel_size[0]
+        # Use the stored dilations attribute
+        layers_rf = [self.kernel_size * d for d in self.dilations]
         
-        for layer in self.layers[1:]:
-            dilation = layer.dilation[0]
-            kernel_size = layer.kernel_size[0]
-            
-            # Update the receptive field for the current layer
-            layer_rf = kernel_size + (kernel_size - 1) * (dilation - 1)
-            
-            # Update the total receptive field
-            total_rf += layer_rf - 1
-
+        # The total receptive field is the sum of the receptive field of all layers
+        total_rf = sum(layers_rf)
         return total_rf
 

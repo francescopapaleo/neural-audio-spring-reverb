@@ -40,9 +40,10 @@ class LstmConvSkip(nn.Module):
         
         self.use_skip = use_skip
 
-        # Convolutional layer for feature extraction
+        # Convolutional layer and batch normalization
         self.conv1d = nn.Conv1d(input_size, hidden_size, kernel_size=kernel_size, padding=kernel_size // 2)
-        
+        self.bn1 = nn.BatchNorm1d(hidden_size)
+
         # LSTM layer
         self.lstm = nn.LSTM(hidden_size, 
                             hidden_size, 
@@ -60,6 +61,7 @@ class LstmConvSkip(nn.Module):
     def forward(self, x):
         # Feature extraction
         x_features = self.conv1d(x)
+        x_features = self.bn1(x_features)
 
         # Permute for LSTM: batch, seq_len, channels
         x_permuted = x_features.permute(0, 2, 1)

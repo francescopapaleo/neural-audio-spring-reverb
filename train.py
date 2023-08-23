@@ -4,7 +4,6 @@ import torchaudio.functional as F
 import auraloss
 import numpy as np
 import os
-from torchinfo import summary
 
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -51,8 +50,6 @@ def main():
 
     print(model)
 
-    # summary(model, input_size=(args.batch_size, 1, 1), device=device)
-
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
     mse = torch.nn.MSELoss().to(device)
@@ -62,7 +59,9 @@ def main():
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
         hop_sizes=[16, 64, 256, 1024]).to(device)
-    criterion_str = 'mse'
+    
+    criterion = hparams['criterion']
+    alpha = 1.0
 
     # Load data
     train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
@@ -76,7 +75,6 @@ def main():
         'lr': args.lr,
         'receptive_field': rf,
         'params': params,
-        'criterion': criterion_str,
     })
 
     start_epoch = last_epoch + 1 if args.checkpoint is not None else 0
@@ -97,8 +95,10 @@ def main():
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
-                loss = mrstft(output, target)
-                
+                loss_1 = mae(output, target)
+                loss_2 = mrstft(output, target)
+                loss = loss_1 + (alpha * loss_2)
+
                 loss.backward()                             
                 optimizer.step()
          
@@ -121,7 +121,9 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
-                    loss = mrstft(output, target)
+                    loss_1 = mae(output, target)
+                    loss_2 = mrstft(output, target)
+                    loss = loss_1 + (alpha * loss_2)
 
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
@@ -136,7 +138,7 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, criterion_str, optimizer, scheduler, epoch, args.batch_size, args.lr, timestamp, avg_valid_loss, args
+                    model, hparams, optimizer, scheduler, epoch, timestamp, avg_valid_loss, args
                 )
 
     finally:

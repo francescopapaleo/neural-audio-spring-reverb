@@ -8,7 +8,7 @@ from pathlib import Path
 
 from src.dataset_egfxset import EgfxDataset, CustomDataset
 from src.networks.tcn import TCN
-from src.networks.wavenet import WaveNetFF
+from src.networks.wavenet import PedalNetWaveNet
 from src.networks.lstm import LSTM, LstmConvSkip
 from src.networks.gcn import GCN
 from configurations import parse_args
@@ -30,7 +30,7 @@ def collate_fn(batch):
 
     return dry_stacked, wet_stacked
 
-def load_data(datadir, batch_size, train_ratio=0.7, val_ratio=0.2, test_ratio=0.1):
+def load_data(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
     """Load and split the dataset"""
     dataset = EgfxDataset(root_dir=datadir)
 
@@ -44,9 +44,9 @@ def load_data(datadir, batch_size, train_ratio=0.7, val_ratio=0.2, test_ratio=0.
     train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
     # Create data loaders for train, validation, and test sets
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True, collate_fn=collate_fn)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True, collate_fn=collate_fn)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True, collate_fn=collate_fn)
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, val_loader, test_loader
 
@@ -75,11 +75,11 @@ def initialize_model(device, hparams, args):
             dilation = hparams['dilation'],
             cond_dim = hparams['cond_dim'],
         ).to(device)
-    elif hparams['model_type'] == "WaveNetFF":
-        model = WaveNetFF(
+    elif hparams['model_type'] == "PedalNetWaveNet":
+        model = PedalNetWaveNet(
             num_channels = hparams['num_channels'],
             dilation_depth = hparams['dilation_depth'],
-            num_layers = hparams['num_layers'],
+            num_repeat = hparams['num_repeat'],
             kernel_size = hparams['kernel_size'],
         ).to(device)
     elif hparams['model_type'] == 'LSTM':
@@ -112,7 +112,7 @@ def initialize_model(device, hparams, args):
     model.to(device)
     
     # Conditionally compute the receptive field for certain model types
-    if hparams['model_type'] in ["TCN", "WaveNetFF", "GCN"]:
+    if hparams['model_type'] in ["TCN", "PedalNetWaveNet", "GCN"]:
         rf = model.compute_receptive_field()
         print(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms", end='\n\n')    
     else:
@@ -146,7 +146,9 @@ def load_model_checkpoint(device, checkpoint, args):
     return model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params
 
 
-def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp, avg_valid_loss, args):
+def save_model_checkpoint(
+    model, hparams, optimizer, scheduler, epoch, timestamp, avg_valid_loss, args
+    ):
     args = parse_args()
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
@@ -154,16 +156,15 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
     save_path = Path(args.modelsdir)/f"{model_type}"
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
-    save_to = save_path / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'
+    save_to = save_path / f'{model_name}_e{epoch}_{timestamp}.pt'
     torch.save({
         'model_type': model_type,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
-        'state_epoch': n_epochs,          
-        'name': f'{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}',
+        'state_epoch': epoch,          
+        'name': f'{model_name}_{epoch}_{args.batch_size}_{args.lr}_{timestamp}',
         'hparams': hparams,
-        'criterion': str(criterion),
         'avg_valid_loss': avg_valid_loss,
     }, save_to)
 
