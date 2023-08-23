@@ -144,7 +144,7 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
   author  = {Francesco Papaleo and Xavier Lizarraga},
   school  = {Universitat Pompeu Fabra},
   year    = {2023},
-  month   = {},
+  month   = {August},
   doi     = {},
   url     = {}
 }

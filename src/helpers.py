@@ -7,9 +7,10 @@ import numpy as np
 from pathlib import Path
 
 from src.dataset_egfxset import EgfxDataset, CustomDataset
-from src.networks.TCN import TCN
-from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, LSTMskip
+from src.networks.tcn import TCN
+from src.networks.wavenet import WaveNetFF
+from src.networks.lstm import LSTM, LstmConvSkip
+from src.networks.gcn import GCN
 from configurations import parse_args
 
 args = parse_args()
@@ -64,35 +65,46 @@ def select_device(device):
 
 
 def initialize_model(device, hparams, args):
-    sample_rate = args.sample_rate
     if hparams['model_type'] == "TCN":
         model = TCN(
+            n_inputs = 1,
+            n_outputs = 1,
             n_blocks = hparams['n_blocks'],
             kernel_size = hparams['kernel_size'],
-            n_channels = hparams['n_channels'], 
+            num_channels = hparams['num_channels'], 
             dilation = hparams['dilation'],
             cond_dim = hparams['cond_dim'],
         ).to(device)
-    elif hparams['model_type'] == "WaveNet":
-        model = WaveNet(
-            n_channels = hparams['n_channels'],
-            dilation=hparams['dilation'],
-            num_repeat=hparams['num_repeat'],
+    elif hparams['model_type'] == "WaveNetFF":
+        model = WaveNetFF(
+            num_channels = hparams['num_channels'],
+            dilation_depth = hparams['dilation_depth'],
+            num_layers = hparams['num_layers'],
             kernel_size = hparams['kernel_size'],
         ).to(device)
     elif hparams['model_type'] == 'LSTM':
         model = LSTM(
-            input_size=hparams['input_size'], 
-            hidden_size=hparams['hidden_size'], 
-            output_size=hparams['output_size'],
-            num_layers=hparams['num_layers'],
+            input_size = hparams['input_size'],
+            output_size = hparams['output_size'],
+            hidden_size = hparams['hidden_size'],
+            num_layers = hparams['num_layers'],
         ).to(device)
-    elif hparams['model_type'] == 'LSTMskip':
-        model = LSTMskip(
-            input_size=hparams['input_size'], 
-            hidden_size=hparams['hidden_size'], 
-            output_size=hparams['output_size'],
-            num_layers=hparams['num_layers'],
+    elif hparams['model_type'] == 'LstmConvSkip':
+        model = LstmConvSkip(
+            input_size = hparams['input_size'],
+            hidden_size = hparams['hidden_size'],
+            num_layers = hparams['num_layers'],
+            output_size = hparams['output_size'],
+            use_skip = hparams['use_skip'],
+            kernel_size = hparams['kernel_size'],
+        ).to(device)
+    elif hparams['model_type'] == 'GCN':
+        model = GCN(
+            input_size = hparams['input_size'],
+            hidden_size = hparams['hidden_size'],
+            output_size = hparams['output_size'],
+            num_layers = hparams['num_layers'],
+            dropout = hparams['dropout'],
         ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
@@ -100,9 +112,9 @@ def initialize_model(device, hparams, args):
     model.to(device)
     
     # Conditionally compute the receptive field for certain model types
-    if hparams['model_type'] in ["TCN", "WaveNet"]:
+    if hparams['model_type'] in ["TCN", "WaveNetFF"]:
         rf = model.compute_receptive_field()
-        print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms", end='\n\n')    
+        print(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms", end='\n\n')    
     else:
         rf = None
 
@@ -123,7 +135,15 @@ def load_model_checkpoint(device, checkpoint, args):
     model.load_state_dict(checkpoint['model_state_dict'])
     print(f"Model initialized: {model_name}")
 
-    return model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch
+    if hparams['model_type'] in ["TCN", "SimpleWaveNet"]:
+        rf = model.compute_receptive_field()
+        print(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms", end='\n\n')    
+    else:
+        rf = None
+    
+    params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    return model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params
 
 
 def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epochs, batch_size, lr, timestamp, args):
@@ -131,7 +151,7 @@ def save_model_checkpoint(model, hparams, criterion, optimizer, scheduler, n_epo
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
 
-    save_path = Path(args.checkpoint)
+    save_path = Path(args.modelsdir)/f"{model_type}"
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
     save_to = save_path / f'{model_name}_{n_epochs}_{batch_size}_{timestamp}.pt'

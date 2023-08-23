@@ -3,6 +3,7 @@ import torchaudio
 import torchaudio.functional as F
 import auraloss
 import numpy as np
+import os
 from torchinfo import summary
 
 from torch.utils.tensorboard import SummaryWriter
@@ -15,16 +16,21 @@ from configurations import parse_args, configs
 def main():
     args = parse_args()
     torch.manual_seed(42)
-    torch.backends.cudnn.benchmark = True
     
     device = select_device(args.device)
-    
+
+    torch.backends.cudnn.deterministic = True
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+    torch.cuda.empty_cache()
+
     # If there's a checkpoint, load it first
     if args.checkpoint is not None:
-        model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch = load_model_checkpoint(device, args.checkpoint, args)
+        model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
         if optimizer_state_dict is not None:
+            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)  
             optimizer.load_state_dict(optimizer_state_dict)
         if scheduler_state_dict is not None:
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
             scheduler.load_state_dict(scheduler_state_dict)
     else:
         # Else, get configuration from the args
@@ -41,8 +47,11 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
-    writer.add_text('model_summary', str(model), global_step=0)
     torch.cuda.empty_cache()
+
+    print(model)
+
+    # summary(model, input_size=(args.batch_size, 1, 1), device=device)
 
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
@@ -82,9 +91,9 @@ def main():
             c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
             for batch_idx, (dry, wet) in enumerate(train_loader):
                 optimizer.zero_grad() 
-                input = dry.to(device)
+                input = dry.to(device)          # shape: [batch, channel, seq]
                 target = wet.to(device)
-            
+                
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
@@ -137,10 +146,20 @@ def main():
         print(f"Final Validation Loss: {final_valid_loss}")
         
         output /= torch.max(torch.abs(output))
+        target /= torch.max(torch.abs(target))
+
+        input = input.squeeze(1).detach().cpu()
         output = output.squeeze(1).detach().cpu()
-        
-        save_path = f"{log_dir}/{args.config}_output.wav"
-        torchaudio.save(save_path, output, args.sample_rate, bits_per_sample=24)
+        target = target.squeeze(1).detach().cpu()
+
+        save_in = f"{log_dir}/{args.config}_input.wav"
+        torchaudio.save(save_in, input, args.sample_rate, bits_per_sample=24)
+
+        save_out = f"{log_dir}/{args.config}_output.wav"
+        torchaudio.save(save_out, output, args.sample_rate, bits_per_sample=24)
+
+        save_target = f"{log_dir}/{args.config}_target.wav"
+        torchaudio.save(save_target, target, args.sample_rate, bits_per_sample=24)
 
     writer.close()
 
