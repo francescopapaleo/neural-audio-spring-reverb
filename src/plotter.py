@@ -99,7 +99,7 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
 
 
 def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
-    plt.subplots(figsize=(7, 7))
+    plt.subplots(figsize=(9, 4))
     plt.plot(T, energy_db, label="Energy")
     plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
     plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")

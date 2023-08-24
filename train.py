@@ -78,6 +78,7 @@ def main():
         'lr': args.lr,
         'receptive_field': rf,
         'params': params,
+        'sample_rate': args.sample_rate,
     })
 
     start_epoch = last_epoch + 1 if args.checkpoint is not None else 0

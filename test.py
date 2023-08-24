@@ -2,7 +2,6 @@ import torch
 import torchaudio
 import torchaudio.functional as F
 import auraloss
-import time
 import os
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
@@ -53,6 +52,7 @@ def main():
     with torch.no_grad():
         for step, (dry, wet) in enumerate(test_loader):
             start_time = datetime.now()
+            
             input = dry
             target = wet            
             global_step = step + 1

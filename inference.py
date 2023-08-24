@@ -1,70 +1,61 @@
-# inference.py
-
 import torch
 import torchaudio
-import torchaudio.functional as F
+import torch.nn.functional as F
 from pathlib import Path
 from datetime import datetime
-import time
 
-from src.helpers import load_audio, select_device, load_model_checkpoint
+from src.helpers import select_device, load_model_checkpoint
 from configurations import parse_args
 
-torch.manual_seed(42)
-
-def make_inference(x_p, sample_rate, model, device, c0: float, c1: float, mix: float, ) -> torch.Tensor:   
-    x_p_mono = x_p.mean(dim=0, keepdim=True)
-    x_p_mono = x_p_mono.unsqueeze(0)  # Add batch dimension
-    print(f"Shape of mono audio: {x_p_mono.shape}")
-
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1)  
-
-    x_p = x_p_mono.to(device)
-    c = c.to(device)
-
-    # Pad the input signal 
-    front_pad = 256 - 1
-    back_pad = front_pad
-    x_p_pad = torch.nn.functional.pad(x_p, (front_pad, back_pad))
-
-    # Process audio with the pre-trained model
+def make_inference(input, sample_rate, model, device, mix):   
+    
+    input = input.to(device)
+    
     model.eval()
     with torch.no_grad():
+        start_time = datetime.now()
+
+        # Process audio with the pre-trained model
+        y_wet = model(input)
         
-        y_wet = model(x_p_pad, c)
-        y_wet_hp = F.highpass_biquad(y_wet.view(-1), sample_rate, 20.0)
-        y_wet_lp = F.lowpass_biquad(y_wet_hp.view(-1), sample_rate, 20000.0)
-    
+        end_time = datetime.now()
+        duration = end_time - start_time
+        num_samples = input.size(1)
+        length_in_seconds = num_samples / sample_rate
+        rtf = duration.total_seconds() / length_in_seconds
+        print(f"RTF: {rtf}")
+
     # Normalize for safe measure
-    y_wet /= y_wet_lp.abs().max()
-    x_dry = x_p_pad.abs().max()
+    y_wet /= y_wet.abs().max()
     
-    y_wet = y_wet.to(device)
-    x_dry = x_dry.to(device)
-
-    # Mix
+    # Apply mixing
     mix = mix / 100.0
-    y_hat = (mix * y_wet) + ((1 - mix) * x_dry)
+    y_hat = mix * y_wet + (1 - mix) * input
 
-    # # Remove transient
-    # y_hat = y_hat[..., 8192:]
+    # Normalize output
     y_hat /= y_hat.abs().max().item()
 
     return y_hat
 
-    return y_wet
-
 
 def main():
     args = parse_args()
-
     device = select_device(args.device)
 
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint, args)
+    model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
 
-    x_p, fs_x, = torchaudio.load(args.input)
+    waveform, sr, = torchaudio.load(args.input)
 
-    y_hat = make_inference(x_p, args.sample_rate, model, device, args.mix)
+    target_length = 240000
+    if waveform.size(1) < target_length:
+        padding = target_length - waveform.size(1)
+        waveform = F.pad(waveform, (0, padding))
+
+    # Add the batch dimension if it's missing
+    if waveform.dim() == 1:
+        waveform = waveform.unsqueeze(0)
+
+    y_hat = make_inference(waveform, args.sample_rate, model, device, args.mix)
 
     # Create formatted filename
     now = datetime.now()
@@ -74,7 +65,7 @@ def main():
     output_file_path = Path(args.audiodir) / filename
 
     # Save the output using torchaudio
-    y_hat = y_hat.squeeze(0)
+    # y_hat = y_hat.squeeze(0)
     y_hat = y_hat.cpu()
     print(y_hat.shape)
     torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=24)

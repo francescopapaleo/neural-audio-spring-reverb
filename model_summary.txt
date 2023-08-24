@@ -1,0 +1,214 @@
+
+Configuration name: lstm-cs-96
+Model name: lstm-cs-96_20230824-013331
+Number of parameters: 75171
+criterion: mae+mrstft
+batch size: 4
+current epoch: 31
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LstmConvSkip                             [4, 1, 240000]            --
+├─Conv1d: 1-1                            [4, 96, 240000]           384
+├─BatchNorm1d: 1-2                       [4, 96, 240000]           192
+├─LSTM: 1-3                              [4, 240000, 96]           74,496
+├─Linear: 1-4                            [4, 240000, 1]            97
+├─Linear: 1-5                            [4, 240000, 1]            2
+==========================================================================================
+Total params: 75,171
+Trainable params: 75,171
+Non-trainable params: 0
+Total mult-adds (G): 71.88
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 2227.20
+Params size (MB): 0.30
+Estimated Total Size (MB): 2231.34
+==========================================================================================
+
+Configuration name: wavenet-10
+Model name: wavenet-10_20230824-013657
+Number of parameters: 18593
+criterion: mae+mrstft
+batch size: 4
+current epoch: 51
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+PedalNetWaveNet                          [4, 1, 240000]            --
+├─CausalConv1d: 1-1                      [4, 16, 240000]           32
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-1                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-2                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-3                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-4                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-5                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-6                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-7                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-8                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-9                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-10                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-11                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-12                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-13                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-14                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-15                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-16                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-17                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-18                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-19                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-20                [4, 16, 240000]           272
+├─Conv1d: 1-22                           [4, 1, 240000]            161
+==========================================================================================
+Total params: 18,593
+Trainable params: 18,593
+Non-trainable params: 0
+Total mult-adds (G): 17.85
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 3816.96
+Params size (MB): 0.07
+Estimated Total Size (MB): 3820.87
+==========================================================================================
+
+Configuration name: gcn-2500
+Model name: gcn-2500_20230824-015908
+Number of parameters: 26401
+criterion: mae+mrstft
+batch size: 4
+current epoch: 32
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [4, 1, 240000]            --
+├─ModuleList: 1-1                        --                        --
+│    └─GatedConv1d: 2-1                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 239996]           192
+│    │    └─Conv1d: 3-2                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-2                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-3                  [4, 32, 239988]           2,592
+│    │    └─Conv1d: 3-4                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-3                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-5                  [4, 32, 239964]           2,592
+│    │    └─Conv1d: 3-6                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-4                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 239892]           2,592
+│    │    └─Conv1d: 3-8                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-5                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-9                  [4, 32, 239676]           2,592
+│    │    └─Conv1d: 3-10                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-6                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-11                 [4, 32, 239028]           2,592
+│    │    └─Conv1d: 3-12                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-7                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-13                 [4, 32, 237084]           2,592
+│    │    └─Conv1d: 3-14                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-8                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-15                 [4, 32, 231252]           2,592
+│    │    └─Conv1d: 3-16                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-9                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-17                 [4, 32, 213756]           2,592
+│    │    └─Conv1d: 3-18                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-10                 [4, 16, 240000]           --
+│    │    └─Conv1d: 3-19                 [4, 32, 161268]           2,592
+│    │    └─Conv1d: 3-20                 [4, 16, 240000]           272
+├─Conv1d: 1-2                            [4, 1, 240000]            161
+==========================================================================================
+Total params: 26,401
+Trainable params: 26,401
+Non-trainable params: 0
+Total mult-adds (G): 24.12
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 3573.15
+Params size (MB): 0.11
+Estimated Total Size (MB): 3577.10
+==========================================================================================
+
+Configuration name: lstm-cs-32
+Model name: lstm-cs-32_20230824-013035
+Number of parameters: 17123
+criterion: mae+mrstft
+batch size: 4
+current epoch: 53
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LstmConvSkip                             [4, 1, 240000]            --
+├─Conv1d: 1-1                            [4, 32, 240000]           128
+├─BatchNorm1d: 1-2                       [4, 32, 240000]           64
+├─LSTM: 1-3                              [4, 240000, 32]           16,896
+├─Linear: 1-4                            [4, 240000, 1]            33
+├─Linear: 1-5                            [4, 240000, 1]            2
+==========================================================================================
+Total params: 17,123
+Trainable params: 17,123
+Non-trainable params: 0
+Total mult-adds (G): 16.34
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 752.64
+Params size (MB): 0.07
+Estimated Total Size (MB): 756.55
+==========================================================================================
+
+Configuration name: gcn-250
+Model name: gcn-250_20230824-011632
+Number of parameters: 65569
+criterion: mae + mrstft
+batch size: 4
+current epoch: 121
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [4, 1, 240000]            --
+├─ModuleList: 1-1                        --                        --
+│    └─GatedConv1d: 2-1                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 239960]           1,344
+│    │    └─Conv1d: 3-2                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-2                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-3                  [4, 32, 239760]           21,024
+│    │    └─Conv1d: 3-4                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-3                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-5                  [4, 32, 238560]           21,024
+│    │    └─Conv1d: 3-6                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-4                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 231360]           21,024
+│    │    └─Conv1d: 3-8                  [4, 16, 240000]           272
+├─Conv1d: 1-2                            [4, 1, 240000]            65
+==========================================================================================
+Total params: 65,569
+Trainable params: 65,569
+Non-trainable params: 0
+Total mult-adds (G): 62.08
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 1471.63
+Params size (MB): 0.26
+Estimated Total Size (MB): 1475.73
+==========================================================================================
+
+Configuration name: gcn-250
+Model name: gcn-250_20230823-205707
+Number of parameters: 65569
+criterion: mae + mrstft
+batch size: 4
