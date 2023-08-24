@@ -43,7 +43,7 @@ def main():
     mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
     criterions = [mae, mse, esr, dc, mrstft]
-    test_results = {"mae": [], "mse": [], "esr": [], "dc": [], "mrstft": []}
+    test_results = {"mae": [], "esr": [], "dc": [], "mrstft": []}
 
     num_batches = len(test_loader)
     rtf_list = []
@@ -102,10 +102,12 @@ def main():
         writer.add_scalar(f'test/global_{name}', global_score, global_step)
     
     mean_test_results = {k: sum(v) / len(v) for k, v in test_results.items()}
+    avg_rtf = sum(rtf_list) / len(rtf_list)
+    mean_test_results['rtf'] = avg_rtf
+
     writer.add_hparams(hparams, mean_test_results)
 
-    avg_rtf = sum(rtf_list) / len(rtf_list)
-    writer.add_scalar(f'test/rtf', avg_rtf, global_step)
+    # writer.add_scalar(f'test/rtf', avg_rtf, global_step)
 
     writer.flush()
     writer.close()

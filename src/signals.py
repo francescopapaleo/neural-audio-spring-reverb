@@ -8,7 +8,7 @@ from scipy.io import wavfile
 from typing import Tuple
 from pathlib import Path
 
-from src.plotter import plot_impulse_response
+from src.plotter import *
 from configurations import parse_args
 
 
@@ -124,18 +124,32 @@ def main(duration: float, sample_rate: int, audiodir: str):
     single_impulse = impulse(sample_rate, duration, decibels=-18)
 
     # Save as .wav files
-    save_audio(audiodir, "sweep_gen", sample_rate, sweep)
-    save_audio(audiodir, "invfilt_gen", sample_rate, inverse_filter)
-    save_audio(audiodir, "reference_gen", sample_rate, reference)
-    save_audio(audiodir, "impulse_gen", sample_rate, single_impulse)
+    save_audio(audiodir, "gen/sweep_gen", sample_rate, sweep)
+    save_audio(audiodir, "gen/invfilt_gen", sample_rate, inverse_filter)
+    save_audio(audiodir, "gen/reference_gen", sample_rate, reference)
+    save_audio(audiodir, "gen/impulse_gen", sample_rate, single_impulse)
 
     # Plot them
-    plot_impulse_response(sweep, inverse_filter, reference, args.sample_rate, "generator_reference")
+    
+    fig, ax = plt.subplots(3, 1, figsize=(15,7))
+    plot_data(get_time_stamps_np(len(sweep), sample_rate), sweep, ax[0], "Sweep Tone", "Time [s]", "Amplitude")
+    plot_data(get_time_stamps_np(len(inverse_filter), sample_rate), inverse_filter, ax[1], "Inverse Filter", "Time [s]", "Amplitude")
+    plot_data(get_time_stamps_np(len(reference), sample_rate), reference, ax[2], "Reference IR", "Time [s]", "Amplitude")
+    fig.suptitle(f"Impulse Response δ(t)")
+    save_plot(fig, "Generator_Reference")
 
 
 if __name__ == "__main__":
 
     args = parse_args()
 
-    main(args.duration, args.sample_rate, args.audiodir)
-    
+    # main(args.duration, args.sample_rate, args.audiodir)
+
+    import torchaudio
+
+    proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')
+    inv_filt, _ = torchaudio.load('audio/gen/invfilt_gen.wav')
+
+    ir_result = np.convolve(proc_sweep.squeeze().numpy(), inv_filt.squeeze().numpy())
+
+    save_audio(args.audiodir, "gcn-250-IR", args.sample_rate, ir_result)

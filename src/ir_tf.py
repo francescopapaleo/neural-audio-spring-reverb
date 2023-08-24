@@ -1,5 +1,4 @@
-""" 
-Impulse response and transfer function generator.
+""" Impulse response and transfer function generator.
 """
 
 import numpy as np
@@ -8,40 +7,40 @@ from scipy.io import wavfile
 from scipy.fft import fft
 from scipy import signal
 import matplotlib.pyplot as plt
-
+from mpl_toolkits.mplot3d import Axes3D
 
 from src.signals import generate_reference
 from src.plotter import plot_impulse_response
-from src.helpers import load_audio, load_model_checkpoint
+from src.helpers import load_model_checkpoint
 from inference import make_inference
 from configurations import parse_args
 
 
 def generate_impulse_response(checkpoint, sample_rate, device, duration, args):
     
-    model, model_name, hparams = load_model_checkpoint(device, checkpoint, args)
+    model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, checkpoint, args)
 
     # Generate the reference signals
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate) 
-
-    x_p, fs_x, input_name = load_audio(sweep, sample_rate)
+    sweep = sweep.reshape(1, -1)
+    print("generated sweep:", sweep.shape)
 
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
-        x_p, model, device, args.c0, args.c1)
+        sweep, sample_rate, model, device, args.mix)
 
     # Perform the operation
     sweep_output = sweep_output[0].cpu().numpy()
     sweep_output = sweep_output.squeeze()
-    print("sweep_output shape:", sweep_output.shape)
-    print("inverse_filter shape:", inverse_filter.shape)
+    print(f"sweep_output: {sweep_output.shape} || inverse_filter {inverse_filter.shape}")
+
 
     # Convolve the sweep tone with the inverse filter
     measured = np.convolve(sweep_output, inverse_filter)
 
     # Save and plot the measured impulse response
     save_as = f"{Path(checkpoint).stem}_IR.wav"
-    wavfile.write(f"audio/processed/{save_as}", sample_rate, measured.astype(np.float32))
+    wavfile.write(f"audio/proc/{save_as}", sample_rate, measured.astype(np.float32))
     print(f"Saved measured impulse response to {save_as}")
 
     plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint).stem)
@@ -65,19 +64,6 @@ def fft_scipy(x: np.ndarray, fft_size: int, axis: int = -1) -> np.ndarray:
         
         return fft(fft_buffer, fft_size, axis=axis)[:hN]
 
-
-# def transfer_function(x: np.ndarray, y: np.ndarray):
-#     X = fft_scipy(x, len(y))
-#     Y = fft_scipy(y, len(y))
-#     tf = Y / X
-#     return tf
-
-# def generate_transfer_function(reference, measured_ir, sample_rate):
-#     tf = transfer_function(reference, measured_ir)
-#     magnitude = 20 * np.log10(np.abs(tf))
-#     phase = np.angle(tf) * 180 / np.pi
-#     return magnitude, phase
-
 def transfer_function(x: np.ndarray, y: np.ndarray, n_fft: int, hop_length: int):
     len_x = len(x)
     len_y = len(y)
@@ -95,32 +81,39 @@ def transfer_function(x: np.ndarray, y: np.ndarray, n_fft: int, hop_length: int)
 
 def generate_transfer_function(reference, measured_ir, n_fft: int, hop_length: int):
     tf = transfer_function(reference, measured_ir, n_fft, hop_length)
-    magnitude = 20 * np.log10(np.abs(tf) + 1e-10)
+    magnitude = 20 * np.log10(np.abs(tf) / np.abs(tf).max())
     phase = np.angle(tf) * 180 / np.pi
     return magnitude, phase
 
-def plot_tf(tf, sample_rate, n_fft, hop_length, file_name):
-        fig, ax = plt.subplots(figsize=(15, 7))
+from mpl_toolkits.mplot3d import Axes3D
 
-        # Compute the frequencies for each FFT bin
-        freqs = np.linspace(0, sample_rate / 2, tf.shape[0])
+def plot_tf_waterfall(magnitude, phase, sample_rate, n_fft, hop_length, file_name):
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
 
-        # Compute the times for each frame
-        times = np.arange(tf.shape[1]) * hop_length / sample_rate
+    # Generate time and frequency axes
+    time_axis = np.arange(0, magnitude.shape[1] * hop_length / sample_rate, hop_length / sample_rate)
+    freq_axis = np.fft.fftfreq(n_fft, d=1/sample_rate)[:n_fft//2]
 
-        # Compute 10 * log10 of the absolute value of the transfer function to convert to dB
-        tf_dB = 10 * np.log10(np.abs(tf))
+    # Ensure dimensions match
+    T, F = np.meshgrid(time_axis, freq_axis)
+    magnitude = magnitude[:T.shape[0], :T.shape[1]]
+    # magnitude = magnitude[:, :T.shape[1]]  # Trim magnitude to match shape
 
-        im = ax.imshow(tf_dB, aspect='auto', origin='lower', extent=[times.min(), times.max(), freqs.min(), freqs.max()])
-        ax.set_title('Spectrogram')
-        ax.set_ylabel('Frequency [Hz]')
-        ax.set_xlabel('Time [sec]')
-        fig.colorbar(im, ax=ax, format='%+2.0f dB')
+    # Plot the waterfall spectrogram
+    surf = ax.plot_surface(T, F, magnitude, cmap='viridis', antialiased=True)
 
-        plt.tight_layout()
-        plt.savefig(f"{file_name}_spectrogram.png")
-        plt.show()
+    ax.set_title('Transfer Function Waterfall Spectrogram')
+    ax.set_xlabel('Time [sec]')
+    ax.set_ylabel('Frequency [Hz]')
+    ax.set_zlabel('Magnitude [dB]')
 
+    # Rotate the view for better visibility
+    ax.view_init(elev=30, azim=-45)
+
+    plt.tight_layout()
+    plt.savefig(f"results/plots/{file_name}.png")
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -137,7 +130,9 @@ if __name__ == "__main__":
     else: # mode == 'tf'
         measured_ir, reference = generate_impulse_response(args.checkpoint, args.sample_rate, args.device, args.duration, args)
         magnitude, phase = generate_transfer_function(reference, measured_ir, n_fft, hop_length)
-        plot_tf(magnitude, args.sample_rate, n_fft, hop_length, file_name=Path(args.checkpoint).stem)
-
-    
-    
+        
+        # Convert the string to a Path object
+        checkpoint_path = Path(args.checkpoint)
+        file_name = f'{checkpoint_path.stem}_waterfall'
+        
+        plot_tf_waterfall(magnitude, phase, args.sample_rate, n_fft, hop_length,file_name)

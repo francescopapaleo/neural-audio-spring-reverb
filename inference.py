@@ -9,6 +9,10 @@ from configurations import parse_args
 
 def make_inference(input, sample_rate, model, device, mix):   
     
+    # Add the batch dimension if it's missing
+    input = input.reshape(1, 1, -1)
+    input = torch.from_numpy(input).float()
+
     input = input.to(device)
     
     model.eval()
@@ -50,10 +54,9 @@ def main():
     if waveform.size(1) < target_length:
         padding = target_length - waveform.size(1)
         waveform = F.pad(waveform, (0, padding))
-
-    # Add the batch dimension if it's missing
-    if waveform.dim() == 1:
-        waveform = waveform.unsqueeze(0)
+    
+    waveform = waveform.numpy()
+    print(f'input waveform: {waveform.shape}')
 
     y_hat = make_inference(waveform, args.sample_rate, model, device, args.mix)
 
@@ -62,12 +65,12 @@ def main():
     filename = f"{model_name}.wav"
 
     # Output file path
-    output_file_path = Path(args.audiodir) / filename
+    output_file_path = Path(args.audiodir) / f'proc/{filename}'
 
     # Save the output using torchaudio
-    # y_hat = y_hat.squeeze(0)
-    y_hat = y_hat.cpu()
-    print(y_hat.shape)
+    y_hat = y_hat.squeeze(0).cpu()
+    # y_hat = y_hat.cpu()
+
     torchaudio.save(str(output_file_path), y_hat, sample_rate=args.sample_rate, channels_first=True, bits_per_sample=24)
     print(f"Saved processed file to {output_file_path}")
 

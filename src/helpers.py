@@ -2,11 +2,11 @@
 
 import torch
 import torchaudio
-import librosa
 import numpy as np
 from pathlib import Path
 
-from src.dataset_egfxset import EgfxDataset, CustomDataset
+from src.egfxset import EgfxDataset
+from src.springset import SpringDataset
 from src.networks.tcn import TCN
 from src.networks.wavenet import PedalNetWaveNet
 from src.networks.lstm import LSTM, LstmConvSkip
@@ -32,7 +32,7 @@ def collate_fn(batch):
 
 def load_data(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
     """Load and split the dataset"""
-    dataset = EgfxDataset(root_dir=datadir)
+    dataset = SpringDataset(root_dir=datadir)
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)
@@ -134,7 +134,7 @@ def load_model_checkpoint(device, checkpoint, args):
 
     model.load_state_dict(checkpoint['model_state_dict'])
     print(f"Model initialized: {model_name}")
-
+    
     if hparams['model_type'] in ["TCN", "SimpleWaveNet"]:
         rf = model.compute_receptive_field()
         print(f"Receptive field: {rf} samples or {(rf / args.sample_rate)*1e3:0.1f} ms", end='\n\n')    

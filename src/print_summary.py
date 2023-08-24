@@ -11,7 +11,7 @@ args = parse_args()
 device = select_device(args.device)
 
 # Path to the checkpoints
-path_to_checkpoints = Path(args.modelsdir)
+path_to_checkpoints = Path('results/checkpoints/')
 
 # List all files in the directory
 model_files = path_to_checkpoints.glob("*.pt")
@@ -19,15 +19,19 @@ with open('model_summary.txt', 'w') as f:
     for model_file in model_files:
         # Load model from the checkpoint
         model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, model_file, args)
-
         # Print information about the model
         f.write("\n")
+        f.write(f"Processing {model_file}...")
         f.write(f"Configuration name: {hparams['conf_name']}\n")
         f.write(f"Model name: {model_name}\n")
         f.write(f"Number of parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad)}\n")
         f.write(f'criterion: {hparams["criterion"]}\n')
         f.write(f'batch size: {hparams["batch_size"]}\n')
-        f.write(f'current epoch: {hparams["curr_epoch"]}\n')
+        try:
+            f.write(f'current epoch: {hparams["curr_epoch"]}\n')
+        except KeyError:
+            pass
+
         if hparams['model_type'] in ["TCN", "WaveNet"]:
             rf = model.compute_receptive_field()
             f.write(f"Receptive field: {rf} samples or {(rf / args.sample_rate) * 1e3:0.1f} ms\n")
