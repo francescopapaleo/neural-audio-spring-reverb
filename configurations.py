@@ -17,11 +17,9 @@ def parse_args():
     parser.add_argument('--device', type=str, default='cuda:0', help='set device to run the model on')
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
     parser.add_argument('--n_epochs', type=int, default=50, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     
-    parser.add_argument('--c0', type=float, default=0.0, help='c0 parameter for the model')
-    parser.add_argument('--c1', type=float, default=0.0, help='c1 parameter for the model')
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')
     
     # Measurements
@@ -69,6 +67,7 @@ configs = [
     'num_channels': 16,
     'kernel_size': 5,
     'dilation_depth': 3,
+    'criterion': 'mae+mrstft',
     },
     {
     'conf_name': 'wavenet-10',

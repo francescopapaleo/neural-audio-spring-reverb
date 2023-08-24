@@ -58,7 +58,10 @@ def main():
     mrstft =  auraloss.freq.MultiResolutionSTFTLoss(
         fft_sizes=[32, 128, 512, 2048],
         win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024]).to(device)
+        hop_sizes=[16, 64, 256, 1024],
+        sample_rate=args.sample_rate,
+        perceptual_weighting=True,
+        ).to(device)
     
     criterion = hparams['criterion']
     alpha = 1.0
@@ -145,23 +148,24 @@ def main():
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
-        print(f"Final Validation Loss: {final_valid_loss}")
-        
-        output /= torch.max(torch.abs(output))
-        target /= torch.max(torch.abs(target))
+        print(f"Final Validation Loss: {final_valid_loss}")    
 
-        input = input.squeeze(1).detach().cpu()
-        output = output.squeeze(1).detach().cpu()
-        target = target.squeeze(1).detach().cpu()
+        inp = input.view(-1).unsqueeze(0).cpu()
+        tgt = target.view(-1).unsqueeze(0).cpu()
+        out = output.view(-1).unsqueeze(0).cpu()
 
-        save_in = f"{log_dir}/{args.config}_input.wav"
-        torchaudio.save(save_in, input, args.sample_rate, bits_per_sample=24)
+        inp /= torch.max(torch.abs(inp))
+        tgt /= torch.max(torch.abs(tgt))                
+        out /= torch.max(torch.abs(out))
 
-        save_out = f"{log_dir}/{args.config}_output.wav"
-        torchaudio.save(save_out, output, args.sample_rate, bits_per_sample=24)
+        save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
+        torchaudio.save(save_in, inp, args.sample_rate, bits_per_sample=24)
 
-        save_target = f"{log_dir}/{args.config}_target.wav"
-        torchaudio.save(save_target, target, args.sample_rate, bits_per_sample=24)
+        save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
+        torchaudio.save(save_out, out, args.sample_rate, bits_per_sample=24)
+
+        save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
+        torchaudio.save(save_target, tgt, args.sample_rate, bits_per_sample=24)
 
     writer.close()
 

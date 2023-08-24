@@ -64,7 +64,7 @@ def main():
 
     x_p, fs_x, = torchaudio.load(args.input)
 
-    y_hat = make_inference(x_p, args.sample_rate, model, device, args.c0, args.c1, args.mix)
+    y_hat = make_inference(x_p, args.sample_rate, model, device, args.mix)
 
     # Create formatted filename
     now = datetime.now()

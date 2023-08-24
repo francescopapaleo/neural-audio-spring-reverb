@@ -153,17 +153,22 @@ def save_model_checkpoint(
     model_type = hparams['model_type']
     model_name = hparams['conf_name']
 
-    save_path = Path(args.modelsdir)/f"{model_type}"
+    hparams.update({
+            'curr_epoch': epoch,
+        })
+
+
+    save_path = Path(args.modelsdir)
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
-    save_to = save_path / f'{model_name}_e{epoch}_{timestamp}.pt'
+    save_to = save_path / f'{model_name}.pt'
     torch.save({
         'model_type': model_type,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
         'state_epoch': epoch,          
-        'name': f'{model_name}_{epoch}_{args.batch_size}_{args.lr}_{timestamp}',
+        'name': f'{model_name}_{timestamp}',
         'hparams': hparams,
         'avg_valid_loss': avg_valid_loss,
     }, save_to)

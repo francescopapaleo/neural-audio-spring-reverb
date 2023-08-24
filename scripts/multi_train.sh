@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configs=("tcn-baseline-mse" "wavenet-ff-mse" "lstm-mse" "lstm-conv-skip-mse" "gcn-mse")
+# configs=("tcn-baseline-mse" "wavenet-ff-mse" "lstm-mse" "lstm-conv-skip-mse" "gcn-mse")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
