@@ -37,7 +37,7 @@ class SpringDataset(torch.utils.data.Dataset):
     """
     def __init__(self, root_dir, split=None, transform=None):
         super(SpringDataset, self).__init__()
-        self.root_dir = Path(root_dir)
+        self.root_dir = Path(root_dir) / 'plate-spring' / 'spring'
         self.split = split
         self.seed = torch.seed()
 
@@ -128,7 +128,7 @@ def peak_normalize(tensor):
     torch.nn.functional.normalize(tensor, p=2, dim=1)
     return tensor
 
-def load_data(datadir, batch_size):
+def load_springset(datadir, batch_size):
     """Load and split the dataset"""
     trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
     train_size = int(0.8 * len(trainset))
@@ -142,7 +142,6 @@ def load_data(datadir, batch_size):
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, valid_loader, test_loader
-
 
 """
 Spring Reverb - Bass and Guitar - recorded from the spring reverb tank: Accutronics 4EB2C1B: Dry Mix - 0%, Wet Mix - 100%

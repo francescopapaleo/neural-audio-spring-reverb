@@ -4,19 +4,20 @@ def parse_args():
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
 
     # Paths
-    parser.add_argument('--datadir', type=str, default='../datasets/egfxset/', help='Path (rel) to the dataset ')
+    parser.add_argument('--datadir', type=str, default='../datasets/', help='Path (rel) to the dataset ')
     parser.add_argument('--audiodir', type=str, default='audio/', help='Path (rel) to the audio files')
-    parser.add_argument('--logdir', type=str, default='results/', help='Path (rel) to  the log directory')
+    parser.add_argument('--logdir', type=str, default='results/16k/', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
     parser.add_argument('--modelsdir', type=str, default='results/checkpoints/', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
-
+    parser.add_argument('--dataset', type=str, default=None, help='Dataset to use')
+    
     # Model
     parser.add_argument('--config', type=str, default='tcn-baseline', help='The configuration to use')
     parser.add_argument('--device', type=str, default='cuda:0', help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
-    parser.add_argument('--n_epochs', type=int, default=1, help='the total number of epochs')
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio')    
+    parser.add_argument('--n_epochs', type=int, default=100, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     

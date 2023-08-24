@@ -1,12 +1,6 @@
-# src/helpers.py
-
 import torch
-import torchaudio
-import numpy as np
 from pathlib import Path
 
-from src.egfxset import EgfxDataset
-from src.springset import SpringDataset
 from src.networks.tcn import TCN
 from src.networks.wavenet import PedalNetWaveNet
 from src.networks.lstm import LSTM, LstmConvSkip
@@ -14,42 +8,6 @@ from src.networks.gcn import GCN
 from configurations import parse_args
 
 args = parse_args()
-
-def collate_fn(batch):
-    # Separate the dry and wet samples
-    dry_samples = [dry for dry, _ in batch]
-    wet_samples = [wet for _, wet in batch]
-    
-    # Stack along the time dimension (dim=2 for 3D tensors)
-    dry_stacked = torch.cat(dry_samples, dim=1)
-    wet_stacked = torch.cat(wet_samples, dim=1)
-
-    # Add an extra batch dimension 
-    dry_stacked = dry_stacked.unsqueeze(0)
-    wet_stacked = wet_stacked.unsqueeze(0)
-
-    return dry_stacked, wet_stacked
-
-def load_data(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
-    """Load and split the dataset"""
-    dataset = SpringDataset(root_dir=datadir)
-
-    # Calculate the sizes of train, validation, and test sets
-    total_size = len(dataset)
-    train_size = int(train_ratio * total_size)
-    val_size = int(val_ratio * total_size)
-    test_size = total_size - train_size - val_size
-
-    # Split the dataset into train, validation, and test sets
-    train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
-
-    # Create data loaders for train, validation, and test sets
-    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
-    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
-
-    return train_loader, val_loader, test_loader
-
 
 def select_device(device):
     if device is None: 
@@ -157,11 +115,12 @@ def save_model_checkpoint(
             'curr_epoch': epoch,
         })
 
-
     save_path = Path(args.modelsdir)
     save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     
-    save_to = save_path / f'{model_name}.pt'
+    sr_tag = args.sample_rate / 1000
+
+    save_to = save_path / f'{model_name}-{sr_tag}k.pt'
     torch.save({
         'model_type': model_type,
         'model_state_dict': model.state_dict(),
@@ -172,38 +131,3 @@ def save_model_checkpoint(
         'hparams': hparams,
         'avg_valid_loss': avg_valid_loss,
     }, save_to)
-
-def load_audio(input, sample_rate):
-    print(f"Input type: {type(input)}")  # add this line to check the type of the input
-    if isinstance(input, str):
-        # Load audio file
-        x_p, fs_x = torchaudio.load(input)
-        x_p = x_p.float()
-        print("sample rate: ", fs_x)
-        input_name = Path(input).stem
-    elif isinstance(input, np.ndarray):  # <-- change here
-        # Resample numpy array if necessary
-        # if input.shape[1] / sample_rate != len(input) / sample_rate:
-        #     input = librosa.resample(input, input.shape[1], sample_rate)
-
-        # Convert numpy array to tensor and ensure it's float32
-        x_p = torch.from_numpy(input).float()
-        # Add an extra dimension if necessary to simulate channel dimension
-        if len(x_p.shape) == 1:
-            x_p = x_p.unsqueeze(0)
-        fs_x = sample_rate
-        print("sample rate: ", fs_x)
-        input_name = 'sweep'
-    else:
-        raise ValueError('input must be either a file path or a numpy array')
-
-    # Ensure the audio is at the desired sample rate
-    if fs_x != sample_rate:
-        resampler = torchaudio.transforms.Resample(orig_freq=fs_x, new_freq=sample_rate)
-        x_p = resampler(x_p)
-        fs_x = sample_rate
-
-        print("sample rate: ", fs_x)
-
-    return x_p, fs_x, input_name
-

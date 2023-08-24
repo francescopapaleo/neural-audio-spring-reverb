@@ -12,7 +12,7 @@ class EgfxDataset(torch.utils.data.Dataset):
                  random_start=False,
                  random_seed=42
                 ):
-        self.root_dir = root_dir
+        self.root_dir = Path(root_dir) / 'egfxset'
         self.target_length = target_length
         self.random_start = random_start
         self.dry_dir = os.path.join(self.root_dir, 'Clean')
@@ -73,65 +73,38 @@ class EgfxDataset(torch.utils.data.Dataset):
         return len(self.dry_files)
 
 
-class CustomDataset(torch.utils.data.Dataset):
-    def __init__(self,
-                 root_dir,
-                 target_length=48000 * 8,
-                 random_start=False,
-                 random_seed=42
-                ):
-        self.root_dir = root_dir
-        self.random_start = random_start
-        self.dry_dir = os.path.join(self.root_dir, 'dry')
-        self.wet_dir = os.path.join(self.root_dir, 'wet')
-        
-        self.target_length = target_length
-        random.seed(random_seed)  # set the seed for reproducibility
+def collate_fn(batch):
+    # Separate the dry and wet samples
+    dry_samples = [dry for dry, _ in batch]
+    wet_samples = [wet for _, wet in batch]
+    
+    # Stack along the time dimension (dim=2 for 3D tensors)
+    dry_stacked = torch.cat(dry_samples, dim=1)
+    wet_stacked = torch.cat(wet_samples, dim=1)
 
-        self.dry_files = sorted(glob.glob(os.path.join(self.dry_dir, '*.wav')))
-        self.wet_files = sorted(glob.glob(os.path.join(self.wet_dir, '*.wav')))
+    # Add an extra batch dimension 
+    dry_stacked = dry_stacked.unsqueeze(0)
+    wet_stacked = wet_stacked.unsqueeze(0)
 
-        assert len(self.dry_files) == len(self.wet_files), "The number of dry and wet files should be the same."
+    return dry_stacked, wet_stacked
 
-    def load_and_normalize(self, audio_file):
-        audio, sample_rate = torchaudio.load(audio_file)
-        # Normalize audio
-        # normalized_audio = audio / torch.abs(audio).max()
-        normalized_audio = audio
-        # Convert to PyTorch tensor and add channel dimension
-        return normalized_audio
 
-    def __getitem__(self, index):
-        dry_file = self.dry_files[index]
-        wet_file = self.wet_files[index]
+def load_egfxset(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
+    """Load and split the dataset"""
+    dataset = EgfxDataset(root_dir=datadir)
 
-        # Load and normalize the audio files
-        dry_tensor = self.load_and_normalize(dry_file)
-        wet_tensor = self.load_and_normalize(wet_file)
+    # Calculate the sizes of train, validation, and test sets
+    total_size = len(dataset)
+    train_size = int(train_ratio * total_size)
+    val_size = int(val_ratio * total_size)
+    test_size = total_size - train_size - val_size
 
-        # Get the lengths of the two tensors
-        dry_length = dry_tensor.size(1)
-        wet_length = wet_tensor.size(1)
-        
-        # If dry_tensor is longer than wet_tensor, truncate or pad wet_tensor
-        if dry_length > wet_length:
-            padding_size = dry_length - wet_length
-            wet_tensor = torch.nn.functional.pad(wet_tensor, (0, padding_size))
-        # If wet_tensor is longer than dry_tensor, truncate or pad dry_tensor
-        elif wet_length > dry_length:
-            padding_size = wet_length - dry_length
-            dry_tensor = torch.nn.functional.pad(dry_tensor, (0, padding_size))
+    # Split the dataset into train, validation, and test sets
+    train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
 
-        if self.random_start and (dry_tensor.size(1) > self.target_length):
-            max_start_idx = dry_tensor.size(1) - self.target_length
-            start_idx = random.randint(0, max_start_idx)
-            end_idx = start_idx + self.target_length
-            
-            dry_tensor = dry_tensor[:, start_idx:end_idx]
-            wet_tensor = wet_tensor[:, start_idx:end_idx]
+    # Create data loaders for train, validation, and test sets
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size, num_workers=0, shuffle=True, drop_last=True)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size, num_workers=0, drop_last=True)
 
-        # Return the audio data
-        return dry_tensor, wet_tensor
-
-    def __len__(self):
-        return len(self.dry_files)
+    return train_loader, val_loader, test_loader

@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    if springrevset is not None:
+    if springset is not None:
         try:
             # Create a new directory
             os.makedirs(args.datadir, exist_ok=True)

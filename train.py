@@ -9,7 +9,9 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
-from src.helpers import load_data, select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
+from src.egfxset import load_egfxset
+from src.springset import load_springset
+from src.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
 from configurations import parse_args, configs
 
 def main():
@@ -67,7 +69,10 @@ def main():
     alpha = 1.0
 
     # Load data
-    train_loader, valid_loader, _ = load_data(args.datadir, args.batch_size)
+    if args.dataset == 'egfxset':
+        train_loader, valid_loader, _ = load_egfxset(args.datadir, args.batch_size)
+    if args.dataset == 'springset':
+        train_loader, valid_loader, _ = load_springset(args.datadir, args.batch_size)
     
     # Initialize minimum validation loss with infinity
     min_valid_loss = np.inf
@@ -160,13 +165,13 @@ def main():
         out /= torch.max(torch.abs(out))
 
         save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
-        torchaudio.save(save_in, inp, args.sample_rate, bits_per_sample=24)
+        torchaudio.save(save_in, inp, args.sample_rate)
 
         save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
-        torchaudio.save(save_out, out, args.sample_rate, bits_per_sample=24)
+        torchaudio.save(save_out, out, args.sample_rate)
 
         save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
-        torchaudio.save(save_target, tgt, args.sample_rate, bits_per_sample=24)
+        torchaudio.save(save_target, tgt, args.sample_rate)
 
     writer.close()
 

@@ -7,8 +7,9 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 
-from src.plotter import plot_compare_waveform, plot_compare_spectrogram
-from src.helpers import load_data, select_device, load_model_checkpoint
+from src.egfxset import load_egfxset
+from src.springset import load_springset
+from src.helpers import select_device, load_model_checkpoint
 from configurations import parse_args
 
 def main():
@@ -34,8 +35,12 @@ def main():
     log_dir = Path(args.logdir) / f"test/{model_name}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     
-    _, _, test_loader = load_data(args.datadir, batch_size)
-
+    # Load data
+    if args.dataset == 'egfxset':
+        _, _, test_loader = load_egfxset(args.datadir, args.batch_size)
+    if args.dataset == 'springset':
+        _, _, test_loader = load_springset(args.datadir, args.batch_size)
+    
     mae = torch.nn.L1Loss()
     mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
@@ -89,13 +94,13 @@ def main():
                 out /= torch.max(torch.abs(out))
 
                 save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
-                torchaudio.save(save_in, inp, args.sample_rate, bits_per_sample=24)
+                torchaudio.save(save_in, inp, args.sample_rate)
 
                 save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
-                torchaudio.save(save_out, out, args.sample_rate, bits_per_sample=24)
+                torchaudio.save(save_out, out, args.sample_rate)
 
                 save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
-                torchaudio.save(save_target, tgt, args.sample_rate, bits_per_sample=24)
+                torchaudio.save(save_target, tgt, args.sample_rate)
 
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])
@@ -106,8 +111,6 @@ def main():
     mean_test_results['rtf'] = avg_rtf
 
     writer.add_hparams(hparams, mean_test_results)
-
-    # writer.add_scalar(f'test/rtf', avg_rtf, global_step)
 
     writer.flush()
     writer.close()
