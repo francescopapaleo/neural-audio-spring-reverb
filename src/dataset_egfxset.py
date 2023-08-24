@@ -1,5 +1,3 @@
-# src/egfxset.py
-
 from pathlib import Path
 import torch
 import torchaudio
@@ -11,16 +9,16 @@ class EgfxDataset(torch.utils.data.Dataset):
     def __init__(self,
                  root_dir,
                  target_length=48000 * 5,
-                 random_start=True,
+                 random_start=False,
                  random_seed=42
                 ):
         self.root_dir = root_dir
+        self.target_length = target_length
         self.random_start = random_start
         self.dry_dir = os.path.join(self.root_dir, 'Clean')
         self.wet_dir = os.path.join(self.root_dir, 'Spring Reverb')
         self.positions = ['Bridge', 'Bridge-Middle', 'Middle', 'Middle-Neck', 'Neck']
         
-        self.target_length = target_length
         random.seed(random_seed)  # set the seed for reproducibility
 
         self.dry_files = []
@@ -46,28 +44,25 @@ class EgfxDataset(torch.utils.data.Dataset):
         dry_file = self.dry_files[index]
         wet_file = self.wet_files[index]
 
-        # Load and normalize the audio files
+        # Load audio files
         dry_tensor = self.load(dry_file)
         wet_tensor = self.load(wet_file)
 
-        # Get the lengths of the two tensors
-        dry_length = dry_tensor.size(1)
-        wet_length = wet_tensor.size(1)
-        
-        # If dry_tensor is longer than wet_tensor, truncate or pad wet_tensor
-        if dry_length > wet_length:
-            padding_size = dry_length - wet_length
-            wet_tensor = torch.nn.functional.pad(wet_tensor, (0, padding_size))
-        # If wet_tensor is longer than dry_tensor, truncate or pad dry_tensor
-        elif wet_length > dry_length:
-            padding_size = wet_length - dry_length
-            dry_tensor = torch.nn.functional.pad(dry_tensor, (0, padding_size))
+        # Truncate or pad the audio files to the target length
+        if dry_tensor.size(1) > self.target_length:
+            dry_tensor = dry_tensor[:, :self.target_length]
+        if dry_tensor.size(1) < self.target_length:
+            dry_tensor = torch.nn.functional.pad(dry_tensor, (0, self.target_length - dry_tensor.size(1)))
 
-        if self.random_start and (dry_tensor.size(1) > self.target_length):
-            max_start_idx = dry_tensor.size(1) - self.target_length
+        # If random_start is set to True, randomly select a segment from the tensor
+        if self.random_start:
+            max_start_idx = self.target_length - dry_tensor.size(1)
+
+            # Ensure the start index is non-negative
+            max_start_idx = max(0, max_start_idx)
             start_idx = random.randint(0, max_start_idx)
             end_idx = start_idx + self.target_length
-            
+
             dry_tensor = dry_tensor[:, start_idx:end_idx]
             wet_tensor = wet_tensor[:, start_idx:end_idx]
 
