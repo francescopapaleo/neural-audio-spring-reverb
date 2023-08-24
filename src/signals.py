@@ -4,9 +4,12 @@ Modified version from the originally written by Xavier Lizarraga
 """
 
 import numpy as np
+import torchaudio
 from scipy.io import wavfile
+from scipy import signal
 from typing import Tuple
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 from src.plotter import *
 from configurations import parse_args
@@ -143,12 +146,10 @@ if __name__ == "__main__":
 
     args = parse_args()
 
+    
     # main(args.duration, args.sample_rate, args.audiodir)
-
-    import torchaudio
-
-    proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')
-    inv_filt, _ = torchaudio.load('audio/gen/invfilt_gen.wav')
+    # proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')
+    # inv_filt, _ = torchaudio.load('audio/gen/invfilt_gen.wav')
 
     ir_result = np.convolve(proc_sweep.squeeze().numpy(), inv_filt.squeeze().numpy())
 
