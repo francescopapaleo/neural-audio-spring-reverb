@@ -1,64 +1,91 @@
-#test.py
-
 import torch
+import torchaudio
+import torchaudio.functional as F
 import auraloss
+import os
 from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 
-from src.plotter import plot_compare_waveform, plot_compare_spectrogram
-from src.helpers import load_data, select_device, load_model_checkpoint
+from src.egfxset import load_egfxset
+from src.springset import load_springset
+from src.helpers import select_device, load_model_checkpoint
 from configurations import parse_args
 
-torch.manual_seed(42)
+def main():
+    print("Testing model...")
+    args = parse_args()
+    torch.manual_seed(42)
+    
+    device = select_device(args.device)
 
-def evaluate_model(model, device, model_name, hparams, test_loader, writer, sample_rate):
+    torch.backends.cudnn.deterministic = True
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+    torch.cuda.empty_cache()
+
+    sample_rate = args.sample_rate
+
+    model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
+    
+    batch_size = hparams['batch_size']
+    n_epochs = hparams['n_epochs']
+    lr = hparams['lr']
+
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_dir = Path(args.logdir) / f"test/{model_name}_{timestamp}"
+    writer = SummaryWriter(log_dir=log_dir)
+    
+    # Load data
+    if args.dataset == 'egfxset':
+        _, _, test_loader = load_egfxset(args.datadir, args.batch_size)
+    if args.dataset == 'springset':
+        _, _, test_loader = load_springset(args.datadir, args.batch_size)
+    
     mae = torch.nn.L1Loss()
     mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
-    stft = auraloss.freq.STFTLoss()
     dc = auraloss.time.DCLoss()
     mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
     criterions = [mae, mse, esr, dc, mrstft]
-    test_results = {"mae": [], "mse": [], "esr": [], "dc": [], "mrstft": []}
-
-    c = torch.tensor([0.0, 0.0]).view(1,1,-1)           
+    test_results = {"mae": [], "esr": [], "dc": [], "mrstft": []}
 
     num_batches = len(test_loader)
+    rtf_list = []
 
     model.eval()
     with torch.no_grad():
-        for step, (input, target) in enumerate(test_loader):
+        for step, (dry, wet) in enumerate(test_loader):
+            start_time = datetime.now()
+            
+            input = dry
+            target = wet            
             global_step = step + 1
             print(f"Batch {global_step}/{num_batches}")
 
             # move input and target to device
             input = input.to(device)                    
             target = target.to(device)
-            c = c.to(device)
-
-            # pad input and target to match receptive field
-            # Conditionally compute the receptive field for certain model types
-            if hparams['model_type'] in ["TCN", "WaveNet"]:
-                rf = model.compute_receptive_field()
-
-                input_pad = torch.nn.functional.pad(input, (rf-1, 0))
-                target_pad = torch.nn.functional.pad(target, (rf-1, 0))
-            else:
-                rf = None
-                input_pad = input
-                target_pad = target
 
             # forward pass
-            output = model(input_pad, c)
-            output_trim = output[:,:,:target_pad.size(2)]
+            output = model(input)
+            
+            end_time = datetime.now()
+            duration = end_time - start_time
+            num_samples = input.size(2)
+            lenght_in_seconds = num_samples / sample_rate
+            rtf = duration.total_seconds() / lenght_in_seconds
+            rtf_list.append(rtf)
 
             # Compute metrics means for current batch
             for metric, name in zip(criterions, test_results.keys()):
-                batch_score = metric(output_trim, target_pad).item()
+                batch_score = metric(output, target).item()
                 test_results[name].append(batch_score)
+            
+            # Plot and save audios every n batches
+            if step == num_batches - 1:
 
+<<<<<<< HEAD
             # Plot and save audios every 4 batches
             if step % 8 == 0:
                 single_target = target_pad[1]
@@ -86,33 +113,33 @@ def evaluate_model(model, device, model_name, hparams, test_loader, writer, samp
 
     return test_results, global_step
     
+=======
+                inp = input.view(-1).unsqueeze(0).cpu()
+                tgt = target.view(-1).unsqueeze(0).cpu()
+                out = output.view(-1).unsqueeze(0).cpu()
+>>>>>>> 48kHz
 
-def main():
-    print("Testing model...")
-    args = parse_args()
-    torch.cuda.empty_cache()
-    
-    device = select_device(args.device)
+                inp /= torch.max(torch.abs(inp))
+                tgt /= torch.max(torch.abs(tgt))                
+                out /= torch.max(torch.abs(out))
 
-    model, model_name, hparams = load_model_checkpoint(device, args.checkpoint_path)
-    
-    batch_size = hparams['batch_size']
-    n_epochs = hparams['n_epochs']
-    lr = hparams['lr']
+                save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
+                torchaudio.save(save_in, inp, args.sample_rate)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) / f"test/{model_name}_{n_epochs}_{batch_size}_{lr}_{timestamp}"
-    writer = SummaryWriter(log_dir=log_dir)
+                save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
+                torchaudio.save(save_out, out, args.sample_rate)
 
-    _, _, test_loader = load_data(args.datadir, batch_size)
-
-    test_results, global_step = evaluate_model(model, device, model_name, hparams, test_loader, writer, args.sample_rate)
+                save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
+                torchaudio.save(save_target, tgt, args.sample_rate)
 
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])
         writer.add_scalar(f'test/global_{name}', global_score, global_step)
     
     mean_test_results = {k: sum(v) / len(v) for k, v in test_results.items()}
+    avg_rtf = sum(rtf_list) / len(rtf_list)
+    mean_test_results['rtf'] = avg_rtf
+
     writer.add_hparams(hparams, mean_test_results)
 
     writer.flush()
@@ -120,5 +147,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
-

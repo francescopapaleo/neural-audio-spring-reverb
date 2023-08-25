@@ -30,6 +30,9 @@ def apply_decorations(ax, legend=False, location="upper right"):
 
 
 def plot_data(x, y, subplot, title, x_label, y_label, legend=False):
+    min_length = min(len(x), len(y))
+    x = x[:min_length]
+    y = y[:min_length]
     subplot.plot(x, y)
     subplot.set_xlim([0, x[-1]])
     subplot.set_title(title)
@@ -48,7 +51,7 @@ def plot_data(x, y, subplot, title, x_label, y_label, legend=False):
 
 
 def get_time_stamps_np(signal_length, sample_rate):
-    return np.arange(0, signal_length / sample_rate, 1 / sample_rate)
+    return np.linspace(0, (signal_length-1) / sample_rate, signal_length)
 
 
 def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measured: np.ndarray, sample_rate: int, file_name: str):
@@ -89,14 +92,18 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     # ax[1].set_ylabel('Frequency [Hz]')
     # ax[1].set_xlabel('Time [sec]')
 
-    plt.suptitle(f"{file_name} - Transfer Function H(w)")
+    # plt.suptitle(f"{file_name} - Transfer Function H(w)")
 
-    save_plot(fig, file_name + "_TF")
+    # save_plot(fig, file_name + "_TF")
 
 
 
 def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
+<<<<<<< HEAD
     plt.subplots(figsize=(7, 7))
+=======
+    plt.subplots(figsize=(9, 4))
+>>>>>>> 48kHz
     plt.plot(T, energy_db, label="Energy")
     plt.plot([0, est_rt60], [e_5db, -65], "--", label="Linear Fit")
     plt.plot(T, np.ones_like(T) * -60, "--", label="-60 dB")
