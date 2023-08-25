@@ -54,7 +54,6 @@ def main():
 
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
-    mse = torch.nn.MSELoss().to(device)
     dc = auraloss.time.DCLoss().to(device)
     esr = auraloss.time.ESRLoss().to(device)
     mrstft =  auraloss.freq.MultiResolutionSTFTLoss(

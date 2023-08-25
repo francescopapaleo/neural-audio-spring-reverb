@@ -27,25 +27,41 @@ def generate_impulse_response(checkpoint, sample_rate, device, duration, args):
 
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
-        sweep, sample_rate, model, device, args.mix)
+        sweep, sample_rate, model, device, 100)
 
     # Perform the operation
     sweep_output = sweep_output[0].cpu().numpy()
     sweep_output = sweep_output.squeeze()
-    print(f"sweep_output: {sweep_output.shape} || inverse_filter {inverse_filter.shape}")
-
+    print(f"sweep_output:{sweep_output.shape} || inverse_filter:{inverse_filter.shape}")
 
     # Convolve the sweep tone with the inverse filter
     measured = np.convolve(sweep_output, inverse_filter)
+    
+    measured_index = np.argmax(np.abs(measured))
+    print(f"measured_index:{measured_index}")
 
     # Save and plot the measured impulse response
     save_as = f"{Path(checkpoint).stem}_IR.wav"
     wavfile.write(f"audio/proc/{save_as}", sample_rate, measured.astype(np.float32))
     print(f"Saved measured impulse response to {save_as}")
 
-    plot_impulse_response(sweep_output, inverse_filter, measured, sample_rate, file_name=Path(checkpoint).stem)
+    fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(10, 8), gridspec_kw={'height_ratios': [1, 1]})
+    for ax in axs:
+        ax.grid(True)
+        ax.set_xlabel('Time [sec]')
 
-    return measured, reference
+    axs[0].set_title(f'Model: {model_name} Impulse Response (IR)')
+    axs[0].plot(measured)
+    axs[0].set_ylim([-1, 1])
+    
+    axs[1].specgram(measured, NFFT=1024, Fs=sample_rate, noverlap=512, cmap='hot', scale='dB')
+    
+    plt.tight_layout()
+    plt.savefig(f"results/plots/{Path(checkpoint).stem}_IR.png")
+    print(f"Saved measured impulse response plot to {Path(checkpoint).stem}_IR.png")
+    plt.show()
+        
+    return sweep_output, measured
 
 def fft_scipy(x: np.ndarray, fft_size: int, axis: int = -1) -> np.ndarray:
 
