@@ -4,11 +4,11 @@ def parse_args():
     parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
 
     # Paths
-    parser.add_argument('--datadir', type=str, default='../datasets/', help='Path (rel) to the dataset ')
-    parser.add_argument('--audiodir', type=str, default='audio/', help='Path (rel) to the audio files')
-    parser.add_argument('--logdir', type=str, default='results/48k/', help='Path (rel) to  the log directory')
+    parser.add_argument('--datadir', type=str, default='../datasets', help='Path (rel) to the dataset ')
+    parser.add_argument('--audiodir', type=str, default='audio', help='Path (rel) to the audio files')
+    parser.add_argument('--logdir', type=str, default='results/48k', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--modelsdir', type=str, default='results/checkpoints/', help='Path (rel) to models checkpoints directory')
+    parser.add_argument('--modelsdir', type=str, default='results/48k/models', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--dataset', type=str, default=None, help='Dataset to use')
