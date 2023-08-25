@@ -1,249 +1,512 @@
 
-Processing results/16k/models/LSTM-96-legacy-bs32.pt...Configuration name: LSTM-96
-Model name: LSTM-96_1000_32_0.001_20230810-062251
-Number of parameters: 38113
-criterion: mrstft
-batch size: 32
+Processing results/48k/models/wavenet-24-48.0k.pt...Configuration name: wavenet-24
+Model name: wavenet-24_20230825-003730
+Number of parameters: 44577
+criterion: mae+mrstft
+batch size: 4
+current epoch: 79
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-LSTM                                     [4, 1, 32000]             --
-├─LSTM: 1-1                              [4, 32000, 96]            38,016
-├─Linear: 1-2                            [4, 32000, 1]             97
+PedalNetWaveNet                          [4, 1, 240000]            --
+├─CausalConv1d: 1-1                      [4, 16, 240000]           32
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-1                 [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-2                 [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-3                 [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-4                 [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-5                 [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-6                 [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-7                 [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-8                 [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-9                 [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-10                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-11                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-12                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-13                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-14                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-15                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-16                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-17                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-18                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-19                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-20                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-21                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-22                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-23                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-24                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-25                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-26                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-27                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-28                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-29                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-30                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-31                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-32                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-33                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-34                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-35                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-36                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-37                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-38                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-39                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-40                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-41                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-42                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-43                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-44                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-45                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-46                [4, 16, 240000]           272
+├─ModuleList: 1-48                       --                        (recursive)
+│    └─CausalConv1d: 2-47                [4, 32, 240000]           1,568
+├─ModuleList: 1-49                       --                        (recursive)
+│    └─CausalConv1d: 2-48                [4, 16, 240000]           272
+├─Conv1d: 1-50                           [4, 1, 240000]            385
 ==========================================================================================
-Total params: 38,113
-Trainable params: 38,113
+Total params: 44,577
+Trainable params: 44,577
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 4.87
+Total mult-adds (Units.GIGABYTES): 42.79
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 99.33
-Params size (MB): 0.15
-Estimated Total Size (MB): 99.99
+Input size (MB): 3.84
+Forward/backward pass size (MB): 8977.92
+Params size (MB): 0.18
+Estimated Total Size (MB): 8981.94
 ==========================================================================================
 
-Processing results/16k/models/LSTM-96-legacy-bs8.pt...Configuration name: LSTM-96
-Model name: LSTM-96_150_8_0.001_20230810-152813
-Number of parameters: 38113
-criterion: esr
-batch size: 8
+Processing results/48k/models/wavenet-10-48.0k.pt...Configuration name: wavenet-10
+Model name: wavenet-10_20230825-003227
+Number of parameters: 18593
+criterion: mae+mrstft
+batch size: 4
+current epoch: 71
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-LSTM                                     [4, 1, 32000]             --
-├─LSTM: 1-1                              [4, 32000, 96]            38,016
-├─Linear: 1-2                            [4, 32000, 1]             97
+PedalNetWaveNet                          [4, 1, 240000]            --
+├─CausalConv1d: 1-1                      [4, 16, 240000]           32
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-1                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-2                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-3                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-4                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-5                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-6                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-7                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-8                 [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-9                 [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-10                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-11                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-12                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-13                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-14                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-15                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-16                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-17                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-18                [4, 16, 240000]           272
+├─ModuleList: 1-20                       --                        (recursive)
+│    └─CausalConv1d: 2-19                [4, 32, 240000]           1,568
+├─ModuleList: 1-21                       --                        (recursive)
+│    └─CausalConv1d: 2-20                [4, 16, 240000]           272
+├─Conv1d: 1-22                           [4, 1, 240000]            161
 ==========================================================================================
-Total params: 38,113
-Trainable params: 38,113
+Total params: 18,593
+Trainable params: 18,593
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 4.87
+Total mult-adds (Units.GIGABYTES): 17.85
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 99.33
-Params size (MB): 0.15
-Estimated Total Size (MB): 99.99
+Input size (MB): 3.84
+Forward/backward pass size (MB): 3816.96
+Params size (MB): 0.07
+Estimated Total Size (MB): 3820.87
 ==========================================================================================
 
-Processing results/16k/models/tcn-baseline-16.0k.pt...Configuration name: tcn-baseline
-Model name: tcn-baseline_20230824-154656
+Processing results/48k/models/tcn-baseline-48.0k.pt...Configuration name: tcn-baseline
+Model name: tcn-baseline_20230825-003052
 Number of parameters: 31494
 criterion: mrstft
 batch size: 4
-current epoch: 95
-Receptive field: 88889 samples or 5555.6 ms
+current epoch: 47
+Receptive field: 88889 samples or 1851.9 ms
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-TCN                                      [4, 1, 32000]             --
+TCN                                      [4, 1, 240000]            --
 ├─ModuleList: 1-1                        --                        --
-│    └─TCNBlock: 2-1                     [4, 32, 32000]            --
-│    │    └─Conv1d: 3-1                  [4, 32, 32000]            320
-│    │    └─PReLU: 3-2                   [4, 32, 32000]            1
-│    │    └─Conv1d: 3-3                  [4, 32, 32000]            32
-│    └─TCNBlock: 2-2                     [4, 32, 32000]            --
-│    │    └─Conv1d: 3-4                  [4, 32, 32000]            9,248
-│    │    └─PReLU: 3-5                   [4, 32, 32000]            1
-│    │    └─Conv1d: 3-6                  [4, 32, 32000]            1,024
-│    └─TCNBlock: 2-3                     [4, 32, 32000]            --
-│    │    └─Conv1d: 3-7                  [4, 32, 32000]            9,248
-│    │    └─PReLU: 3-8                   [4, 32, 32000]            1
-│    │    └─Conv1d: 3-9                  [4, 32, 32000]            1,024
-│    └─TCNBlock: 2-4                     [4, 32, 32000]            --
-│    │    └─Conv1d: 3-10                 [4, 32, 32000]            9,248
-│    │    └─PReLU: 3-11                  [4, 32, 32000]            1
-│    │    └─Conv1d: 3-12                 [4, 32, 32000]            1,024
-│    └─TCNBlock: 2-5                     [4, 1, 32000]             --
-│    │    └─Conv1d: 3-13                 [4, 1, 32000]             289
-│    │    └─PReLU: 3-14                  [4, 1, 32000]             1
-│    │    └─Conv1d: 3-15                 [4, 1, 32000]             32
+│    └─TCNBlock: 2-1                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 240000]           320
+│    │    └─PReLU: 3-2                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-3                  [4, 32, 240000]           32
+│    └─TCNBlock: 2-2                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-4                  [4, 32, 240000]           9,248
+│    │    └─PReLU: 3-5                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-6                  [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-3                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 240000]           9,248
+│    │    └─PReLU: 3-8                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-9                  [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-4                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-10                 [4, 32, 240000]           9,248
+│    │    └─PReLU: 3-11                  [4, 32, 240000]           1
+│    │    └─Conv1d: 3-12                 [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-5                     [4, 1, 240000]            --
+│    │    └─Conv1d: 3-13                 [4, 1, 240000]            289
+│    │    └─PReLU: 3-14                  [4, 1, 240000]            1
+│    │    └─Conv1d: 3-15                 [4, 1, 240000]            32
 ==========================================================================================
 Total params: 31,494
 Trainable params: 31,494
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 4.03
+Total mult-adds (Units.GIGABYTES): 30.23
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 396.29
+Input size (MB): 3.84
+Forward/backward pass size (MB): 2972.16
 Params size (MB): 0.13
-Estimated Total Size (MB): 396.93
+Estimated Total Size (MB): 2976.13
 ==========================================================================================
 
-Processing results/16k/models/lstm-cs-96-16.0k.pt...Configuration name: lstm-cs-96
-Model name: lstm-cs-96_20230824-160004
-Number of parameters: 75171
+Processing results/48k/models/gcn-2500-48.0k.pt...Configuration name: gcn-2500
+Model name: gcn-2500_20230824-225801
+Number of parameters: 26401
 criterion: mae+mrstft
 batch size: 4
-current epoch: 11
+current epoch: 43
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-LstmConvSkip                             [4, 1, 32000]             --
-├─Conv1d: 1-1                            [4, 96, 32000]            384
-├─BatchNorm1d: 1-2                       [4, 96, 32000]            192
-├─LSTM: 1-3                              [4, 32000, 96]            74,496
-├─Linear: 1-4                            [4, 32000, 1]             97
-├─Linear: 1-5                            [4, 32000, 1]             2
+GCN                                      [4, 1, 240000]            --
+├─ModuleList: 1-1                        --                        --
+│    └─GatedConv1d: 2-1                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 239996]           192
+│    │    └─Conv1d: 3-2                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-2                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-3                  [4, 32, 239988]           2,592
+│    │    └─Conv1d: 3-4                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-3                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-5                  [4, 32, 239964]           2,592
+│    │    └─Conv1d: 3-6                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-4                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 239892]           2,592
+│    │    └─Conv1d: 3-8                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-5                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-9                  [4, 32, 239676]           2,592
+│    │    └─Conv1d: 3-10                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-6                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-11                 [4, 32, 239028]           2,592
+│    │    └─Conv1d: 3-12                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-7                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-13                 [4, 32, 237084]           2,592
+│    │    └─Conv1d: 3-14                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-8                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-15                 [4, 32, 231252]           2,592
+│    │    └─Conv1d: 3-16                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-9                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-17                 [4, 32, 213756]           2,592
+│    │    └─Conv1d: 3-18                 [4, 16, 240000]           272
+│    └─GatedConv1d: 2-10                 [4, 16, 240000]           --
+│    │    └─Conv1d: 3-19                 [4, 32, 161268]           2,592
+│    │    └─Conv1d: 3-20                 [4, 16, 240000]           272
+├─Conv1d: 1-2                            [4, 1, 240000]            161
+==========================================================================================
+Total params: 26,401
+Trainable params: 26,401
+Non-trainable params: 0
+Total mult-adds (Units.GIGABYTES): 24.12
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 3573.15
+Params size (MB): 0.11
+Estimated Total Size (MB): 3577.10
+==========================================================================================
+
+Processing results/48k/models/tcn-4000-48.0k.pt...Configuration name: tcn-4000
+Model name: tcn-4000_20230825-111109
+Number of parameters: 62854
+criterion: mae+mrstft
+batch size: 4
+current epoch: 121
+Receptive field: 199999 samples or 4166.6 ms
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+TCN                                      [4, 1, 240000]            --
+├─ModuleList: 1-1                        --                        --
+│    └─TCNBlock: 2-1                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 240000]           640
+│    │    └─PReLU: 3-2                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-3                  [4, 32, 240000]           32
+│    └─TCNBlock: 2-2                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-4                  [4, 32, 240000]           19,488
+│    │    └─PReLU: 3-5                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-6                  [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-3                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 240000]           19,488
+│    │    └─PReLU: 3-8                   [4, 32, 240000]           1
+│    │    └─Conv1d: 3-9                  [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-4                     [4, 32, 240000]           --
+│    │    └─Conv1d: 3-10                 [4, 32, 240000]           19,488
+│    │    └─PReLU: 3-11                  [4, 32, 240000]           1
+│    │    └─Conv1d: 3-12                 [4, 32, 240000]           1,024
+│    └─TCNBlock: 2-5                     [4, 1, 240000]            --
+│    │    └─Conv1d: 3-13                 [4, 1, 240000]            609
+│    │    └─PReLU: 3-14                  [4, 1, 240000]            1
+│    │    └─Conv1d: 3-15                 [4, 1, 240000]            32
+==========================================================================================
+Total params: 62,854
+Trainable params: 62,854
+Non-trainable params: 0
+Total mult-adds (Units.GIGABYTES): 60.34
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 2972.16
+Params size (MB): 0.25
+Estimated Total Size (MB): 2976.25
+==========================================================================================
+
+Processing results/48k/models/lstm-cs-96-48.0k.pt...Configuration name: lstm-cs-96
+Model name: lstm-cs-96_20230825-151911
+Number of parameters: 75171
+criterion: mae+mrstft
+batch size: 4
+current epoch: 63
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LstmConvSkip                             [4, 1, 240000]            --
+├─Conv1d: 1-1                            [4, 96, 240000]           384
+├─BatchNorm1d: 1-2                       [4, 96, 240000]           192
+├─LSTM: 1-3                              [4, 240000, 96]           74,496
+├─Linear: 1-4                            [4, 240000, 1]            97
+├─Linear: 1-5                            [4, 240000, 1]            2
 ==========================================================================================
 Total params: 75,171
 Trainable params: 75,171
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 9.58
+Total mult-adds (Units.GIGABYTES): 71.88
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 296.96
+Input size (MB): 3.84
+Forward/backward pass size (MB): 2227.20
 Params size (MB): 0.30
-Estimated Total Size (MB): 297.77
+Estimated Total Size (MB): 2231.34
 ==========================================================================================
 
-Processing results/16k/models/wavenet-18-16.0k.pt...Configuration name: wavenet-18
-Model name: wavenet-18_20230824-164635
+Processing results/48k/models/wavenet-18-48.0k.pt...Configuration name: wavenet-18
+Model name: wavenet-18_20230825-112323
 Number of parameters: 33441
 criterion: mae+mrstft
 batch size: 4
-current epoch: 97
+current epoch: 119
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-PedalNetWaveNet                          [4, 1, 32000]             --
-├─CausalConv1d: 1-1                      [4, 16, 32000]            32
+PedalNetWaveNet                          [4, 1, 240000]            --
+├─CausalConv1d: 1-1                      [4, 16, 240000]           32
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-1                 [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-1                 [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-2                 [4, 16, 32000]            272
+│    └─CausalConv1d: 2-2                 [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-3                 [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-3                 [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-4                 [4, 16, 32000]            272
+│    └─CausalConv1d: 2-4                 [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-5                 [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-5                 [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-6                 [4, 16, 32000]            272
+│    └─CausalConv1d: 2-6                 [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-7                 [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-7                 [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-8                 [4, 16, 32000]            272
+│    └─CausalConv1d: 2-8                 [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-9                 [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-9                 [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-10                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-10                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-11                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-11                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-12                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-12                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-13                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-13                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-14                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-14                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-15                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-15                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-16                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-16                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-17                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-17                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-18                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-18                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-19                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-19                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-20                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-20                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-21                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-21                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-22                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-22                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-23                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-23                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-24                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-24                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-25                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-25                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-26                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-26                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-27                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-27                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-28                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-28                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-29                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-29                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-30                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-30                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-31                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-31                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-32                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-32                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-33                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-33                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-34                [4, 16, 32000]            272
+│    └─CausalConv1d: 2-34                [4, 16, 240000]           272
 ├─ModuleList: 1-36                       --                        (recursive)
-│    └─CausalConv1d: 2-35                [4, 32, 32000]            1,568
+│    └─CausalConv1d: 2-35                [4, 32, 240000]           1,568
 ├─ModuleList: 1-37                       --                        (recursive)
-│    └─CausalConv1d: 2-36                [4, 16, 32000]            272
-├─Conv1d: 1-38                           [4, 1, 32000]             289
+│    └─CausalConv1d: 2-36                [4, 16, 240000]           272
+├─Conv1d: 1-38                           [4, 1, 240000]            289
 ==========================================================================================
 Total params: 33,441
 Trainable params: 33,441
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 4.28
+Total mult-adds (Units.GIGABYTES): 32.10
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 902.14
+Input size (MB): 3.84
+Forward/backward pass size (MB): 6766.08
 Params size (MB): 0.13
-Estimated Total Size (MB): 902.79
+Estimated Total Size (MB): 6770.05
 ==========================================================================================
 
-Processing results/16k/models/gcn-250-16.0k-1.pt...Configuration name: gcn-250
-Model name: gcn-250_20230824-180806
+Processing results/48k/models/gcn-250-48.0k.pt...Configuration name: gcn-250
+Model name: gcn-250_20230824-224525
 Number of parameters: 65569
-criterion: mae+mrstft
+criterion: mae + mrstft
 batch size: 4
-current epoch: 98
+current epoch: 123
 ==========================================================================================
 Layer (type:depth-idx)                   Output Shape              Param #
 ==========================================================================================
-GCN                                      [4, 1, 32000]             --
+GCN                                      [4, 1, 240000]            --
 ├─ModuleList: 1-1                        --                        --
-│    └─GatedConv1d: 2-1                  [4, 16, 32000]            --
-│    │    └─Conv1d: 3-1                  [4, 32, 31960]            1,344
-│    │    └─Conv1d: 3-2                  [4, 16, 32000]            272
-│    └─GatedConv1d: 2-2                  [4, 16, 32000]            --
-│    │    └─Conv1d: 3-3                  [4, 32, 31760]            21,024
-│    │    └─Conv1d: 3-4                  [4, 16, 32000]            272
-│    └─GatedConv1d: 2-3                  [4, 16, 32000]            --
-│    │    └─Conv1d: 3-5                  [4, 32, 30560]            21,024
-│    │    └─Conv1d: 3-6                  [4, 16, 32000]            272
-│    └─GatedConv1d: 2-4                  [4, 16, 32000]            --
-│    │    └─Conv1d: 3-7                  [4, 32, 23360]            21,024
-│    │    └─Conv1d: 3-8                  [4, 16, 32000]            272
-├─Conv1d: 1-2                            [4, 1, 32000]             65
+│    └─GatedConv1d: 2-1                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-1                  [4, 32, 239960]           1,344
+│    │    └─Conv1d: 3-2                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-2                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-3                  [4, 32, 239760]           21,024
+│    │    └─Conv1d: 3-4                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-3                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-5                  [4, 32, 238560]           21,024
+│    │    └─Conv1d: 3-6                  [4, 16, 240000]           272
+│    └─GatedConv1d: 2-4                  [4, 16, 240000]           --
+│    │    └─Conv1d: 3-7                  [4, 32, 231360]           21,024
+│    │    └─Conv1d: 3-8                  [4, 16, 240000]           272
+├─Conv1d: 1-2                            [4, 1, 240000]            65
 ==========================================================================================
 Total params: 65,569
 Trainable params: 65,569
 Non-trainable params: 0
-Total mult-adds (Units.GIGABYTES): 7.52
+Total mult-adds (Units.GIGABYTES): 62.08
 ==========================================================================================
-Input size (MB): 0.51
-Forward/backward pass size (MB): 187.02
+Input size (MB): 3.84
+Forward/backward pass size (MB): 1471.63
 Params size (MB): 0.26
-Estimated Total Size (MB): 187.80
+Estimated Total Size (MB): 1475.73
+==========================================================================================
+
+Processing results/48k/models/lstm-cs-32-48.0k.pt...Configuration name: lstm-cs-32
+Model name: lstm-cs-32_20230825-001333
+Number of parameters: 17123
+criterion: mae+mrstft
+batch size: 4
+current epoch: 64
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LstmConvSkip                             [4, 1, 240000]            --
+├─Conv1d: 1-1                            [4, 32, 240000]           128
+├─BatchNorm1d: 1-2                       [4, 32, 240000]           64
+├─LSTM: 1-3                              [4, 240000, 32]           16,896
+├─Linear: 1-4                            [4, 240000, 1]            33
+├─Linear: 1-5                            [4, 240000, 1]            2
+==========================================================================================
+Total params: 17,123
+Trainable params: 17,123
+Non-trainable params: 0
+Total mult-adds (Units.GIGABYTES): 16.34
+==========================================================================================
+Input size (MB): 3.84
+Forward/backward pass size (MB): 752.64
+Params size (MB): 0.07
+Estimated Total Size (MB): 756.55
 ==========================================================================================

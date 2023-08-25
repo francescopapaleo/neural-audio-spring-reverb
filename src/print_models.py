@@ -11,7 +11,7 @@ args = parse_args()
 device = select_device(args.device)
 
 # Path to the checkpoints
-path_to_checkpoints = Path('results/16k/models')
+path_to_checkpoints = Path(args.modelsdir)
 
 # List all files in the directory
 model_files = path_to_checkpoints.glob("*.pt")
@@ -39,7 +39,7 @@ with open('results/model_summary.txt', 'w') as f:
             rf = None
         
         # Print the model summary
-        inputs = torch.randn(4, 1, 32000).to(device)
+        inputs = torch.randn(4, 1, 240000).to(device)
         model_summary = summary(model, input_data=inputs, verbose=0)
         f.write(str(model_summary))  # convert the Summary object to a string
         f.write("\n")
