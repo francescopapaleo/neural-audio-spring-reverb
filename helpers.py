@@ -9,7 +9,7 @@ from pathlib import Path
 from src.dataset import SpringDataset
 from src.networks.TCN import TCN
 from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, LSTMskip, BiLSTM
+from src.networks.old_lstm import LSTM, LSTMskip, BiLSTM
 from configurations import parse_args
 
 

@@ -1,76 +1,6 @@
 import torch
 from pathlib import Path
 
-<<<<<<< HEAD
-from src.dataset import SpringDataset
-from src.networks.TCN import TCN
-from src.networks.WaveNet import WaveNet
-from src.networks.LSTM import LSTM, LSTMskip
-from configurations import parse_args
-
-
-import librosa
-
-def load_audio(input, sample_rate):
-    print(f"Input type: {type(input)}")  # add this line to check the type of the input
-    if isinstance(input, str):
-        # Load audio file
-        x_p, fs_x = torchaudio.load(input)
-        x_p = x_p.float()
-        print("sample rate: ", fs_x)
-        input_name = Path(input).stem
-    elif isinstance(input, np.ndarray):  # <-- change here
-        # Resample numpy array if necessary
-        # if input.shape[1] / sample_rate != len(input) / sample_rate:
-        #     input = librosa.resample(input, input.shape[1], sample_rate)
-
-        # Convert numpy array to tensor and ensure it's float32
-        x_p = torch.from_numpy(input).float()
-        # Add an extra dimension if necessary to simulate channel dimension
-        if len(x_p.shape) == 1:
-            x_p = x_p.unsqueeze(0)
-        fs_x = sample_rate
-        print("sample rate: ", fs_x)
-        input_name = 'sweep'
-    else:
-        raise ValueError('input must be either a file path or a numpy array')
-
-    # Ensure the audio is at the desired sample rate
-    if fs_x != sample_rate:
-        resampler = torchaudio.transforms.Resample(orig_freq=fs_x, new_freq=sample_rate)
-        x_p = resampler(x_p)
-        fs_x = sample_rate
-
-        print("sample rate: ", fs_x)
-
-    return x_p, fs_x, input_name
-
-
-
-def peak_normalize(tensor):
-    # max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
-    # normalized_tensor = tensor / max_values
-    # return normalized_tensor
-    torch.nn.functional.normalize(tensor, p=2, dim=1)
-    return tensor
-
-
-def load_data(datadir, batch_size):
-    """Load and split the dataset"""
-    trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
-    train_size = int(0.8 * len(trainset))
-    val_size = len(trainset) - train_size
-    train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
-
-    train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
-
-    testset = SpringDataset(root_dir=datadir, split="test", transform=peak_normalize)
-    test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
-
-    return train_loader, valid_loader, test_loader
-
-=======
 from src.networks.tcn import TCN
 from src.networks.wavenet import PedalNetWaveNet
 from src.networks.lstm import LSTM, LstmConvSkip
@@ -78,7 +8,6 @@ from src.networks.gcn import GCN
 from configurations import parse_args
 
 args = parse_args()
->>>>>>> 48kHz
 
 def select_device(device):
     if device is None: 
