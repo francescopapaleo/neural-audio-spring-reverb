@@ -38,7 +38,7 @@ configs = [
     'num_channels': 32,
     'dilation': 10,
     'cond_dim': 0,
-    'criterion': 'mrstft',
+    'criterion': 'mae+mrstft',
     },
     {
     'conf_name': 'tcn-4000',

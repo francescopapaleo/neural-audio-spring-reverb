@@ -85,39 +85,9 @@ def main():
             # Plot and save audios every n batches
             if step == num_batches - 1:
 
-<<<<<<< HEAD
-            # Plot and save audios every 4 batches
-            if step % 8 == 0:
-                single_target = target_pad[1]
-                single_output = output_trim[1]
-
-                waveform_fig = plot_compare_waveform(single_target.detach().cpu(), 
-                                                    single_output.detach().cpu(),
-                                                    sample_rate,
-                                                    title=f"Waveform_{model_name}_{global_step}"
-                                                    )
-                spectrogram_fig = plot_compare_spectrogram(single_target.cpu(), 
-                                                        single_output.cpu(), 
-                                                        sample_rate,
-                                                        title=f"Spectra_{model_name}_{global_step}",
-                                                        t_label=f"Target_{global_step}", o_label=f"Output_{global_step}"
-                                                        )
-
-                writer.add_figure(f"test/Waveform_{model_name}_{global_step}", waveform_fig, global_step)
-                writer.add_figure(f"test/Spectra_{model_name}_{global_step}", spectrogram_fig, global_step)
-
-                writer.add_audio(f"test/Target_{model_name}_{global_step}", 
-                                single_target.detach().cpu(), global_step, sample_rate=sample_rate)
-                writer.add_audio(f"test/Output_{model_name}_{global_step}", 
-                                single_output.detach().cpu(), global_step, sample_rate=sample_rate)
-
-    return test_results, global_step
-    
-=======
                 inp = input.view(-1).unsqueeze(0).cpu()
                 tgt = target.view(-1).unsqueeze(0).cpu()
                 out = output.view(-1).unsqueeze(0).cpu()
->>>>>>> 48kHz
 
                 inp /= torch.max(torch.abs(inp))
                 tgt /= torch.max(torch.abs(tgt))                

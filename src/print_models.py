@@ -15,7 +15,7 @@ path_to_checkpoints = Path('results/checkpoints/')
 
 # List all files in the directory
 model_files = path_to_checkpoints.glob("*.pt")
-with open('model_summary.txt', 'w') as f:
+with open('results/checkpoints/model_summary.txt', 'w') as f:
     for model_file in model_files:
         # Load model from the checkpoint
         model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, model_file, args)
