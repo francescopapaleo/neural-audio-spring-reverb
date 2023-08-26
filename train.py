@@ -28,7 +28,7 @@ def main():
     if args.checkpoint is not None:
         model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
         if optimizer_state_dict is not None:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)  
+            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
             optimizer.load_state_dict(optimizer_state_dict)
         if scheduler_state_dict is not None:
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
