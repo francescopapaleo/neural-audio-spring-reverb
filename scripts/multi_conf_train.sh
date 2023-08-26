@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# configs=("tcn-baseline-mse" "wavenet-ff-mse" "lstm-mse" "lstm-conv-skip-mse" "gcn-mse")
+# list the configurations to be trained:
+# configs=("tcn-baseline" "wavenet-10" "lstm-cs-96" "gcn-250")
 
 # Change the working directory to the parent directory
 cd "$(dirname "${BASH_SOURCE[0]}")/.."

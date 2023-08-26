@@ -49,7 +49,7 @@ def sine(sample_rate: int, duration: float, amplitude: float, frequency: float =
 
 
 def sweep_tone(sample_rate: int, duration: float, amplitude: float, f0: float = 20, f1: float = 20000, inverse: bool = False) -> np.ndarray:
-    '''Generate a sweep tone
+    '''Generate a logaritmic sweep tone
     
     Arguments:
     ----------

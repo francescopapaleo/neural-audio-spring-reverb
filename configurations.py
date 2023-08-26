@@ -25,7 +25,6 @@ def parse_args():
     
     # Measurements
     parser.add_argument("--duration", type=float, default=5.0, help="duration in seconds")
-    parser.add_argument("--mode", type=str, choices=['ir', 'tf'], default='ir', help="Mode to run: 'ir' for impulse response or 'tf' for transfer function")
     
     return parser.parse_args()
 

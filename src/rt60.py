@@ -80,7 +80,9 @@ def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_nam
         # time vector
         def get_time(x, fs):
             return np.arange(x.shape[0]) / fs - i_5db / fs
-
+        
+        # The 0 point on time axis is shifted to the point where the energy is 5 dB below the peak 
+        
         T = get_time(energy_db, fs)
         plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name)
 

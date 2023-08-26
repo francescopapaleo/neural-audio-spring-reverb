@@ -4,15 +4,15 @@
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Define the directory with the checkpoints
-checkpoints_dir="results/48k/models"
+IRs_dir="results/measured_IR"
 
 # Iterate over all .pt (PyTorch checkpoint) files in the directory
-for checkpoint in "$checkpoints_dir"/*.pt; do
+for ir_audio in "$IRs_dir"/*.wav; do
     # Call your test script with the checkpoint file as an argument
-    printf "Testing checkpoint: %s\n" "$checkpoint"
+    printf "Measuring RT60: %s\n" "$ir_audio"
     
     # for impulse response measurement uncomment the line below
-    # python -m src.impulse_response --checkpoint "$checkpoint"  --device cpu --sample_rate 48000 
+    python -m src.rt60 --device cpu --sample_rate 48000 --input "$ir_audio"
     
     # for testing on egfxset uncomment the line below
     # python test.py --checkpoint "$checkpoint" --logdir "results/48k" --device cpu --dataset egfxset --sample_rate 48000
