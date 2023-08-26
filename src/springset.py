@@ -122,10 +122,12 @@ class SpringDataset(torch.utils.data.Dataset):
 
 
 def peak_normalize(tensor):
-    # max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
+    
+    tensor /= torch.max(torch.abs(tensor))
+    #  max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
     # normalized_tensor = tensor / max_values
     # return normalized_tensor
-    torch.nn.functional.normalize(tensor, p=2, dim=1)
+    # torch.nn.functional.normalize(tensor, p=2, dim=1)
     return tensor
 
 def load_springset(datadir, batch_size):

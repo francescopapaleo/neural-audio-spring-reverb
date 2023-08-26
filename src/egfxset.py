@@ -35,6 +35,8 @@ class EgfxDataset(torch.utils.data.Dataset):
                 self.wet_files.extend(wet_files_position)
             else:
                 print(f"No files found in {position}")
+        
+        self.transform = transform
 
     def load(self, audio_file):
         audio, sample_rate = torchaudio.load(audio_file)
@@ -73,6 +75,16 @@ class EgfxDataset(torch.utils.data.Dataset):
         return len(self.dry_files)
 
 
+def peak_normalize(tensor):
+    
+    tensor /= torch.max(torch.abs(tensor))
+    #  max_values = torch.max(torch.abs(tensor), dim=1, keepdim=True).values
+    # normalized_tensor = tensor / max_values
+    # return normalized_tensor
+    # torch.nn.functional.normalize(tensor, p=2, dim=1)
+    return tensor
+
+
 def collate_fn(batch):
     # Separate the dry and wet samples
     dry_samples = [dry for dry, _ in batch]
@@ -91,7 +103,7 @@ def collate_fn(batch):
 
 def load_egfxset(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
     """Load and split the dataset"""
-    dataset = EgfxDataset(root_dir=datadir)
+    dataset = EgfxDataset(root_dir=datadir, transform=peak_normalize)
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)
