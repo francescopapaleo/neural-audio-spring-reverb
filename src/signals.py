@@ -5,7 +5,7 @@ Modified version from the originally written by Xavier Lizarraga
 
 import numpy as np
 import torchaudio
-from scipy.io import wavfile
+import torch
 from scipy import signal
 from typing import Tuple
 from pathlib import Path
@@ -30,7 +30,6 @@ def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndar
     impulse[0] = 10 ** (decibels / 20)  # Convert decibels to amplitude
 
     return impulse
-
 
 
 def sine(sample_rate: int, duration: float, amplitude: float, frequency: float = 440.0) -> np.ndarray:
@@ -95,13 +94,12 @@ def generate_reference(duration: float, sample_rate: int, decibels: float = -18,
     
     # Convolves the sweep tone with the inverse filter in order to obtain the impulse response x(t)
     N = len(sweep)
-    reference = np.convolve(inverse_filter, sweep)
+    impulse_response = np.convolve(inverse_filter, sweep)
 
-    return sweep, inverse_filter, reference
+    return sweep, inverse_filter, impulse_response
 
 
-
-def save_audio(dir_path: str, file_name: str, sample_rate: int, audio: np.ndarray):
+def save_audio(dir_path: str, file_name: str, sample_rate: int, bit_depth:int, waveform: np.ndarray):
     '''Saves an audio array to a .wav file.
 
     Arguments:
@@ -114,26 +112,33 @@ def save_audio(dir_path: str, file_name: str, sample_rate: int, audio: np.ndarra
     # Create the directory if it does not exist
     output_directory = Path(dir_path)
     output_directory.mkdir(parents=True, exist_ok=True)
-    
     output_path = output_directory / f"{file_name}.wav"
-    wavfile.write(output_path, sample_rate, audio.astype(np.float32))
+    
+    # Save the audio file
+    waveform = waveform[np.newaxis, :]
+
+    waveform /= np.max(np.abs(waveform))
+    waveform = torch.from_numpy(waveform).float()
+
+    torchaudio.save(output_path, waveform, sample_rate,
+    encoding="PCM_S", bits_per_sample=bit_depth)
+    
     print(f"Saved {output_path}")
 
 
-def main(duration: float, sample_rate: int, audiodir: str):
+def main(duration: float, sample_rate: int, bit_depth:int, audiodir: str):
 
     # Generate the arrays
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
     single_impulse = impulse(sample_rate, duration, decibels=-18)
 
     # Save as .wav files
-    save_audio(audiodir, "gen/sweep_gen", sample_rate, sweep)
-    save_audio(audiodir, "gen/invfilt_gen", sample_rate, inverse_filter)
-    save_audio(audiodir, "gen/reference_gen", sample_rate, reference)
-    save_audio(audiodir, "gen/impulse_gen", sample_rate, single_impulse)
+    save_audio(audiodir, "gen/sweep_gen", sample_rate, bit_depth, sweep)
+    save_audio(audiodir, "gen/invfilt_gen", sample_rate, bit_depth, inverse_filter)
+    save_audio(audiodir, "gen/reference_gen", sample_rate, bit_depth, reference)
+    save_audio(audiodir, "gen/impulse_gen", sample_rate, bit_depth, single_impulse)
 
     # Plot them
-    
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
     plot_data(get_time_stamps_np(len(sweep), sample_rate), sweep, ax[0], "Sweep Tone", "Time [s]", "Amplitude")
     plot_data(get_time_stamps_np(len(inverse_filter), sample_rate), inverse_filter, ax[1], "Inverse Filter", "Time [s]", "Amplitude")
@@ -146,11 +151,10 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    
-    # main(args.duration, args.sample_rate, args.audiodir)
+    main(args.duration, args.sample_rate, args.bit_depth, args.audiodir)
     # proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')
     # inv_filt, _ = torchaudio.load('audio/gen/invfilt_gen.wav')
 
-    ir_result = np.convolve(proc_sweep.squeeze().numpy(), inv_filt.squeeze().numpy())
+    # ir_result = np.convolve(proc_sweep.squeeze().numpy(), inv_filt.squeeze().numpy())
 
-    save_audio(args.audiodir, "gcn-250-IR", args.sample_rate, ir_result)
+    # save_audio(args.audiodir, "gcn-250-IR", args.sample_rate, ir_result)

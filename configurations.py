@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 def parse_args():
-    parser = ArgumentParser(description='Train a TCN model on the plate-spring dataset')
+    parser = ArgumentParser(description='')
 
     # Paths
     parser.add_argument('--datadir', type=str, default='../datasets', help='Path (rel) to the dataset ')
@@ -13,10 +13,13 @@ def parse_args():
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--dataset', type=str, default=None, help='Dataset to use')
     
+    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
+    parser.add_argument('--bit_depth', type=int, default=24, help='bits per second')  
+
     # Model
     parser.add_argument('--config', type=str, default=None, help='The configuration to use')
     parser.add_argument('--device', type=str, default='cuda:0', help='set device to run the model on')
-    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio')    
+ 
     parser.add_argument('--n_epochs', type=int, default=1, help='the total number of epochs')
     parser.add_argument('--batch_size', type=int, default=4, help='batch size')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
