@@ -1,4 +1,11 @@
-""" Signal Generators for Measurements
+""" 
+Signal Generators for Measurements
+===================================
+This module contains functions to generate the signals used in the measurements:
+    - Impulse
+    - Sine wave
+    - Sweep tone
+    - Reference impulse response
 
 Modified version from the originally written by Xavier Lizarraga
 """
@@ -6,13 +13,13 @@ Modified version from the originally written by Xavier Lizarraga
 import numpy as np
 import torchaudio
 import torch
-from scipy import signal
+import os
 from typing import Tuple
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-from src.plotter import *
 from configurations import parse_args
+from src.plotter import plot_data, save_plot, get_time_stamps_np
 
 
 def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndarray:
@@ -132,11 +139,15 @@ def main(duration: float, sample_rate: int, bit_depth:int, audiodir: str):
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
     single_impulse = impulse(sample_rate, duration, decibels=-18)
 
+    directory = "audio/signals"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     # Save as .wav files
-    save_audio(audiodir, "gen/sweep_gen", sample_rate, bit_depth, sweep)
-    save_audio(audiodir, "gen/invfilt_gen", sample_rate, bit_depth, inverse_filter)
-    save_audio(audiodir, "gen/reference_gen", sample_rate, bit_depth, reference)
-    save_audio(audiodir, "gen/impulse_gen", sample_rate, bit_depth, single_impulse)
+    save_audio(audiodir, "signals/sweep_tone", sample_rate, bit_depth, sweep)
+    save_audio(audiodir, "signals/inverse_filter", sample_rate, bit_depth, inverse_filter)
+    save_audio(audiodir, "signals/ir_reference", sample_rate, bit_depth, reference)
+    save_audio(audiodir, "signals/single_impulse", sample_rate, bit_depth, single_impulse)
 
     # Plot them
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
@@ -152,9 +163,9 @@ if __name__ == "__main__":
     args = parse_args()
 
     main(args.duration, args.sample_rate, args.bit_depth, args.audiodir)
+
+
     # proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')
     # inv_filt, _ = torchaudio.load('audio/gen/invfilt_gen.wav')
-
     # ir_result = np.convolve(proc_sweep.squeeze().numpy(), inv_filt.squeeze().numpy())
-
     # save_audio(args.audiodir, "gcn-250-IR", args.sample_rate, ir_result)

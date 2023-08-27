@@ -10,7 +10,16 @@ from inference import make_inference
 from configurations import parse_args
 
 def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duration, args):
-    """ Automatic impulse response measurement of a trained model
+    """ 
+    Impulse response measurement of a trained model
+    =========================================================
+    1. Generate the analysis signals
+    2. Make inference with the model on the sweep tone
+    3. Convolve the sweep tone with the inverse filter
+    4. Normalize the impulse response
+    5. Plot the spectrogram
+    6. Save the impulse response as a .wav file
+    
     """
 
     model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, checkpoint, args)

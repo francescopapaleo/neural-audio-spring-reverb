@@ -63,38 +63,30 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     save_plot(fig, file_name + "_IR")
 
 
-# def plot_transfer_function(magnitude: np.ndarray, phase: np.ndarray, sample_rate: int, file_name: str):
-#     freqs = np.linspace(0, sample_rate / 2, len(magnitude))
-#     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
-#     plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
-#     plt.imshow(magnitude, origin='lower', aspect='auto', extent=[0, 1, 0, 1])
-#     plot_data(freqs, phase, ax[1], " ", "Frequency [Hz]", "Phase [degrees]")
-#     plt.suptitle(f"{file_name} - Transfer Function H(w)")
-#     save_plot(fig, file_name + "_TF")
+def generate_spectrogram(waveform, sample_rate, nperseg=256, noverlap=128):
+    frequencies, times, Sxx = signal.spectrogram(waveform, fs=sample_rate, nperseg=nperseg, noverlap=noverlap)
+    return frequencies, times, 10 * np.log10(Sxx + 1e-10)
 
-# def plot_transfer_function(magnitude: np.ndarray, phase, sample_rate: int, file_name: str):
-#     freqs = np.linspace(0, sample_rate / 2, len(magnitude))
+def plot_waterfall(waveform, file_name, sample_rate, stride=10):
+    frequencies, times, Sxx = generate_spectrogram(waveform, sample_rate)
 
-#     fig, ax = plt.subplots(2, 1, figsize=(15, 7))
+    fig = plt.figure(figsize=(10,8))
+    ax = fig.add_subplot(111, projection='3d')
 
-#     # Plot the magnitude
-#     plt.imshow(20*np.log10(np.abs(magnitude))+1e-8), ax[0], origin='lower', aspect='auto', extent=[t.min(), t.max(), f.min(), f.max()/1000])
-#     plt.colorbar(format='%+2.0f dB')
-#     plt.title('Spectrogram')
-#     plt.xlabel('Time [sec]')
-#     plt.ylabel('Frequency [kHz]')
-#     plt.tight_layout()
-    # plot_data(freqs, magnitude, ax[0], "Transfer Function", "Frequency [Hz]", "Magnitude [dBFS]")
+    num_slices = len(times) // stride
+    dZ = Sxx.shape[1] / num_slices
 
-    # Plot the spectrogram
-    # plot_data(freqs, phase, ax[1], "Phase", "Frequency [Hz]", "Phase [degrees]")
-    # ax[1].set_title('Spectrogram')
-    # ax[1].set_ylabel('Frequency [Hz]')
-    # ax[1].set_xlabel('Time [sec]')
+    for i in range(0, len(times), stride):
+        ax.plot(frequencies, Sxx[:, i], zs=i * dZ, zdir='y', alpha=0.7)
 
-    # plt.suptitle(f"{file_name} - Transfer Function H(w)")
+    ax.set_xlabel('Frequency (Hz)')
+    ax.set_ylabel('Time (slices)')
+    ax.set_zlabel('Magnitude (dB)')
+    ax.set_title('Waterfall Spectrogram')
 
-    # save_plot(fig, file_name + "_TF")
+    plt.tight_layout()
+    plt.savefig(f"results/measured_IR/{file_name}_waterfall.png")
+    print(f"Saved spectrogram plot to {file_name}_waterfall.png")
 
 
 def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
