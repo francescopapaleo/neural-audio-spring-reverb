@@ -39,6 +39,8 @@ def make_inference(input, sample_rate, model, device, mix):
     # Normalize output
     y_hat /= y_hat.abs().max().item()
 
+    y_hat = y_hat.cpu()
+
     return y_hat
 
 
@@ -76,4 +78,6 @@ def main():
 
 
 if __name__ == "__main__":
+    
+    
     main()

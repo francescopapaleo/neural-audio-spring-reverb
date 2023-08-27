@@ -23,24 +23,31 @@ class CausalConv1d(torch.nn.Conv1d):
         return result
 
 def _conv_stack(dilations, in_channels, out_channels, kernel_size):
-    """ Create stack of dilated convolutional layers, outlined in WaveNet paper:
-    https://arxiv.org/pdf/1609.03499.pdf """
-    return nn.ModuleList([
+    """
+    Create stack of dilated convolutional layers, outlined in WaveNet paper:
+    https://arxiv.org/pdf/1609.03499.pdf 
+    """
+    return nn.ModuleList(
+        [
             CausalConv1d(
                 in_channels=in_channels,
                 out_channels=out_channels,
                 dilation=d,
                 kernel_size=kernel_size,
-            ) for i, d in enumerate(dilations)
+            ) 
+            for i, d in enumerate(dilations)
         ]
     )
 
 class PedalNetWaveNet(nn.Module):
-    def __init__(self, num_channels=16, dilation_depth=10, num_repeat=0, kernel_size=3):
+    def __init__(self, num_channels=16, 
+                 dilation_depth=10, 
+                 num_repeat=0, 
+                 kernel_size=3):
         super(PedalNetWaveNet, self).__init__()
 
         self.kernel_size = kernel_size
-        self.num_channels = num_channels
+
         self.dilations = [2 ** d for d in range(dilation_depth)] * num_repeat
         internal_channels = int(num_channels * 2)
         self.hidden = _conv_stack(self.dilations, num_channels, internal_channels, kernel_size)
@@ -56,6 +63,8 @@ class PedalNetWaveNet(nn.Module):
             out_channels=1,
             kernel_size=1,
         )
+        
+        self.num_channels = num_channels
 
     def forward(self, x):
         out = x

@@ -26,13 +26,17 @@ def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duratio
 
     # Generate the reference signals
     sweep, inverse_filter, _ = generate_reference(duration, sample_rate) 
+    # sweep:(240000,) || inverse_filter:(240000,)
     sweep = sweep.reshape(1, -1)
 
     # Make inference with the model on the sweep tone
     sweep_output = make_inference(
         sweep, sample_rate, model, device, 100)
 
-    sweep_output = sweep_output.view(-1).squeeze(0).cpu()
+    print(f"sweep_output:{sweep_output.shape} || inverse_filter:{inverse_filter.shape}")
+    sweep_output = sweep_output.reshape(-1)
+
+    print("post squeeze")
     print(f"sweep_output:{sweep_output.shape} || inverse_filter:{inverse_filter.shape}")
 
 
@@ -64,44 +68,13 @@ def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duratio
     print(f"Saved spectrogram plot to {Path(checkpoint).stem}_IR.png")
 
     ir_tensor = torch.from_numpy(impulse_response).unsqueeze(0).float()
-    save_as = f"{Path(checkpoint).stem}_IR.wav"
+    
+    save_directory = "results/measured_IR/audio"
+    Path(save_directory).mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+    save_as = f"{save_directory}/{Path(checkpoint).stem}_IR.wav"
     torchaudio.save(save_as, ir_tensor, sample_rate, bits_per_sample=bit_depth)
     print(f"Saved measured impulse response to {save_as}, sample rate: {sample_rate}, bit depth: {bit_depth}")
 
-
-    # # https://github.com/willfehlmusic/Python_Sketchpads/blob/master/Sketchpad004_LinLogSweep/Sketchpad004_LinLogSweep.py
-
-    # log_n = len(sweep_output) # length of the signal
-    # log_k = np.arange(log_n)
-    # log_T = log_n/sample_rate
-    # log_frq = log_k/log_T # two sides frequency range
-    # log_frq = log_frq[range(log_n//2)] # one side frequency range
-    # log_Y = np.fft.fft(sweep_output)/log_n # fft computing and normalization
-    # log_Y = log_Y[range(log_n//2)]
-
-    # IR_n = len(impulse_response) # length of the signal
-    # IR_k = np.arange(IR_n)
-    # IR_T = IR_n/sample_rate
-    # IR_frq = IR_k/IR_T # two sides frequency range
-    # IR_frq = IR_frq[range(IR_n//2)] # one side frequency range
-    # IR_Y = np.fft.fft(impulse_response)/IR_n # fft computing and normalization
-    # IR_Y = IR_Y[range(IR_n//2)]
-
-    # fig, axes = plt.subplots(2, 1, sharex=False, sharey=False, constrained_layout=True,figsize=(10,5))
-    # axes[0].plot(impulse_response,'r') # plotting the spectrum
-    # axes[0].set_title('Time Domain')
-    # axes[0].set_xlabel('Time')
-    # axes[0].set_ylabel('Amplitude')
-    # axes[0].set_xlim(len(impulse_response)*(0.5-0.005),len(impulse_response)*(0.5+0.005))
-    # axes[1].semilogx(log_frq, 20*np.log10(abs(IR_Y)),'r') # plotting the spectrum
-    # axes[1].set_title('Frequency Domain')
-    # axes[1].set_xlabel('Frequency [Hz]')
-    # axes[1].set_ylabel('Magnitude [dB]')
-    # axes[1].set_xlim(20,20000)
-    # axes[1].set_ylim(-120,0)
-    # plt.grid()
-    # plt.savefig('response_of_IR_New.png', bbox_inches="tight")
-    # plt.show(block=False)
 
 
 if __name__ == "__main__":
