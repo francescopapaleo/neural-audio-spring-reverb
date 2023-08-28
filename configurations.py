@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--modelsdir', type=str, default='results/48k/checkpoints', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
-    parser.add_argument('--dataset', type=str, default=None, help='Dataset to use')
+    parser.add_argument('--dataset', type=str, default='egfxset', help='Dataset to use')
     
     # Audio
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
@@ -35,7 +35,7 @@ def parse_args():
 
 configs = [
     {
-    'conf_name': 'tcn-baseline',
+    'conf_name': 'tcn-baseline-v28',
     'model_type': 'TCN',
     'n_blocks': 5,
     'kernel_size': 9,
@@ -55,7 +55,7 @@ configs = [
     'criterion': 'mae+mrstft',
     },
     {
-    'conf_name': 'gcn-250',
+    'conf_name': 'gcn-250-v28',
     'model_type': 'GCN',
     'num_blocks': 1,
     'num_layers': 4,
@@ -102,7 +102,7 @@ configs = [
     'criterion': 'mae+mrstft',
     },
     {
-    'conf_name': 'wavenet-1k5',
+    'conf_name': 'wavenet-1k5-v28',
     'model_type': 'PedalNetWaveNet',
     'num_channels': 8,
     'dilation_depth': 10,
@@ -122,7 +122,7 @@ configs = [
     'criterion': 'mae+mrstft',
     },
     {
-    'conf_name': 'lstm-cs-96',
+    'conf_name': 'lstm-cs-96-v28',
     'model_type': 'LstmConvSkip',
     'input_size': 1,
     'hidden_size': 96,

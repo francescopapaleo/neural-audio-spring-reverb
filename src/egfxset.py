@@ -110,7 +110,11 @@ def load_egfxset(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_rati
     total_size = len(dataset)
     train_size = int(train_ratio * total_size)
     val_size = int(val_ratio * total_size)
-    test_size = total_size - train_size - val_size
+    test_size = int(test_ratio * total_size)
+
+    # Distribute the difference
+    diff = total_size - (train_size + val_size + test_size)
+    train_size += diff
 
     # Split the dataset into train, validation, and test sets
     train_data, val_data, test_data = torch.utils.data.random_split(dataset, [train_size, val_size, test_size])
