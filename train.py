@@ -1,6 +1,5 @@
 import torch
 import torchaudio
-import torchaudio.functional as F
 import auraloss
 import numpy as np
 import os
@@ -65,7 +64,7 @@ def main():
         ).to(device)
     
     criterion = hparams['criterion']
-    alpha = 1.0
+    alpha = 0.5
 
     # Load data
     if args.dataset == 'egfxset':
@@ -97,7 +96,7 @@ def main():
             c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
             for batch_idx, (dry, wet) in enumerate(train_loader):
                 optimizer.zero_grad() 
-                input = dry.to(device)          # shape: [batch, channel, seq]
+                input = dry.to(device)          # shape: [batch, channel, lenght]
                 target = wet.to(device)
                 
                 output = model(input)
@@ -105,7 +104,7 @@ def main():
                 # output = torchaudio.functional.preemphasis(output, 0.95)
                 loss_1 = mae(output, target)
                 loss_2 = mrstft(output, target)
-                loss = loss_1 + (alpha * loss_2)
+                loss = alpha * loss_1 + (1- alpha) * loss_2
 
                 loss.backward()                             
                 optimizer.step()
@@ -131,8 +130,7 @@ def main():
                     # output = torchaudio.functional.preemphasis(output, 0.95)
                     loss_1 = mae(output, target)
                     loss_2 = mrstft(output, target)
-                    loss = loss_1 + (alpha * loss_2)
-
+                    loss = alpha * loss_1 + (1- alpha) * loss_2
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     

@@ -72,7 +72,7 @@ def main():
             
             end_time = datetime.now()
             duration = end_time - start_time
-            num_samples = input.size(2)
+            num_samples = input.size(-1) * batch_size
             lenght_in_seconds = num_samples / sample_rate
             rtf = duration.total_seconds() / lenght_in_seconds
             rtf_list.append(rtf)

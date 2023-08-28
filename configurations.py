@@ -102,6 +102,15 @@ configs = [
     'criterion': 'mae+mrstft',
     },
     {
+    'conf_name': 'wavenet-1k5',
+    'model_type': 'PedalNetWaveNet',
+    'num_channels': 8,
+    'dilation_depth': 10,
+    'num_repeat': 5,
+    'kernel_size': 5,
+    'criterion': 'mae+mrstft',
+    },
+    {
     'conf_name': 'lstm-cs-32',
     'model_type': 'LstmConvSkip',
     'input_size': 1,
