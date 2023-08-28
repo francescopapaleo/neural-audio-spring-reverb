@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from src.signals import generate_reference
 from src.helpers import load_model_checkpoint
+from src.plotter import plot_waterfall
 from inference import make_inference
 from configurations import parse_args
 
@@ -66,6 +67,10 @@ def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duratio
     plt.tight_layout()
     plt.savefig(f"results/measured_IR/{Path(checkpoint).stem}_IR.png")
     print(f"Saved spectrogram plot to {Path(checkpoint).stem}_IR.png")
+
+    # Plot the waterfall spectrogram
+    file_name = f"{Path(checkpoint).stem}_IR_waterfall.png"
+    plot_waterfall(impulse_response, file_name, sample_rate, stride=10)
 
     ir_tensor = torch.from_numpy(impulse_response).unsqueeze(0).float()
     

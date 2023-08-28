@@ -64,7 +64,7 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
 
 
 def generate_spectrogram(waveform, sample_rate, nperseg=256, noverlap=128):
-    frequencies, times, Sxx = signal.spectrogram(waveform, fs=sample_rate, nperseg=nperseg, noverlap=noverlap)
+    frequencies, times, Sxx = spectrogram(waveform, fs=sample_rate, nperseg=nperseg, noverlap=noverlap)
     return frequencies, times, 10 * np.log10(Sxx + 1e-10)
 
 def plot_waterfall(waveform, file_name, sample_rate, stride=10):

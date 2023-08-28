@@ -2,7 +2,6 @@
 import torch
 import torchaudio
 import numpy as np
-import scipy.signal as signal
 from pathlib import Path
 import matplotlib.pyplot as plt
 
@@ -43,7 +42,7 @@ def main(input_path, args):
     file_name = Path(input_path).stem
 
     # Plot the spectrogram
-    cax = ax.specgram(impulse_response, NFFT=512, Fs=sample_rate, noverlap=256, cmap='hot', scale='dB', mode='magnitude', vmin=-100, vmax=0)
+    cax = ax.specgram(impulse_response, NFFT=512, Fs=sample_rate, noverlap=256, cmap='hot', scale='dB', mode='magnitude', vmin=-120, vmax=0)
     ax.set_ylabel('Frequency [Hz]')
     ax.set_xlabel('Time [sec]')
     ax.set_title(f'{file_name} IR')
