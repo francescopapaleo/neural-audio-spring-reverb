@@ -4,7 +4,7 @@
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Define the directory with the checkpoints
-checkpoints_dir="results/48k/models/"
+checkpoints_dir="results/16k/models/"
 
 # Iterate over all .pt (PyTorch checkpoint) files in the directory
 for checkpoint in "$checkpoints_dir"/*.pt; do
@@ -16,5 +16,5 @@ for checkpoint in "$checkpoints_dir"/*.pt; do
     
     # for testing on egfxset uncomment the line below
     # python test.py --checkpoint "$checkpoint" --logdir "results/48k" --device cpu --dataset egfxset --sample_rate 48000
-    # python test.py --checkpoint "$checkpoint" --logdir "results/16k" --device cpu --dataset springset --sample_rate 16000 
+    python test.py --checkpoint "$checkpoint" --logdir "results/16k" --device cpu --dataset springset --sample_rate 16000 
     done
