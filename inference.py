@@ -31,9 +31,8 @@ def make_inference(input: torch.Tensor, sample_rate, model, device, mix) -> torc
     torch.Tensor
         Processed signal with the same shape as the input signal [channels, samples]
     """
-    x = input.view(1, 1, -1)         # Add the batch dimension
-
-    x = x.to(device)                # Move to device
+    input = torch.tensor(input, dtype=torch.float32).to(device)
+    x = input.reshape(1, 1, -1)         # Add the batch dimension
     
     model.eval()
     with torch.no_grad():
