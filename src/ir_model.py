@@ -10,7 +10,7 @@ from src.plotter import plot_waterfall
 from inference import make_inference
 from configurations import parse_args
 
-def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duration, args):
+def measure_impulse_response(checkpoint, sample_rate, bit_rate, device, duration, args):
     """ 
     Impulse response measurement of a trained model
     =========================================================
@@ -77,8 +77,8 @@ def measure_impulse_response(checkpoint, sample_rate, bit_depth, device, duratio
     save_directory = "results/measured_IR/audio"
     Path(save_directory).mkdir(parents=True, exist_ok=True)  # Ensure directory exists
     save_as = f"{save_directory}/{Path(checkpoint).stem}_IR.wav"
-    torchaudio.save(save_as, ir_tensor, sample_rate, bits_per_sample=bit_depth)
-    print(f"Saved measured impulse response to {save_as}, sample rate: {sample_rate}, bit depth: {bit_depth}")
+    torchaudio.save(save_as, ir_tensor, sample_rate, bits_per_sample=bit_rate)
+    print(f"Saved measured impulse response to {save_as}, sample rate: {sample_rate}, bit depth: {bit_rate}")
 
 
 
@@ -87,4 +87,4 @@ if __name__ == "__main__":
 
     print('Measure the impulse response of a trained model')
 
-    measure_impulse_response(args.checkpoint, args.sample_rate, args.bit_depth, args.device, args.duration, args)
+    measure_impulse_response(args.checkpoint, args.sample_rate, args.bit_rate, args.device, args.duration, args)

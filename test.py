@@ -14,6 +14,8 @@ from configurations import parse_args
 
 def main():
     print("Testing model...")
+    print(torchaudio.get_audio_backend())
+
     args = parse_args()
     torch.manual_seed(42)
     
@@ -24,6 +26,7 @@ def main():
     torch.cuda.empty_cache()
 
     sample_rate = args.sample_rate
+    bit_rate = args.bit_rate
 
     model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
     
@@ -96,14 +99,16 @@ def main():
                 tgt = target.view(-1).unsqueeze(0).cpu()
                 out = output.view(-1).unsqueeze(0).cpu()
 
-                save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
-                torchaudio.save(save_in, inp, args.sample_rate)
+                sr_tag = sample_rate // 1000
 
-                save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
-                torchaudio.save(save_out, out, args.sample_rate)
+                save_in = f"results/audio_batches/inp_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_in, inp, sample_rate=sample_rate)
 
-                save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
-                torchaudio.save(save_target, tgt, args.sample_rate)
+                save_out = f"results/audio_batches/out_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_out, out, sample_rate=sample_rate)
+
+                save_target = f"results/audio_batches/tgt_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_target, tgt, sample_rate=sample_rate)
 
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])

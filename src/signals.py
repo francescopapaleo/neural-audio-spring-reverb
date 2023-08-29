@@ -106,7 +106,7 @@ def generate_reference(duration: float, sample_rate: int, decibels: float = -18,
     return sweep, inverse_filter, impulse_response
 
 
-def save_audio(dir_path: str, file_name: str, sample_rate: int, bit_depth:int, waveform: np.ndarray):
+def save_audio(dir_path: str, file_name: str, sample_rate: int, bit_rate:int, waveform: np.ndarray):
     '''Saves an audio array to a .wav file.
 
     Arguments:
@@ -128,12 +128,12 @@ def save_audio(dir_path: str, file_name: str, sample_rate: int, bit_depth:int, w
     waveform = torch.from_numpy(waveform).float()
 
     torchaudio.save(output_path, waveform, sample_rate,
-    encoding="PCM_S", bits_per_sample=bit_depth)
+    encoding="PCM_S", bits_per_sample=bit_rate)
     
     print(f"Saved {output_path}")
 
 
-def main(duration: float, sample_rate: int, bit_depth:int, audiodir: str):
+def main(duration: float, sample_rate: int, bit_rate:int, audiodir: str):
 
     # Generate the arrays
     sweep, inverse_filter, reference = generate_reference(duration, sample_rate)
@@ -144,10 +144,10 @@ def main(duration: float, sample_rate: int, bit_depth:int, audiodir: str):
         os.makedirs(directory)
 
     # Save as .wav files
-    save_audio(audiodir, "signals/sweep_tone", sample_rate, bit_depth, sweep)
-    save_audio(audiodir, "signals/inverse_filter", sample_rate, bit_depth, inverse_filter)
-    save_audio(audiodir, "signals/ir_reference", sample_rate, bit_depth, reference)
-    save_audio(audiodir, "signals/single_impulse", sample_rate, bit_depth, single_impulse)
+    save_audio(audiodir, "signals/sweep_tone", sample_rate, bit_rate, sweep)
+    save_audio(audiodir, "signals/inverse_filter", sample_rate, bit_rate, inverse_filter)
+    save_audio(audiodir, "signals/ir_reference", sample_rate, bit_rate, reference)
+    save_audio(audiodir, "signals/single_impulse", sample_rate, bit_rate, single_impulse)
 
     # Plot them
     fig, ax = plt.subplots(3, 1, figsize=(15,7))
@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    main(args.duration, args.sample_rate, args.bit_depth, args.audiodir)
+    main(args.duration, args.sample_rate, args.bit_rate, args.audiodir)
 
 
     # proc_sweep, _ = torchaudio.load('audio/gcn-250_20230824-011632.wav')

@@ -70,14 +70,14 @@ def generate_spectrogram(waveform, sample_rate, nperseg=256, noverlap=128):
 def plot_waterfall(waveform, file_name, sample_rate, stride=10):
     frequencies, times, Sxx = generate_spectrogram(waveform, sample_rate)
 
-    fig = plt.figure(figsize=(10,8))
+    fig = plt.figure(figsize=(12,8))
     ax = fig.add_subplot(111, projection='3d')
 
     num_slices = len(times) // stride
     dZ = Sxx.shape[1] / num_slices
 
     for i in range(0, len(times), stride):
-        ax.plot(frequencies, Sxx[:, i], zs=i * dZ, zdir='y', alpha=0.7)
+        ax.plot(frequencies, Sxx[:, i], zs=i * dZ, zdir='y', alpha=0.7, cmap='cm.Blues')
 
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Time (slices)')

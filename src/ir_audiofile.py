@@ -58,8 +58,8 @@ def main(input_path, args):
 
     ir_tensor = torch.from_numpy(impulse_response).unsqueeze(0).float()
     save_as = Path(f"results/measured_IR/{file_name}_IR.wav")
-    torchaudio.save(save_as, ir_tensor, sample_rate, bits_per_sample=args.bit_depth)
-    print(f"Saved measured impulse response to {save_as}, sample rate: {sample_rate}, bit depth: {args.bit_depth}")
+    torchaudio.save(save_as, ir_tensor, sample_rate, bits_per_sample=args.bit_rate)
+    print(f"Saved measured impulse response to {save_as}, sample rate: {sample_rate}, bit depth: {args.bit_rate}")
 
     # Plot the waterfall spectrogram
     plot_waterfall(impulse_response, file_name, sample_rate, stride=10)
