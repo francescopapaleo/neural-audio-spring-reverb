@@ -5,6 +5,7 @@ from src.networks.tcn import TCN
 from src.networks.wavenet import PedalNetWaveNet
 from src.networks.lstm import LSTM, LstmConvSkip
 from src.networks.gcn import GCN
+from src.networks.bkp_wavenet import WaveNet
 from configurations import parse_args
 
 args = parse_args()
@@ -63,6 +64,13 @@ def initialize_model(device, hparams, args):
             num_channels = hparams['num_channels'],
             kernel_size = hparams['kernel_size'],
             dilation_depth = hparams['dilation_depth'],
+        ).to(device)
+    elif hparams['model_type'] == "WaveNet":
+        model = WaveNet(
+            n_channels = hparams['n_channels'],
+            dilation=hparams['dilation'],
+            num_repeat=hparams['num_repeat'],
+            kernel_size = hparams['kernel_size'],
         ).to(device)
     else:
         raise ValueError(f"Unknown model type: {hparams['model_type']}")
