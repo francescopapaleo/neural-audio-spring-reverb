@@ -6,16 +6,16 @@ def parse_args():
     # Paths
     parser.add_argument('--datadir', type=str, default='../datasets', help='Path (rel) to the dataset ')
     parser.add_argument('--audiodir', type=str, default='audio', help='Path (rel) to the audio files')
-    parser.add_argument('--logdir', type=str, default='results/48k', help='Path (rel) to  the log directory')
+    parser.add_argument('--logdir', type=str, default='results/16k', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--modelsdir', type=str, default='results/48k/checkpoints', help='Path (rel) to models checkpoints directory')
+    parser.add_argument('--modelsdir', type=str, default='results/16k/checkpoints', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
-    parser.add_argument('--dataset', type=str, default='egfxset', help='Dataset to use')
+    parser.add_argument('--dataset', type=str, default='springset', help='Dataset to use')
     
     # Audio
-    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
-    parser.add_argument('--bit_depth', type=int, default=24, help='bits per second')  
+    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio') 
+    parser.add_argument('--bit_depth', type=int, default=16, help='bits per second')  
 
     # Model
     parser.add_argument('--config', type=str, default=None, help='The configuration to use')

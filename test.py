@@ -85,13 +85,16 @@ def main():
             # Plot and save audios every n batches
             if step == num_batches - 1:
 
+                output = torchaudio.functional.highpass_biquad(output, sample_rate, 20)
+                target = torchaudio.functional.highpass_biquad(target, sample_rate, 20)
+
+                input /= torch.max(torch.abs(input))
+                target /= torch.max(torch.abs(target))                
+                output /= torch.max(torch.abs(output))
+
                 inp = input.view(-1).unsqueeze(0).cpu()
                 tgt = target.view(-1).unsqueeze(0).cpu()
                 out = output.view(-1).unsqueeze(0).cpu()
-
-                inp /= torch.max(torch.abs(inp))
-                tgt /= torch.max(torch.abs(tgt))                
-                out /= torch.max(torch.abs(out))
 
                 save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
                 torchaudio.save(save_in, inp, args.sample_rate)
