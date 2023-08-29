@@ -31,8 +31,8 @@ def main():
     n_epochs = hparams['n_epochs']
     lr = hparams['lr']
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) / f"test/{model_name}_{timestamp}"
+    # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    log_dir = Path(args.logdir) / f"test/{model_name}"
     writer = SummaryWriter(log_dir=log_dir)
     
     # Load data
