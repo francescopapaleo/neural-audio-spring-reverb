@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('--audiodir', type=str, default='audio', help='Path (rel) to the audio files')
     parser.add_argument('--logdir', type=str, default='results/48k', help='Path (rel) to  the log directory')
     parser.add_argument('--plotsdir', type=str, default='results/plots', help='Path (rel) to the plot directory')
-    parser.add_argument('--modelsdir', type=str, default='results/48k/checkpoints', help='Path (rel) to models checkpoints directory')
+    parser.add_argument('--modelsdir', type=str, default='results/16k/models/', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--dataset', type=str, default='egfxset', help='Dataset to use')
@@ -160,5 +160,7 @@ batch_size=1,               # Batch size
 n_epochs=1000,
 n_workers=0,
 lr=1e-3,
+sample_rate=48000,
+bit_rate=24,
 }
 """

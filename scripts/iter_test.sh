@@ -16,5 +16,11 @@ for checkpoint in "$checkpoints_dir"/*.pt; do
     
     # for testing on egfxset uncomment the line below
     # python test.py --checkpoint "$checkpoint" --logdir "results/48k" --device cpu --dataset egfxset --sample_rate 48000
-    python test.py --checkpoint "$checkpoint" --logdir "results/16k" --device cpu --dataset springset --sample_rate 16000 
+    
+    python test.py --checkpoint "$checkpoint" \
+    --logdir "results/16k" \
+    --device cpu \
+    --dataset springset \
+    --sample_rate 16000 --bit_depth 16
+
     done
