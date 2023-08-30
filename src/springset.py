@@ -71,9 +71,11 @@ class SpringDataset(torch.utils.data.Dataset):
         # Convert numpy arrays to tensors
         x, y = torch.from_numpy(x), torch.from_numpy(y)
 
-        if self.transform:
-            x = self.transform(x)
-            y = self.transform(y)
+        # Transforms are provided as a list
+        if self.transforms:
+            for transform in self.transforms:
+                x = transform(x)
+                y = transform(y)
 
         return x, y
     
@@ -120,6 +122,8 @@ class SpringDataset(torch.utils.data.Dataset):
         print(f"Index: {index}")
         print(f"Index data: {self.index[index]}")
 
+def correct_dc_offset(tensor):
+    return tensor - torch.mean(tensor)
 
 def peak_normalize(tensor):
     
@@ -130,9 +134,11 @@ def peak_normalize(tensor):
     # torch.nn.functional.normalize(tensor, p=2, dim=1)
     return tensor
 
+TRANSFORMS = [correct_dc_offset, peak_normalize]
+
 def load_springset(datadir, batch_size, train_ratio ):
     """Load and split the dataset"""
-    trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
+    trainset = SpringDataset(root_dir=datadir, split='train', transforms=TRANSFORMS)
     train_size = int(train_ratio * len(trainset))
     val_size = len(trainset) - train_size
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
@@ -140,7 +146,7 @@ def load_springset(datadir, batch_size, train_ratio ):
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
-    testset = SpringDataset(root_dir=datadir, split="test", transform=peak_normalize)
+    testset = SpringDataset(root_dir=datadir, split="test", transform=TRANSFORMS)
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, valid_loader, test_loader

@@ -81,6 +81,7 @@ class EgfxDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.dry_files)
 
+
 def correct_dc_offset(tensor):
     return tensor - torch.mean(tensor)
 
