@@ -14,8 +14,8 @@ def parse_args():
     parser.add_argument('--dataset', type=str, default='springset', help='Dataset to use')
     
     # Audio
-    parser.add_argument('--sample_rate', type=int, default=16000, help='sample rate of the audio') 
-    parser.add_argument('--bit_rate', type=int, default=16, help='bits per second')  
+    parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
+    parser.add_argument('--bit_rate', type=int, default=24, help='bits per second')  
 
     # Model
     parser.add_argument('--config', type=str, default=None, help='The configuration to use')

@@ -35,7 +35,7 @@ class SpringDataset(torch.utils.data.Dataset):
     url          = {https://doi.org/10.5281/zenodo.3746119}
     }
     """
-    def __init__(self, root_dir, split=None, transform=None):
+    def __init__(self, root_dir, split=None, transforms=None):
         super(SpringDataset, self).__init__()
         self.root_dir = Path(root_dir) / 'plate-spring' / 'spring'
         self.split = split
@@ -57,7 +57,7 @@ class SpringDataset(torch.utils.data.Dataset):
         self.load_data()
         self.index = {i: (self.dry_file.name, self.wet_file.name, i) for i in range(len(self.dry_data))}
         
-        self.transform = transform
+        self.transforms = transforms
 
     def __len__(self):
         # The length should be the number of items in the data
@@ -146,7 +146,7 @@ def load_springset(datadir, batch_size, train_ratio ):
     train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
     valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
 
-    testset = SpringDataset(root_dir=datadir, split="test", transform=TRANSFORMS)
+    testset = SpringDataset(root_dir=datadir, split="test", transforms=TRANSFORMS)
     test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
 
     return train_loader, valid_loader, test_loader
