@@ -63,7 +63,7 @@ def main():
         perceptual_weighting=True,
         ).to(device)
     
-    crit_1 = dc
+    crit_1 = mae
     crit_2 = mrstft
 
     using_losses = crit_1.__class__.__name__ + '+' + crit_2.__class__.__name__
@@ -81,6 +81,7 @@ def main():
     min_valid_loss = np.inf
 
     hparams.update({
+        'conf_name': 'tcn-1800',
         'n_epochs': args.n_epochs,
         'batch_size': args.batch_size,
         'lr': args.lr,
