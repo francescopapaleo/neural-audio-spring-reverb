@@ -1,10 +1,10 @@
 import torch
 import csv
+from pathlib import Path
 
 from src.egfxset import load_egfxset
 from src.springset import load_springset
 from configurations import parse_args
-
 
 if __name__ == "__main__":
 
@@ -20,32 +20,33 @@ if __name__ == "__main__":
         """
         return torch.mean(signal)
 
-    def compute_snr(dry, wet):
+
+    def compute_snr(dry, wet, eps=1e-8):
         """
         Compute the Signal-to-Noise Ratio (SNR) using PyTorch.
         Values are in dB.
         """
-        noise = dry - wet
-        signal_power = torch.mean(dry**2)
-        noise_power = torch.mean(noise**2)
-        
-        if noise_power == 0:  # Avoid log(0) which is undefined
-            return float('inf')  # Infinite SNR
-        
-        snr_db = 10 * torch.log10(signal_power / noise_power)
-        return snr_db.item()
+        dry = dry - dry.mean()
+        wet = wet - wet.mean()
+        res = dry - wet
+        snr = 10 * torch.log10(
+            (wet ** 2).sum() / ((res ** 2).sum() + eps)
+        )
+        return snr.item()
 
     # Load data
     if args.dataset == 'egfxset':
         train_loader, _, _ = load_egfxset(args.datadir, batch_size=1, train_ratio=1.0, val_ratio=0.0, test_ratio=0.0)
     
-    if args.dataset == 'springset':
-        train_loader, _, test_loader = load_springset(args.datadir, batch_size=1, train_ratio=1.0)
+    elif args.dataset == 'springset':  # Added an 'elif' here for clarity.
+        train_loader, _, _ = load_springset(args.datadir, batch_size=1, train_ratio=1.0)
 
     # Write to a CSV file
-    with open(f'{args.dataset}_dc_esr.csv', 'w', newline='') as csv_file:
+    destination = Path(args.logdir)/f'{args.dataset}_dc_snr.csv'
+
+    with open(destination, 'w', newline='') as csv_file:
         writer = csv.writer(csv_file)
-        writer.writerow(["Sample Index", "DC Offset", "SNR"])  # Writing headers
+        writer.writerow(["Sample Index", "dry_DC", "wet_DC", "SNR"])  # Fixed the headers 
 
         for idx, (dry, wet) in enumerate(train_loader):
             # Move the tensors to the computation device
@@ -59,7 +60,7 @@ if __name__ == "__main__":
 
             writer.writerow([idx, dc_offset_dry.item(), dc_offset_wet.item(), snr])
 
-            print(f"Sample {idx}: DC Offset = {dc_offset_dry:.3f}, {dc_offset_wet:.3f} SNR = {snr:.3f} dB", end='\r')
+            print(f"Sample {idx}: DC Offset (dry) = {dc_offset_dry:.3f}, DC Offset (wet) = {dc_offset_wet:.3f}, SNR = {snr:.3f} dB", end='\r')
 
-        print("Audio metrics saved to audio_metrics.csv!")
+        print("\nAudio metrics saved to audio_metrics.csv!")  # Added a newline character for cleaner printing.
         
