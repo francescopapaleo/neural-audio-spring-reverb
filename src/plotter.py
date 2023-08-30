@@ -5,8 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import torch
-import torchaudio.transforms as T
-import librosa
 from pathlib import Path
 from configurations import parse_args
 from scipy.signal import spectrogram
@@ -141,33 +139,3 @@ def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=No
     plt.show(block=False)
 
     return figure
-
-def bin_to_freq(bin, sample_rate, n_fft):
-    return bin * sample_rate / n_fft
-
-
-def plot_compare_spectrogram(target, output, sample_rate, title, t_label="Target", o_label="Output", xlim=None, ylim=None): 
-    hop_size = 512
-    
-    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
-    
-    t_spec = librosa.amplitude_to_db(np.abs(librosa.stft(target.numpy().squeeze())), ref=np.max)
-    o_spec = librosa.amplitude_to_db(np.abs(librosa.stft(output.numpy().squeeze())), ref=np.max)
-
-    axs[0].set_title(t_label or "Target Spectrogram (db)")
-    img1 = librosa.display.specshow(
-        t_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="log", ax=axs[0])
-    fig.colorbar(img1, ax=axs[0], format="%+2.f dB")
-
-    axs[1].set_title(o_label or "Output Spectrogram (db)")
-    img2 = librosa.display.specshow(
-        o_spec, sr=sample_rate, hop_length=hop_size, x_axis="time", y_axis="log", ax=axs[1])
-    fig.colorbar(img2, ax=axs[1], format="%+2.f dB")
-    
-    plt.tight_layout()
-    plt.show(block=False)
-
-    return fig
-
-if __name__ == "__main__":
-    print("This module is not intended to be executed directly. Do it only for debugging purposes.")

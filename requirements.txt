@@ -1,10 +1,9 @@
 auraloss==0.4.0
-h5py==3.8.0
-librosa==0.10.0.post2
-matplotlib==3.7.1
-numpy==1.23.5
-scipy==1.10.1
-tensorboard==2.12.3
+h5py==3.9.0
+librosa==0.10.1
+matplotlib==3.7.2
+numpy==1.24.3
+scipy==1.11.2
 torch==2.0.1
 torchaudio==2.0.2
 torchinfo==1.8.0

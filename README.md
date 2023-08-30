@@ -16,15 +16,6 @@ A basic command line interface is implemented to use the repository. Impulse Res
 To run the code in this repository, you will need the following dependencies installed:
 
 ```terminal
-auraloss==0.4.0
-h5py==3.8.0
-librosa==0.10.0.post2
-matplotlib==3.7.1
-numpy==1.23.5
-scipy==1.10.1
-tensorboard==2.12.3
-torch==2.0.1
-torchaudio==2.0.2
 
 # You can install these dependencies by running the following command:
 
