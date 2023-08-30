@@ -130,10 +130,10 @@ def peak_normalize(tensor):
     # torch.nn.functional.normalize(tensor, p=2, dim=1)
     return tensor
 
-def load_springset(datadir, batch_size):
+def load_springset(datadir, batch_size, train_ratio ):
     """Load and split the dataset"""
     trainset = SpringDataset(root_dir=datadir, split='train', transform=peak_normalize)
-    train_size = int(0.8 * len(trainset))
+    train_size = int(train_ratio * len(trainset))
     val_size = len(trainset) - train_size
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
 

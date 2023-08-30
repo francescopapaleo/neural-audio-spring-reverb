@@ -101,7 +101,6 @@ def collate_fn(batch):
 
     return dry_stacked, wet_stacked
 
-
 def load_egfxset(datadir, batch_size, train_ratio=0.5, val_ratio=0.25, test_ratio=0.25):
     """Load and split the dataset"""
     dataset = EgfxDataset(root_dir=datadir, transform=peak_normalize)
