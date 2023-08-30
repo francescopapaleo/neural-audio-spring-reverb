@@ -10,7 +10,7 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    if springset is not None:
+    if args.dataset == 'springset':
         try:
             # Create a new directory
             os.makedirs(args.datadir, exist_ok=True)
@@ -37,7 +37,7 @@ if __name__ == "__main__":
         except Exception as e:
             print("An unexpected error occurred:", e)
 
-    if egfxset is not None:
+    if args.dataset == 'egfxset':
         try:
             # Create a new directory
             os.makedirs(args.datadir, exist_ok=True)
