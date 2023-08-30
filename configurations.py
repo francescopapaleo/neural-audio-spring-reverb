@@ -11,7 +11,7 @@ def parse_args():
     parser.add_argument('--modelsdir', type=str, default='results/', help='Path (rel) to models checkpoints directory')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
-    parser.add_argument('--dataset', type=str, default='springset', help='Dataset to use')
+    parser.add_argument('--dataset', type=str, default='egfxset', help='Dataset to use')
     
     # Audio
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
@@ -55,7 +55,7 @@ configs = [
     'criterion': 'esr+dc',
     },
     {
-    'conf_name': 'gcn-250-v28',
+    'conf_name': 'gcn-250-v30',
     'model_type': 'GCN',
     'num_blocks': 1,
     'num_layers': 4,

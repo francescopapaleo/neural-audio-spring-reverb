@@ -59,26 +59,57 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     fig.suptitle(f"{file_name} - Impulse Response δ(t)")
     save_plot(fig, file_name + "_IR")
 
-def generate_spectrogram(waveform, sample_rate, nperseg=256, noverlap=128):
-    frequencies, times, Sxx = spectrogram(waveform, fs=sample_rate, nperseg=nperseg, noverlap=noverlap)
-    return frequencies, times, 10 * np.log10(Sxx + 1e-10)
+def generate_spectrogram(waveform, sample_rate):
+    frequencies, times, Sxx = spectrogram(
+        waveform, 
+        fs=sample_rate, 
+        window='blackmanharris',
+        nperseg=64,
+        noverlap=32,
+        # nfft=2048,  
+        scaling='density', 
+        mode='magnitude'
+    )
+    
+    # Convert magnitude to dB
+    Sxx_dB = 10 * np.log10(Sxx + 1e-10)
+    
+    return frequencies, times, Sxx_dB
+
 
 def plot_waterfall(waveform, file_name, sample_rate, stride=1):
     frequencies, times, Sxx = generate_spectrogram(waveform, sample_rate)
 
-    fig = plt.figure(figsize=(12,8))
+    fig = plt.figure(figsize=(8,6))
     ax = fig.add_subplot(111, projection='3d')
 
+    # Compute logarithm of the frequencies (avoid log(0) by adding a small value)
+    # log_freq = np.log10(frequencies + 1e-10)
+    
+    # X, Y = np.meshgrid(frequencies, times[::stride])
     X, Y = np.meshgrid(frequencies, times[::stride])
     Z = Sxx.T[::stride]
 
-    surf = ax.plot_surface(X, Y, Z, cmap='inferno', edgecolor='none', alpha=0.6)
+    surf = ax.plot_surface(X, Y, Z, 
+                           cmap='inferno',
+                           edgecolor='none', 
+                           alpha=0.8,
+                           linewidth=0,
+                            antialiased=False)
 
+    # Add a color bar which maps values to colors
+    cbar = fig.colorbar(surf, ax=ax, pad=0.01, aspect=35, shrink=0.5)
+    cbar.set_label('Magnitude (dB)')
+
+    # Set labels and title
     ax.set_xlabel('Frequency (Hz)')
-    ax.set_ylabel('Time (slices)')
+    ax.set_ylabel('Time (seconds)')
     ax.set_zlabel('Magnitude (dB)')
-    ax.set_title('Waterfall Spectrogram')
-    ax.view_init(30, 60)  # Adjusts the viewing angle for better visualization
+    ax.set_title(f'{file_name} - Spectrogram')
+    
+    ax.set_xlim([frequencies[-1], frequencies[0]])
+    ax.view_init(15, 15)  # Adjusts the viewing angle for better visualization
+    plt.tight_layout()
 
     plt.tight_layout()
     plt.savefig(f"results/measured_IR/{file_name}_waterfall.png", dpi=300)

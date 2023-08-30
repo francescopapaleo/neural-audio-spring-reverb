@@ -46,7 +46,8 @@ def measure_impulse_response(checkpoint, sample_rate, bit_rate, device, duration
     print(impulse_response.shape)
 
     # Normalize the impulse response
-    impulse_response /= np.max(np.abs(impulse_response))
+    impulse_response = impulse_response - np.mean(impulse_response)
+    ir_norm = impulse_response / np.abs(impulse_response).np.max()
         
     # Only create a single subplot for the spectrogram
     fig, ax = plt.subplots(figsize=(10, 8))

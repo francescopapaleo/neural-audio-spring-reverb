@@ -64,6 +64,7 @@ def main():
         ).to(device)
     
     criterion = hparams['criterion']
+    print(f"Using criterion {criterion}")
     alpha = 0.5
 
     # Load data
@@ -102,8 +103,8 @@ def main():
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
-                loss_1 = esr(output, target)
-                loss_2 = dc(output, target)
+                loss_1 = mae(output, target)
+                loss_2 = mrstft(output, target)
                 loss = alpha * loss_1 + (1- alpha) * loss_2
 
                 loss.backward()                             
@@ -128,8 +129,8 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
-                    loss_1 = esr(output, target)
-                    loss_2 = dc(output, target)
+                    loss_1 = mae(output, target)
+                    loss_2 = mrstft(output, target)
                     loss = alpha * loss_1 + (1- alpha) * loss_2
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
