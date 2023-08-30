@@ -63,8 +63,12 @@ def main():
         perceptual_weighting=True,
         ).to(device)
     
-    criterion = hparams['criterion']
-    print(f"Using criterion {criterion}")
+    crit_1 = dc
+    crit_2 = mrstft
+
+    using_losses = crit_1.__class__.__name__ + '+' + crit_2.__class__.__name__
+    print(f"Using criterion {using_losses}")
+
     alpha = 0.5
 
     # Load data
@@ -77,12 +81,15 @@ def main():
     min_valid_loss = np.inf
 
     hparams.update({
+        'conf_name': 'tcn-1800',
         'n_epochs': args.n_epochs,
         'batch_size': args.batch_size,
         'lr': args.lr,
         'receptive_field': rf,
         'params': params,
         'sample_rate': args.sample_rate,
+        'bit_rate': args.bit_rate,
+        'criterion': using_losses,
     })
 
     start_epoch = last_epoch + 1 if args.checkpoint is not None else 0
@@ -103,8 +110,8 @@ def main():
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
-                loss_1 = mae(output, target)
-                loss_2 = mrstft(output, target)
+                loss_1 = crit_1(output, target)
+                loss_2 = crit_2(output, target)
                 loss = alpha * loss_1 + (1- alpha) * loss_2
 
                 loss.backward()                             
@@ -129,8 +136,8 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
-                    loss_1 = mae(output, target)
-                    loss_2 = mrstft(output, target)
+                    loss_1 = crit_1(output, target)
+                    loss_2 = crit_2(output, target)
                     loss = alpha * loss_1 + (1- alpha) * loss_2
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
