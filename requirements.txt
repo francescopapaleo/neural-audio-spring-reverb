@@ -1,6 +1,5 @@
 auraloss==0.4.0
 h5py==3.9.0
-librosa==0.10.1
 matplotlib==3.7.2
 numpy==1.24.3
 scipy==1.11.2

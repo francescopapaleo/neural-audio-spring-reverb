@@ -101,13 +101,13 @@ def main():
 
                 sr_tag = sample_rate // 1000
 
-                save_in = f"results/audio_batches/inp_{hparams['conf_name']}_{sr_tag}k.wav"
+                save_in = f"{log_dir}/audio/inp_{hparams['conf_name']}_{sr_tag}k.wav"
                 torchaudio.save(save_in, inp, sample_rate=sample_rate)
 
-                save_out = f"results/audio_batches/out_{hparams['conf_name']}_{sr_tag}k.wav"
+                save_out = f"{log_dir}/audio_batches/out_{hparams['conf_name']}_{sr_tag}k.wav"
                 torchaudio.save(save_out, out, sample_rate=sample_rate)
 
-                save_target = f"results/audio_batches/tgt_{hparams['conf_name']}_{sr_tag}k.wav"
+                save_target = f"{log_dir}/audio_batches/tgt_{hparams['conf_name']}_{sr_tag}k.wav"
                 torchaudio.save(save_target, tgt, sample_rate=sample_rate)
 
     for name in test_results.keys():

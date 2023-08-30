@@ -81,7 +81,6 @@ def main():
     min_valid_loss = np.inf
 
     hparams.update({
-        'conf_name': 'tcn-1800',
         'n_epochs': args.n_epochs,
         'batch_size': args.batch_size,
         'lr': args.lr,
