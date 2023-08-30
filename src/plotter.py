@@ -4,7 +4,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from matplotlib.colors import LogNorm
 import torch
 import torchaudio.transforms as T
 import librosa
@@ -62,30 +61,29 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     fig.suptitle(f"{file_name} - Impulse Response δ(t)")
     save_plot(fig, file_name + "_IR")
 
-
 def generate_spectrogram(waveform, sample_rate, nperseg=256, noverlap=128):
     frequencies, times, Sxx = spectrogram(waveform, fs=sample_rate, nperseg=nperseg, noverlap=noverlap)
     return frequencies, times, 10 * np.log10(Sxx + 1e-10)
 
-def plot_waterfall(waveform, file_name, sample_rate, stride=10):
+def plot_waterfall(waveform, file_name, sample_rate, stride=1):
     frequencies, times, Sxx = generate_spectrogram(waveform, sample_rate)
 
     fig = plt.figure(figsize=(12,8))
     ax = fig.add_subplot(111, projection='3d')
 
-    num_slices = len(times) // stride
-    dZ = Sxx.shape[1] / num_slices
+    X, Y = np.meshgrid(frequencies, times[::stride])
+    Z = Sxx.T[::stride]
 
-    for i in range(0, len(times), stride):
-        ax.plot(frequencies, Sxx[:, i], zs=i * dZ, zdir='y', alpha=0.7, cmap='cm.Blues')
+    surf = ax.plot_surface(X, Y, Z, cmap='inferno', edgecolor='none', alpha=0.6)
 
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Time (slices)')
     ax.set_zlabel('Magnitude (dB)')
     ax.set_title('Waterfall Spectrogram')
+    ax.view_init(30, 60)  # Adjusts the viewing angle for better visualization
 
     plt.tight_layout()
-    plt.savefig(f"results/measured_IR/{file_name}_waterfall.png")
+    plt.savefig(f"results/measured_IR/{file_name}_waterfall.png", dpi=300)
     print(f"Saved spectrogram plot to {file_name}_waterfall.png")
 
 

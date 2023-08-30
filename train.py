@@ -93,7 +93,7 @@ def main():
 
             # Training
             model.train()
-            c = torch.tensor([0.0, 0.0]).view(1,1,-1).to(device)
+
             for batch_idx, (dry, wet) in enumerate(train_loader):
                 optimizer.zero_grad() 
                 input = dry.to(device)          # shape: [batch, channel, lenght]

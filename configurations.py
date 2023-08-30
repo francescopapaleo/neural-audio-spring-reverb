@@ -35,7 +35,7 @@ def parse_args():
 
 configs = [
     {
-    'conf_name': 'tcn-baseline-v28',
+    'conf_name': 'tcn-5500',
     'model_type': 'TCN',
     'n_blocks': 5,
     'kernel_size': 9,
