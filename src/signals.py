@@ -22,7 +22,7 @@ from configurations import parse_args
 from src.plotter import plot_data, save_plot, get_time_stamps_np
 
 
-def impulse(sample_rate: int, duration: float, decibels: float = -18) -> np.ndarray:
+def impulse(sample_rate: int, duration: float, decibels: float = -1.0) -> np.ndarray:
     '''Generate an impulse
 
     Arguments:

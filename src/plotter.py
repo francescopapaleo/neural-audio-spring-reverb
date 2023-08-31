@@ -4,8 +4,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import torch
 from pathlib import Path
+
 from configurations import parse_args
 from scipy.signal import spectrogram
 
@@ -59,15 +59,15 @@ def plot_impulse_response(sweep: np.ndarray, inverse_filter: np.ndarray, measure
     fig.suptitle(f"{file_name} - Impulse Response δ(t)")
     save_plot(fig, file_name + "_IR")
 
+
 def generate_spectrogram(waveform, sample_rate):
     frequencies, times, Sxx = spectrogram(
         waveform, 
         fs=sample_rate, 
         window='blackmanharris',
-        nperseg=64,
-        noverlap=32,
-        # nfft=2048,  
-        scaling='density', 
+        nperseg=32,
+        noverlap=16,  
+        scaling='spectrum', 
         mode='magnitude'
     )
     
@@ -76,11 +76,10 @@ def generate_spectrogram(waveform, sample_rate):
     
     return frequencies, times, Sxx_dB
 
-
-def plot_waterfall(waveform, file_name, sample_rate, stride=1):
+def plot_waterfall(waveform, title, sample_rate, stride=1):
     frequencies, times, Sxx = generate_spectrogram(waveform, sample_rate)
 
-    fig = plt.figure(figsize=(8,6))
+    fig = plt.figure(figsize=(15, 15))
     ax = fig.add_subplot(111, projection='3d')
 
     # Compute logarithm of the frequencies (avoid log(0) by adding a small value)
@@ -98,6 +97,7 @@ def plot_waterfall(waveform, file_name, sample_rate, stride=1):
                             antialiased=False)
 
     # Add a color bar which maps values to colors
+    ax.autoscale()  # Adjusts the viewing limits for better visualization
     cbar = fig.colorbar(surf, ax=ax, pad=0.01, aspect=35, shrink=0.5)
     cbar.set_label('Magnitude (dB)')
 
@@ -105,15 +105,17 @@ def plot_waterfall(waveform, file_name, sample_rate, stride=1):
     ax.set_xlabel('Frequency (Hz)')
     ax.set_ylabel('Time (seconds)')
     ax.set_zlabel('Magnitude (dB)')
-    ax.set_title(f'{file_name} - Spectrogram')
+    # ax.set_title(title)
     
     ax.set_xlim([frequencies[-1], frequencies[0]])
-    ax.view_init(15, 15)  # Adjusts the viewing angle for better visualization
-    plt.tight_layout()
+    # ax.set_xscale('symlog', linthreshx=0.01)
 
+    # ax.set_xscale('log')
+
+    # ax.set_xlim([20000, 20])  # Set the x-axis limit to be between 20 and 20,000 Hz in log scale
+    ax.view_init(elev=10, azim=45, roll=None, vertical_axis='z')  # Adjusts the viewing angle for better visualization
+    save_plot(fig, title)
     plt.tight_layout()
-    plt.savefig(f"results/measured_IR/{file_name}_waterfall.png", dpi=300)
-    print(f"Saved spectrogram plot to {file_name}_waterfall.png")
 
 
 def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
@@ -135,38 +137,3 @@ def plot_rt60(T, energy_db, e_5db, est_rt60, rt60_tgt, file_name):
     plt.ylim([-100, 6])
     plt.title(f"{file_name} RT60 Measurement: {est_rt60 * 1000:.0f} ms")                 
     save_plot(plt, file_name + "_RT60")
-
-
-def plot_compare_waveform(target, output, sample_rate, title, xlim=None, ylim=None):
-    target = target.numpy()
-    output = output.numpy()
-
-    target_ch, target_frames = target.shape
-    output_ch, output_frames = output.shape
-    assert target_ch == output_ch, "Both waveforms must have the same number of channels"
-    
-    time_target = torch.arange(0, target_frames) / sample_rate
-    time_output = torch.arange(0, output_frames) / sample_rate
-
-    figure, axes = plt.subplots(target_ch, 1, figsize=(10, 5))
-    if target_ch == 1:
-        axes = [axes]
-    for c in range(target_ch):
-        axes[c].plot(time_target, target[c], linewidth=1, alpha=0.8, label='Target')
-        axes[c].plot(time_output, output[c], linewidth=1, alpha=0.8, label='Output')
-        axes[c].grid(True)
-        if target_ch > 1:
-            axes[c].set_ylabel(f'Channel {c+1}')
-        else:
-            axes[c].set_ylabel('Amplitude')
-        axes[c].set_xlabel('Time (s)')
-        if xlim:
-            axes[c].set_xlim(xlim)
-        if ylim:
-            axes[c].set_ylim(ylim)
-        apply_decorations(axes[c], legend=True)
-    figure.suptitle(title)
-    plt.tight_layout()
-    plt.show(block=False)
-
-    return figure

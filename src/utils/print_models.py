@@ -28,8 +28,8 @@ with open('results/model_summary.txt', 'w') as f:
         f.write(f'criterion: {hparams["criterion"]}\n')
         f.write(f'batch size: {hparams["batch_size"]}\n')
         try:
-            print(f'current epoch: {hparams["curr_epoch"]}\n')
-            print(f'model path: {model_file}\n')
+            f.write(f'current epoch: {hparams["curr_epoch"]}\n')
+            f.write(f'model path: {model_file}\n')
         except KeyError:
             pass
 
@@ -40,9 +40,9 @@ with open('results/model_summary.txt', 'w') as f:
             rf = None
         
         # Print the model summary
-        inputs = torch.randn(4, 1, 240000).to(device)
-        model_summary = summary(model, input_data=inputs, verbose=0)
-        f.write(str(model_summary))  # convert the Summary object to a string
+        # inputs = torch.randn(4, 1, 240000).to(device)
+        # model_summary = summary(model, input_data=inputs, verbose=0)
+        # f.write(str(model_summary))  # convert the Summary object to a string
         f.write("\n")
 
 print("Done!")

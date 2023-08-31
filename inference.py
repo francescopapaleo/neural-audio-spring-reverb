@@ -52,7 +52,7 @@ def make_inference(input: torch.Tensor, sample_rate, model, device, mix) -> torc
     y_wet /= y_wet.abs().max()
 
     # High-pass filter
-    y_wet = torchaudio.functional.highpass_biquad(y_wet, sample_rate, 20)
+    y_wet = torchaudio.functional.highpass_biquad(y_wet, sample_rate, 5)
 
     y_wet = y_wet.view(1, -1)
     
