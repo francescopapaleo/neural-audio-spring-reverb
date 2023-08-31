@@ -23,7 +23,7 @@ def parse_args():
  
     # Training
     parser.add_argument('--n_epochs', type=int, default=1, help='the total number of epochs')
-    parser.add_argument('--batch_size', type=int, default=8, help='batch size')
+    parser.add_argument('--batch_size', type=int, default=16, help='batch size')
     parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')

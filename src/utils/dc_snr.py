@@ -26,8 +26,11 @@ if __name__ == "__main__":
         Compute the Signal-to-Noise Ratio (SNR) using PyTorch.
         Values are in dB.
         """
+        # reduce potential DC offset
         dry = dry - dry.mean()
         wet = wet - wet.mean()
+
+        # compute SNR
         res = dry - wet
         snr = 10 * torch.log10(
             (wet ** 2).sum() / ((res ** 2).sum() + eps)

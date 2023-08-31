@@ -11,15 +11,10 @@ from configurations import parse_args
 args = parse_args()
 
 def select_device(device):
-    if device is None: 
-        if torch.cuda.is_available():
-            device = torch.device("cuda:0")
-        else:
-            device = torch.device("cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
     else:
-        device = torch.device(device)
-    print(f"Selected device: {device}")
-    
+        device = torch.device("cpu")
     return device
 
 
