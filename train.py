@@ -56,9 +56,11 @@ def main():
     dc = auraloss.time.DCLoss().to(device)
     esr = auraloss.time.ESRLoss().to(device)
     mrstft =  auraloss.freq.MultiResolutionSTFTLoss(
-        fft_sizes=[32, 128, 512, 2048],
-        win_lengths=[32, 128, 512, 2048],
-        hop_sizes=[16, 64, 256, 1024],
+        fft_sizes=[1024, 2048, 8192],
+        hop_sizes=[256, 512, 2048],
+        win_lengths=[1024, 2048, 8192],
+        scale="mel",
+        n_bins=128,
         sample_rate=args.sample_rate,
         perceptual_weighting=True,
         ).to(device)
@@ -81,7 +83,7 @@ def main():
     min_valid_loss = np.inf
 
     hparams.update({
-        'conf_name': 'tcn-1800',
+        'conf_name': 'gcn-250-inverse',
         'n_epochs': args.n_epochs,
         'batch_size': args.batch_size,
         'lr': args.lr,
