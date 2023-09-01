@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     
     # # Training
-    parser.add_argument('--max_epochs', type=int, default=1000, help='the total number of epochs')
+    parser.add_argument('--max_epochs', type=int, default=150, help='the total number of epochs')
     # parser.add_argument('--batch_size', type=int, default=16, help='batch size')
     # parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     

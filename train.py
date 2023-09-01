@@ -10,7 +10,7 @@ from pathlib import Path
 
 from src.dataload.egfxset import load_egfxset
 from src.dataload.springset import load_springset
-from src.model_hparams import model_hparams
+from src.train_conf import train_model
 from src.models.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
 from src.default_args import parse_args
 
@@ -39,7 +39,7 @@ def main():
     else:
         # Else, get configuration from the args
         print(f"Using configuration {args.conf}")
-        sel_conf = next((c for c in model_hparams if c['conf_name'] == args.conf), None)
+        sel_conf = next((c for c in train_model if c['conf_name'] == args.conf), None)
         if sel_conf is None:
             raise ValueError('Configuration not found')
         hparams = sel_conf
@@ -58,7 +58,6 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     log_dir = Path(args.log_dir)
     writer = SummaryWriter(log_dir=log_dir)
-    torch.cuda.empty_cache()
 
     print(model)
 
@@ -76,19 +75,20 @@ def main():
         perceptual_weighting=True,
         ).to(device)
 
-    alpha = 0.5
+    # Define individual loss choices
+    criterion_choices = {
+        'mae': mae,
+        'mrstft': mrstft,
+        'esr': esr,
+        'dc': dc
+    }
 
-    crit_1 = mae
-    crit_2 = mrstft
+    # Get the chosen criterion from hparams or default to 'mae'
+    criterion = criterion_choices.get(hparams['criterion'], mrstft)
 
-    # criterion_choices = {
-    #     'mae + mrstft': (mae, mrstft),
-    #     'esr + dc': (esr, dc),
-    #     'mae + dc': (mae, dc)
-    # }
-    # crit_1, crit_2 = criterion_choices.get(hparams['criterion'], (mae, mrstft))
-    using_losses = f"{crit_1.__class__.__name__} + {crit_2.__class__.__name__}"
-    print(f"Using criterion {using_losses}")
+    # Print the selected criterion name
+    print(f"Using loss: {criterion.__class__.__name__}")
+
     
     # Load data
     if args.dataset == 'egfxset':
@@ -105,19 +105,19 @@ def main():
     # Correct epoch calculation
     if conf_settings.get('state_epoch', None) is not None:
         state_epoch = conf_settings['state_epoch']
-        start_epoch = state_epoch + 1
-        max_epochs = conf_settings['max_epochs'] + state_epoch
+        current_epoch = state_epoch + 1
+        max_epochs = conf_settings['max_epochs']
     else:
         state_epoch = 0
-        start_epoch = 0
+        current_epoch = 0
         max_epochs = args.max_epochs
     
-    print(f"Training model for {max_epochs} epochs, current epoch {start_epoch}")
+    print(f"Training model for {max_epochs} epochs, current epoch {current_epoch}")
     avg_train_loss = float('inf')  # Initialize to a high value
     avg_valid_loss = float('inf')  # Initialize to a high value
 
     try:
-        for epoch in range(start_epoch, max_epochs):
+        for epoch in range(current_epoch, max_epochs):
             train_loss = 0.0
             print(f"Epoch: {epoch}")
 
@@ -130,9 +130,9 @@ def main():
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
-                loss_1 = crit_1(output, target)
-                loss_2 = crit_2(output, target)
-                loss = alpha * loss_1 + (1- alpha) * loss_2
+                loss = criterion(output, target)
+                # loss_2 = crit_2(output, target)
+                # loss =  loss_1 + 0.5 * loss_2
 
                 loss.backward()                             
                 optimizer.step()
@@ -155,9 +155,7 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
-                    loss_1 = crit_1(output, target)
-                    loss_2 = crit_2(output, target)
-                    loss = alpha * loss_1 + (1- alpha) * loss_2
+                    loss = criterion(output, target)
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     
@@ -171,7 +169,7 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, conf_settings, optimizer, scheduler, epoch, timestamp, avg_valid_loss
+                    model, hparams, conf_settings, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss
                 )
     finally:
         final_train_loss = avg_train_loss
