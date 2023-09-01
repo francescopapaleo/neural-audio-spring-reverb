@@ -7,10 +7,10 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 
-from src.egfxset import load_egfxset
-from src.springset import load_springset
-from src.helpers import select_device, load_model_checkpoint
-from configurations import parse_args
+from src.dataload.egfxset import load_egfxset
+from src.dataload.springset import load_springset
+from src.models.helpers import select_device, load_model_checkpoint
+from src.default_args import parse_args
 
 def main():
     print("Testing model...")
@@ -31,7 +31,7 @@ def main():
     model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
     
     batch_size = hparams['batch_size']
-    n_epochs = hparams['n_epochs']
+    max_epochs = hparams['max_epochs']
     lr = hparams['lr']
 
     # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')

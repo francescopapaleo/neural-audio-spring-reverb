@@ -2,9 +2,9 @@ import csv
 import os
 import time
 
-from configurations import parse_args
-from src.helpers import load_audio, select_device, load_model_checkpoint
-from inference import make_inference
+from src.default_args import parse_args
+from src.models.helpers import load_audio, select_device, load_model_checkpoint
+from src.inference import make_inference
 from datetime import datetime
 from pathlib import Path
 import torch

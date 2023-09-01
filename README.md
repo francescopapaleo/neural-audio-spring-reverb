@@ -39,7 +39,7 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 --device DEVICE                 set device to run the model on
 --duration DURATION             duration in seconds
 
---n_epochs N_EPOCHS             the total number of epochs
+--max_epochs N_EPOCHS             the total number of epochs
 --batch_size BATCH_SIZE         batch size
 --lr LR                         learning rate
 --crop CROP                     crop size

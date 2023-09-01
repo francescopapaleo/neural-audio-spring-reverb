@@ -8,10 +8,11 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
-from src.egfxset import load_egfxset
-from src.springset import load_springset
-from src.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
-from configurations import parse_args, configs
+from src.dataload.egfxset import load_egfxset
+from src.dataload.springset import load_springset
+from src.model_hparams import model_hparams
+from src.models.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
+from src.default_args import parse_args
 
 def main():
     args = parse_args()
@@ -25,27 +26,37 @@ def main():
 
     # If there's a checkpoint, load it first
     if args.checkpoint is not None:
-        model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
+        model, model_name, hparams, conf_settings, optimizer_state_dict, scheduler_state_dict, rf, params = load_model_checkpoint(device, args.checkpoint, args)
+        
         if optimizer_state_dict is not None:
-            optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+            optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
             optimizer.load_state_dict(optimizer_state_dict)
+
         if scheduler_state_dict is not None:
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
             scheduler.load_state_dict(scheduler_state_dict)
+        
     else:
         # Else, get configuration from the args
-        print(f"Using configuration {args.config}")
-        sel_config = next((c for c in configs if c['conf_name'] == args.config), None)
-        if sel_config is None:
+        print(f"Using configuration {args.conf}")
+        sel_conf = next((c for c in model_hparams if c['conf_name'] == args.conf), None)
+        if sel_conf is None:
             raise ValueError('Configuration not found')
-        hparams = sel_config
-        model, rf, params = initialize_model(device, hparams, args)
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)   
+        hparams = sel_conf
+        conf_settings = {
+            'sample_rate': args.sample_rate,
+            'bit_rate': args.bit_rate,
+            'max_epochs': args.max_epochs,
+            'state_epoch': None,
+            'avg_valid_loss': None,
+        }        
+        model, rf, params = initialize_model(device, hparams, conf_settings)
+        optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])   
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
-
+        
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.logdir) / f"train/{hparams['conf_name']}_{timestamp}"
+    log_dir = Path(args.log_dir)
     writer = SummaryWriter(log_dir=log_dir)
     torch.cuda.empty_cache()
 
@@ -64,51 +75,58 @@ def main():
         sample_rate=args.sample_rate,
         perceptual_weighting=True,
         ).to(device)
-    
-    crit_1 = mae
-    crit_2 = mrstft
-
-    using_losses = crit_1.__class__.__name__ + '+' + crit_2.__class__.__name__
-    print(f"Using criterion {using_losses}")
 
     alpha = 0.5
 
+    crit_1 = mae
+    crit_2 = mrstft
+
+    # criterion_choices = {
+    #     'mae + mrstft': (mae, mrstft),
+    #     'esr + dc': (esr, dc),
+    #     'mae + dc': (mae, dc)
+    # }
+    # crit_1, crit_2 = criterion_choices.get(hparams['criterion'], (mae, mrstft))
+    using_losses = f"{crit_1.__class__.__name__} + {crit_2.__class__.__name__}"
+    print(f"Using criterion {using_losses}")
+    
     # Load data
     if args.dataset == 'egfxset':
-        train_loader, valid_loader, _ = load_egfxset(args.datadir, args.batch_size)
+        train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=hparams['batch_size'])
     if args.dataset == 'springset':
-        train_loader, valid_loader, _ = load_springset(args.datadir, args.batch_size)
+        train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=hparams['batch_size'])
     
     # Initialize minimum validation loss with infinity
-    min_valid_loss = np.inf
+    if conf_settings.get('avg_valid_loss', None) is not None:
+        min_valid_loss = conf_settings['avg_valid_loss']
+    else:
+        min_valid_loss = np.inf
 
-    hparams.update({
-        'conf_name': 'gcn-250-inverse',
-        'n_epochs': args.n_epochs,
-        'batch_size': args.batch_size,
-        'lr': args.lr,
-        'receptive_field': rf,
-        'params': params,
-        'sample_rate': args.sample_rate,
-        'bit_rate': args.bit_rate,
-        'criterion': using_losses,
-    })
+    # Correct epoch calculation
+    if conf_settings.get('state_epoch', None) is not None:
+        state_epoch = conf_settings['state_epoch']
+        start_epoch = state_epoch + 1
+        max_epochs = conf_settings['max_epochs'] + state_epoch
+    else:
+        state_epoch = 0
+        start_epoch = 0
+        max_epochs = args.max_epochs
+    
+    print(f"Training model for {max_epochs} epochs, current epoch {start_epoch}")
+    avg_train_loss = float('inf')  # Initialize to a high value
+    avg_valid_loss = float('inf')  # Initialize to a high value
 
-    start_epoch = last_epoch + 1 if args.checkpoint is not None else 0
-
-    print(f"Training model for {args.n_epochs} epochs, with batch size {args.batch_size} and learning rate {args.lr}")
     try:
-        for epoch in range(start_epoch, start_epoch + args.n_epochs):
+        for epoch in range(start_epoch, max_epochs):
             train_loss = 0.0
+            print(f"Epoch: {epoch}")
 
-            # Training
             model.train()
-
             for batch_idx, (dry, wet) in enumerate(train_loader):
                 optimizer.zero_grad() 
                 input = dry.to(device)          # shape: [batch, channel, lenght]
                 target = wet.to(device)
-                
+
                 output = model(input)
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
@@ -122,12 +140,11 @@ def main():
                 train_loss += loss.item()
                 
                 lr = optimizer.param_groups[0]['lr']
-                writer.add_scalar('training/learning_rate', lr, global_step=epoch)
+                writer.add_scalar('learning_rate/train', lr, global_step=epoch)
 
             avg_train_loss = train_loss / len(train_loader)
-            writer.add_scalar('training/loss', avg_train_loss, global_step=epoch)
-            
-            # Validation
+            writer.add_scalar('loss/train', avg_train_loss, global_step=epoch)
+
             model.eval()
             valid_loss = 0.0
             with torch.no_grad():
@@ -144,7 +161,7 @@ def main():
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     
-            writer.add_scalar('validation/loss', avg_valid_loss, global_step=epoch)
+            writer.add_scalar('loss/valid', avg_valid_loss, global_step=epoch)
             
             # Update learning rate
             scheduler.step(avg_valid_loss)
@@ -154,33 +171,32 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, optimizer, scheduler, epoch, timestamp, avg_valid_loss, args
+                    model, hparams, conf_settings, optimizer, scheduler, epoch, timestamp, avg_valid_loss
                 )
-
     finally:
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
         print(f"Final Validation Loss: {final_valid_loss}")    
 
-        inp = input.view(-1).unsqueeze(0).cpu()
-        tgt = target.view(-1).unsqueeze(0).cpu()
-        out = output.view(-1).unsqueeze(0).cpu()
+        input = input.view(-1).unsqueeze(0).cpu()
+        target = target.view(-1).unsqueeze(0).cpu()
+        output = output.view(-1).unsqueeze(0).cpu()
 
-        inp /= torch.max(torch.abs(inp))
-        tgt /= torch.max(torch.abs(tgt))                
-        out /= torch.max(torch.abs(out))
+        input /= torch.max(torch.abs(input))
+        target /= torch.max(torch.abs(target))                
+        output /= torch.max(torch.abs(output))
 
-        save_in = f"{log_dir}/inp_{hparams['conf_name']}.wav"
-        torchaudio.save(save_in, inp, args.sample_rate)
+        save_in = f"{args.audio_dir}input_{hparams['conf_name']}.wav"
+        torchaudio.save(save_in, input, conf_settings['sample_rate'])
 
-        save_out = f"{log_dir}/out_{hparams['conf_name']}.wav"
-        torchaudio.save(save_out, out, args.sample_rate)
+        save_out = f"{args.audio_dir}output_{hparams['conf_name']}.wav"
+        torchaudio.save(save_out, output, conf_settings['sample_rate'])
 
-        save_target = f"{log_dir}/tgt_{hparams['conf_name']}.wav"
-        torchaudio.save(save_target, tgt, args.sample_rate)
+        save_target = f"{args.audio_dir}target_{hparams['conf_name']}.wav"
+        torchaudio.save(save_target, target, conf_settings['sample_rate'])
 
-    writer.close()
+        writer.close()
 
 if __name__ == "__main__":
 
