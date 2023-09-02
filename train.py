@@ -28,6 +28,11 @@ def main():
     if args.checkpoint is not None:
         model, optimizer_state_dict, scheduler_state_dict, hparams, rf, params = load_model_checkpoint(device, args.checkpoint, args)
         
+        if args.lr is not None:
+            hparams['lr'] = args.lr
+        if args.batch_size is not None:
+            hparams['batch_size'] = args.batch_size
+
         if optimizer_state_dict is not None:
             optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
             optimizer.load_state_dict(optimizer_state_dict)
@@ -53,7 +58,7 @@ def main():
         
     # Initialize Tensorboard writer
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    log_dir = Path(args.log_dir)
+    log_dir = Path(args.log_dir) / f"{hparams['conf_name']}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
 
     # print(model)
@@ -85,7 +90,6 @@ def main():
 
     # Print the selected criterion name
     print(f"Using loss: {criterion.__class__.__name__}")
-
     
     # Load data
     if args.dataset == 'egfxset':
@@ -105,7 +109,7 @@ def main():
     # Correct epoch calculation
     if hparams.get('state_epoch', None) is not None:
         state_epoch = hparams['state_epoch']
-        current_epoch = state_epoch + 1
+        current_epoch = state_epoch
         max_epochs = args.max_epochs
     else:
         state_epoch = 0
@@ -115,6 +119,7 @@ def main():
     print(f"Training model for {max_epochs} epochs, current epoch {current_epoch}")
     avg_train_loss = np.inf 
     avg_valid_loss = np.inf
+    patience_count = 0
 
     try:
         for epoch in range(current_epoch, max_epochs):
@@ -123,12 +128,17 @@ def main():
             model.train()
             for batch_idx, (dry, wet) in enumerate(train_loader):
                 optimizer.zero_grad() 
-                input = dry.to(device)          # shape: [batch, channel, lenght]
+                # input shape: [batch, channel, lenght]
+                input = dry.to(device)                             
                 target = wet.to(device)
-
+                
                 output = model(input)
-                if args.pre_emph is not None:
-                    output = torchaudio.functional.preemphasis(output, args.pre_emph)
+                
+                # Pre-emphasis filter
+                pre_emphasis = hparams.get('pre_emphasis', None)
+                if pre_emphasis is not None:
+                    output = torchaudio.functional.preemphasis(output, float(pre_emphasis))
+
                 loss = criterion(output, target)
 
                 loss.backward()                             
@@ -151,8 +161,11 @@ def main():
                 
                     output = model(input)
                     
-                    if args.pre_emph is not None:
-                        output = torchaudio.functional.preemphasis(output, args.pre_emp)
+                    # Pre-emphasis filter
+                    pre_emphasis = hparams.get('pre_emphasis', None)
+                    if pre_emphasis is not None:
+                        output = torchaudio.functional.preemphasis(output, float(pre_emphasis))
+                    
                     loss = criterion(output, target)
 
                     valid_loss += loss.item()                   
@@ -169,24 +182,28 @@ def main():
                 save_model_checkpoint(
                     model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args
                 )
+            else:
+                patience_count += 1 
+            
             current_epoch += 1
+
+    except KeyboardInterrupt:
+        print("\nTraining manually stopped by user. Processing the results...")
 
     finally:
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
         writer.add_hparams(hparams, {'train/final': final_train_loss, 'train/final_valid': final_valid_loss})
-        print(f"Final Validation Loss: {final_valid_loss}")    
+        print(f"Epoch {epoch}, final validation loss: {final_valid_loss}")    
 
-        input = input.view(-1).unsqueeze(0).cpu()
+        output = torchaudio.functional.highpass_biquad(output, hparams["sample_rate"], 20)
+        target = torchaudio.functional.highpass_biquad(target, hparams["sample_rate"], 20)
+
         target = target.view(-1).unsqueeze(0).cpu()
         output = output.view(-1).unsqueeze(0).cpu()
 
-        input /= torch.max(torch.abs(input))
         target /= torch.max(torch.abs(target))                
         output /= torch.max(torch.abs(output))
-
-        save_in = f"{args.audio_dir}/input_{hparams['conf_name']}.wav"
-        torchaudio.save(save_in, input, hparams['sample_rate'])
 
         save_out = f"{args.audio_dir}/output_{hparams['conf_name']}.wav"
         torchaudio.save(save_out, output, hparams['sample_rate'])

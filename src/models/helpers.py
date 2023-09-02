@@ -7,14 +7,47 @@ from src.models.lstm import LSTM, LstmConvSkip
 from src.models.gcn import GCN
 from src.models.bkp_wavenet import WaveNet
 
+
 def select_device(device):
+    """
+    Select the device to be used for training and inference.
+    
+    Parameters:
+        device: str
+            The device to be used. Can be either 'cuda' or 'cpu'.
+    Returns:
+        device: torch.device
+            The device to be used for training and inference.
+    """
     if torch.cuda.is_available():
         device = torch.device("cuda:0")
     else:
         device = torch.device("cpu")
+    print(f"Using device: {device}")
     return device
 
+
+
 def initialize_model(device, hparams):
+    """
+    Initialize a model based on the model type specified in the hparams.
+
+    Parameters:
+        device: torch.device
+            The device (e.g., 'cuda' or 'cpu') to which the model should be transferred.
+        hparams: dict
+            Hyperparameters dictionary containing settings and specifications for the model. 
+        
+    Returns:
+        model: torch.nn.Module 
+            nitialized model of the type specified in hparams.
+        rf: int or None
+            Receptive field of the model in terms of samples. 
+            Only computed for specific model types ["TCN", "PedalNetWaveNet", "GCN"].
+            Returns None for other model types.
+        params: int
+            Total number of trainable parameters in the model.
+    """
     model_dict = {
         'TCN': TCN,
         'PedalNetWaveNet': PedalNetWaveNet,
@@ -23,7 +56,6 @@ def initialize_model(device, hparams):
         'GCN': GCN,
         'WaveNet': WaveNet
     }
-
     model_params = {
         'TCN': {'n_blocks', 'kernel_size', 'num_channels', 'dilation', 'cond_dim'},
         'PedalNetWaveNet': {'num_channels', 'dilation_depth', 'num_repeat', 'kernel_size'},
@@ -54,8 +86,36 @@ def initialize_model(device, hparams):
 
     return model, rf, params
 
+
+
 def load_model_checkpoint(device, checkpoint_path, args):
-    """Load a model checkpoint"""
+    """
+    Load a model checkpoint from a given path.
+
+    Parameters:
+        device : torch.device
+            The device (e.g., 'cuda' or 'cpu') where the checkpoint will be loaded.
+        checkpoint_path : str
+            Path to the checkpoint file to be loaded.
+        args : 
+            Additional arguments or configurations (currently unused in the function but can be 
+            utilized for future extensions).
+
+    Returns:
+        model : torch.nn.Module
+            Initialized and state-loaded model from the checkpoint.
+        optimizer_state_dict : dict or None
+            State dictionary for the optimizer if present in the checkpoint; None otherwise.
+        scheduler_state_dict : dict or None
+            State dictionary for the learning rate scheduler if present in the checkpoint; None otherwise.
+        hparams : dict
+            Hyperparameters dictionary loaded from the checkpoint.
+        rf : int or None
+            Receptive field of the model in terms of samples, computed during model initialization. 
+            Only computed for specific model types; None for others.
+        params : int
+            Total number of trainable parameters in the model.
+    """
 
     checkpoint = torch.load(checkpoint_path, map_location=device)
     model_state_dict = checkpoint.get('model_state_dict')
@@ -69,9 +129,32 @@ def load_model_checkpoint(device, checkpoint_path, args):
     return model, optimizer_state_dict, scheduler_state_dict, hparams, rf, params
 
 
-def save_model_checkpoint(model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args):
-    """Save a model checkpoint"""
 
+def save_model_checkpoint(model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args):
+    """
+    Save a model checkpoint to a specified path.
+
+    Parameters:
+        model : torch.nn.Module
+            The model whose state needs to be saved.
+        hparams : dict
+            Hyperparameters dictionary associated with the model.
+        optimizer : torch.optim.Optimizer
+            The optimizer used during training of the model.
+        scheduler : torch.optim.lr_scheduler._LRScheduler
+            The learning rate scheduler used during training.
+        current_epoch : int
+            The current epoch during training when the checkpoint is saved.
+        timestamp : str
+            Timestamp indicating when the checkpoint was created or last modified.
+        avg_valid_loss : float
+            The average validation loss at the time of saving.
+        args : 
+            Additional arguments or configurations. Must have attributes 'sample_rate' and 'models_dir'.
+
+    Returns:
+        None. The function saves the checkpoint to the designated path.
+    """
     updated_hparams = copy.deepcopy(hparams)
     updated_hparams.update({
             'state_epoch': current_epoch,
@@ -91,4 +174,4 @@ def save_model_checkpoint(model, hparams, optimizer, scheduler, current_epoch, t
         'scheduler_state_dict': scheduler.state_dict(),
         'hparams': updated_hparams,
     }, save_to)
-
+    
