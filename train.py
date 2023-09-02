@@ -137,7 +137,7 @@ def main():
                 train_loss += loss.item()
                 
                 lr = optimizer.param_groups[0]['lr']
-                writer.add_scalar('train/learning_rate', lr, global_step=epoch)
+                writer.add_scalar('train/learning_rate', lr, global_step=current_epoch)
 
             avg_train_loss = train_loss / len(train_loader)
             writer.add_scalar('train/loss_train', avg_train_loss, global_step=epoch)
@@ -152,12 +152,12 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
-                    
                     loss = criterion(output, target)
+
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     
-            writer.add_scalar('train/loss_valid', avg_valid_loss, global_step=epoch)
+            writer.add_scalar('train/loss_valid', avg_valid_loss, global_step=current_epoch)
             
             scheduler.step(avg_valid_loss)
 
@@ -184,13 +184,13 @@ def main():
         target /= torch.max(torch.abs(target))                
         output /= torch.max(torch.abs(output))
 
-        save_in = f"{args.audio_dir}input_{hparams['conf_name']}.wav"
+        save_in = f"{args.audio_dir}/input_{hparams['conf_name']}.wav"
         torchaudio.save(save_in, input, hparams['sample_rate'])
 
-        save_out = f"{args.audio_dir}output_{hparams['conf_name']}.wav"
+        save_out = f"{args.audio_dir}/output_{hparams['conf_name']}.wav"
         torchaudio.save(save_out, output, hparams['sample_rate'])
 
-        save_target = f"{args.audio_dir}target_{hparams['conf_name']}.wav"
+        save_target = f"{args.audio_dir}/target_{hparams['conf_name']}.wav"
         torchaudio.save(save_target, target, hparams['sample_rate'])
 
         writer.close()
