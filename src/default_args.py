@@ -23,9 +23,11 @@ def parse_args():
     parser.add_argument('--device', type=str, default=None, help='Set device to run the model on')
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     
-    # # Training
+    # Training
     parser.add_argument('--max_epochs', type=int, default=150, help='the total number of epochs')
-    
+    parser.add_argument('--pre_emph', type=float, default=None, help='pre-emphasis filter coefficient')
+
+
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')
     
