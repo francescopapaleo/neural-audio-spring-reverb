@@ -93,9 +93,9 @@ def main():
     
     # Load data
     if args.dataset == 'egfxset':
-        train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=hparams['batch_size'])
+        train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=hparams['batch_size'], num_workers=args.num_workers)
     elif args.dataset == 'springset':
-        train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=hparams['batch_size'])
+        train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=hparams['batch_size'], num_workers=args.num_workers)
     else:
         raise ValueError('Dataset not found, options are: egfxset or springset')
 

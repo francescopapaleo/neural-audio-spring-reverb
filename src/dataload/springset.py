@@ -132,17 +132,17 @@ def peak_normalize(tensor):
 
 TRANSFORMS = [correct_dc_offset, peak_normalize]
 
-def load_springset(datadir, batch_size, train_ratio ):
+def load_springset(datadir, batch_size, train_ratio, num_workers=0):
     """Load and split the dataset"""
     trainset = SpringDataset(root_dir=datadir, split='train', transforms=TRANSFORMS)
     train_size = int(train_ratio * len(trainset))
     val_size = len(trainset) - train_size
     train, valid = torch.utils.data.random_split(trainset, [train_size, val_size])
 
-    train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=0, shuffle=True, drop_last=True)
-    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=0, shuffle=False, drop_last=True)
+    train_loader = torch.utils.data.DataLoader(train, batch_size, num_workers=num_workers, shuffle=True, drop_last=True)
+    valid_loader = torch.utils.data.DataLoader(valid, batch_size, num_workers=num_workers, shuffle=False, drop_last=True)
 
     testset = SpringDataset(root_dir=datadir, split="test", transforms=TRANSFORMS)
-    test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=0, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(testset, batch_size, num_workers=num_workers, drop_last=True)
 
     return train_loader, valid_loader, test_loader
