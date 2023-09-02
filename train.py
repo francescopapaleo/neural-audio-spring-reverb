@@ -38,7 +38,7 @@ def main():
             optimizer.load_state_dict(optimizer_state_dict)
 
         if scheduler_state_dict is not None:
-            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.patience)
             scheduler.load_state_dict(scheduler_state_dict)
         
     else:
@@ -183,7 +183,10 @@ def main():
                     model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args
                 )
             else:
-                patience_count += 1 
+                patience_count += 1
+                if args.early_stop is not None and patience_count >= args.early_stop:
+                    print(f"Epoch {epoch}: Loss did not improve for {args.early_stop} epochs, stopping training")
+                    break 
             
             current_epoch += 1
 

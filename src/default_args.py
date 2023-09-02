@@ -29,6 +29,8 @@ def parse_args():
     parser.add_argument('--max_epochs', type=int, default=100, help='maximum number of epochs for training')
     parser.add_argument('--pre_emphasis', type=float, default=None, help='pre-emphasis filter coefficient')
     parser.add_argument('--num_workers', type=int, default=0, help='number of workers for the dataloader')
+    parser.add_argument('--early_stop', type=int, default=None, help='number of epochs to wait before early stopping')
+    parser.add_argument('--patience', type=int, default=10, help='number of epochs to wait before reducing lr')
 
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')
