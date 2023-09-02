@@ -127,8 +127,8 @@ def main():
                 target = wet.to(device)
 
                 output = model(input)
-                
-                # output = torchaudio.functional.preemphasis(output, 0.95)
+                if args.pre_emph is not None:
+                    output = torchaudio.functional.preemphasis(output, args.pre_emph)
                 loss = criterion(output, target)
 
                 loss.backward()                             
@@ -151,7 +151,8 @@ def main():
                 
                     output = model(input)
                     
-                    # output = torchaudio.functional.preemphasis(output, 0.95)
+                    if args.pre_emph is not None:
+                        output = torchaudio.functional.preemphasis(output, args.pre_emp)
                     loss = criterion(output, target)
 
                     valid_loss += loss.item()                   
