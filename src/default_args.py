@@ -24,9 +24,10 @@ def parse_args():
     parser.add_argument('--checkpoint', type=str, default=None, help='Path (rel) to checkpoint file')
     
     # Training
-    parser.add_argument('--max_epochs', type=int, default=150, help='the total number of epochs')
-    parser.add_argument('--pre_emph', type=float, default=None, help='pre-emphasis filter coefficient')
-
+    parser.add_argument('--lr', type=float, default=None, help='learning rate')
+    parser.add_argument('--batch_size', type=int, default=None, help='batch size')
+    parser.add_argument('--max_epochs', type=int, default=100, help='maximum number of epochs for training')
+    parser.add_argument('--pre_emphasis', type=float, default=None, help='pre-emphasis filter coefficient')
 
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')
