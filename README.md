@@ -54,7 +54,7 @@ From the project root folder, run the following commands to download, train, tes
 
 ```terminal
 
-python3 -m data.dataload.download_dataset --dataset DATASET_NAME
+python3 -m src.dataload.download_dataset --dataset DATASET_NAME
 
 python3 train.py --conf CONFIGURATION_NAME --max_epochs N_EPOCHS
 
