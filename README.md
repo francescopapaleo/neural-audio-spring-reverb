@@ -2,22 +2,22 @@
 
 Thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.
 
-## :warning: WORK IN PROGRESS :warning:
+## Requirements
 
-## Abstract
-
-The spring reverb is an archaic device, simple but rich of nonlinear features, present in most guitar amplifiers, and still quite used in music production in general. Historically, this was the cheapest way to generate a reverberation effect. In this thesis, we will address the problem of creating a spring reverberation model with deep learning.
-Different deep learning architectures, based either in time or frequency domain, have been already used for similar tasks. In some cases, certain features can be manipulated by the user to generate results that maintain a similarity to the original emulated effect, providing greater flexibility in the possible outcomes. In this work, we will focus on the use of a Time Convolutional Network (TCN) with Feature-wise Linear Modulation (FiLM) to model the spring reverb.
-
-A basic command line interface is implemented to use the repository. Impulse Response, Transfer Function and RT60 measurements are provided.
-
-### Requirements
-
-To run the code in this repository, you will need the following dependencies installed:
+The following packages are required to run the code:
 
 ```terminal
+auraloss==0.4.0
+h5py==3.9.0
+matplotlib==3.7.2
+numpy==1.24.3
+scipy==1.11.2
+torch==2.0.1
+torchaudio==2.0.2
+torchinfo==1.8.0
+tensorboard==2.14.0
 
-# You can install these dependencies by running the following command:
+# You can install the dependencies by running the following command:
 
 pip install -r requirements.txt
 ```
@@ -29,29 +29,23 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 ```terminal
 -h, --help                      show the help message and exit
 
---datadir DATA_DIR              Path (rel) to dataset
---audiodir AUDIO_DIR            Path (rel) to audio files
---logdir LOG_DIR                Path (rel) to log directory
---load LOAD                     Path (rel) to checkpoint to load
---input INPUT                   Path (rel) relative to input audio
+--data_dir DATA_DIR              relative path to dataset
+--audio_dir AUDIO_DIR            relative path to audio files
+--log_dir LOG_DIR                relative path to log directory
+--results_dir RESULTS_DIR        relative path to results directory
+--plots_dir PLOTS_DIR            relative path to plots directory
+--models_dir MODELS_DIR          relative path to models directory
 
 --sample_rate SAMPLE_RATE       sample rate of the audio
+--bit_rate BIT_RATE             bit rate of the audio
+
+--conf CONF                     configuration to select for training
 --device DEVICE                 set device to run the model on
---duration DURATION             duration in seconds
+--checkpoint CHECKPOINT         relative path to checkpoint
 
---max_epochs N_EPOCHS             the total number of epochs
---batch_size BATCH_SIZE         batch size
---lr LR                         learning rate
---crop CROP                     crop size
+--max_epochs N_EPOCHS           maximum number of epochs for training
 
---max_length MAX_LENGTH       maximum length of the output audio
---stereo                      flag to indicate if the audio is stereo or mono
---tail                        flag to indicate if tail padding is required
---width WIDTH                 width parameter for the model
---c0 C0                       c0 parameter for the model
---c1 C1                       c1 parameter for the model
---gain_dB GAIN_DB             gain in dB for the model
---mix MIX                     mix parameter for the model
+--input INPUT                   relative path to input audio
 ```
 
 ### How to Run
@@ -60,29 +54,25 @@ From the project root folder, run the following commands to download, train, tes
 
 ```terminal
 
-python3 -m data.download_dataset
+python3 -m data.dataload.download_dataset --dataset DATASET_NAME
 
-python3 train.py
+python3 train.py --conf CONFIGURATION_NAME --max_epochs N_EPOCHS
 
-python3 test.py --checkpoint_path CHECKPOINT_RELATIVE_PATH
+python3 test.py --checkpoint_path CHECKPOINT
 
-python3 inference.py --input INPUT_RELATIVE_PATH --checkpoint_path CHECKPOINT_RELATIVE_PATH
+python3 inference.py --input INPUT_REL_PATH --checkpoint_path CHECKPOINT
 ```
 
 To generate reference signals:
   
 ```terminal
-python3 -m utils.signals
+python3 -m src.tools.signals
 ```
 
 ### Tensorboard
 
 ```terminal
-tensorboard dev upload --logdir ./runs/01_train --name "01 training" --description "training with batch size=16, lr=0.001"
-```
-
-```terminal
-tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description "testing trained models"
+tensorboard --logdir logs/
 ```
 
 ## Folder structure
@@ -95,18 +85,14 @@ tensorboard dev upload --logdir ./runs/01_test --name "01 testing" --description
 │   └── raw
 ├── models
 ├── notebooks
-├── results
-│   ├── checkpoints         # saved models
-│   ├── plots
-│   ├── train               # tensorboard training logs        
-│   └── test                # tensorboard testing logs
+├── plots
 ├── scripts                 # bash scripts
 ├── src
-│   ├── data                # data processing
+│   ├── dataload            # data processing
 │   ├── models              # model architectures
-│   ├── utils               # utility functions
-│   └── visualization       # visualization functions
-├── configurations.py       # CLI arguments and hparams
+│   ├── tools               #
+│   └── utils               # 
+│
 ├── inference.py          
 ├── test.py
 ├── train.py

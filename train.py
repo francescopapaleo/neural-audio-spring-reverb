@@ -10,7 +10,7 @@ from pathlib import Path
 
 from src.dataload.egfxset import load_egfxset
 from src.dataload.springset import load_springset
-from src.train_conf import train_model
+from src.train_conf import train_conf
 from src.models.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
 from src.default_args import parse_args
 
@@ -26,7 +26,7 @@ def main():
 
     # If there's a checkpoint, load it first
     if args.checkpoint is not None:
-        model, model_name, hparams, conf_settings, optimizer_state_dict, scheduler_state_dict, rf, params = load_model_checkpoint(device, args.checkpoint, args)
+        model, optimizer_state_dict, scheduler_state_dict, hparams, rf, params = load_model_checkpoint(device, args.checkpoint, args)
         
         if optimizer_state_dict is not None:
             optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])
@@ -39,18 +39,15 @@ def main():
     else:
         # Else, get configuration from the args
         print(f"Using configuration {args.conf}")
-        sel_conf = next((c for c in train_model if c['conf_name'] == args.conf), None)
+        sel_conf = next((c for c in train_conf if c['conf_name'] == args.conf), None)
         if sel_conf is None:
             raise ValueError('Configuration not found')
-        hparams = sel_conf
-        conf_settings = {
-            'sample_rate': args.sample_rate,
-            'bit_rate': args.bit_rate,
-            'max_epochs': args.max_epochs,
+        hparams = {
+            **sel_conf,
             'state_epoch': None,
             'avg_valid_loss': None,
         }        
-        model, rf, params = initialize_model(device, hparams, conf_settings)
+        model, rf, params = initialize_model(device, hparams)
         optimizer = torch.optim.Adam(model.parameters(), lr=hparams['lr'])   
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
         
@@ -59,7 +56,7 @@ def main():
     log_dir = Path(args.log_dir)
     writer = SummaryWriter(log_dir=log_dir)
 
-    print(model)
+    # print(model)
 
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
@@ -71,7 +68,7 @@ def main():
         win_lengths=[1024, 2048, 8192],
         scale="mel",
         n_bins=128,
-        sample_rate=args.sample_rate,
+        sample_rate=hparams['sample_rate'],
         perceptual_weighting=True,
         ).to(device)
 
@@ -93,33 +90,35 @@ def main():
     # Load data
     if args.dataset == 'egfxset':
         train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=hparams['batch_size'])
-    if args.dataset == 'springset':
+    elif args.dataset == 'springset':
         train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=hparams['batch_size'])
-    
+    else:
+        raise ValueError('Dataset not found, options are: egfxset or springset')
+
+
     # Initialize minimum validation loss with infinity
-    if conf_settings.get('avg_valid_loss', None) is not None:
-        min_valid_loss = conf_settings['avg_valid_loss']
+    if hparams.get('avg_valid_loss', None) is not None:
+        min_valid_loss = hparams['avg_valid_loss']
     else:
         min_valid_loss = np.inf
 
     # Correct epoch calculation
-    if conf_settings.get('state_epoch', None) is not None:
-        state_epoch = conf_settings['state_epoch']
+    if hparams.get('state_epoch', None) is not None:
+        state_epoch = hparams['state_epoch']
         current_epoch = state_epoch + 1
-        max_epochs = conf_settings['max_epochs']
+        max_epochs = args.max_epochs
     else:
         state_epoch = 0
         current_epoch = 0
         max_epochs = args.max_epochs
     
     print(f"Training model for {max_epochs} epochs, current epoch {current_epoch}")
-    avg_train_loss = float('inf')  # Initialize to a high value
-    avg_valid_loss = float('inf')  # Initialize to a high value
+    avg_train_loss = np.inf 
+    avg_valid_loss = np.inf
 
     try:
         for epoch in range(current_epoch, max_epochs):
             train_loss = 0.0
-            print(f"Epoch: {epoch}")
 
             model.train()
             for batch_idx, (dry, wet) in enumerate(train_loader):
@@ -131,8 +130,6 @@ def main():
                 
                 # output = torchaudio.functional.preemphasis(output, 0.95)
                 loss = criterion(output, target)
-                # loss_2 = crit_2(output, target)
-                # loss =  loss_1 + 0.5 * loss_2
 
                 loss.backward()                             
                 optimizer.step()
@@ -140,10 +137,10 @@ def main():
                 train_loss += loss.item()
                 
                 lr = optimizer.param_groups[0]['lr']
-                writer.add_scalar('learning_rate/train', lr, global_step=epoch)
+                writer.add_scalar('train/learning_rate', lr, global_step=epoch)
 
             avg_train_loss = train_loss / len(train_loader)
-            writer.add_scalar('loss/train', avg_train_loss, global_step=epoch)
+            writer.add_scalar('train/loss_train', avg_train_loss, global_step=epoch)
 
             model.eval()
             valid_loss = 0.0
@@ -155,13 +152,13 @@ def main():
                     output = model(input)
                     
                     # output = torchaudio.functional.preemphasis(output, 0.95)
+                    
                     loss = criterion(output, target)
                     valid_loss += loss.item()                   
                 avg_valid_loss = valid_loss / len(valid_loader)    
     
-            writer.add_scalar('loss/valid', avg_valid_loss, global_step=epoch)
+            writer.add_scalar('train/loss_valid', avg_valid_loss, global_step=epoch)
             
-            # Update learning rate
             scheduler.step(avg_valid_loss)
 
             # Save the model if it improved
@@ -169,12 +166,14 @@ def main():
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model", end="\r")
                 min_valid_loss = avg_valid_loss
                 save_model_checkpoint(
-                    model, hparams, conf_settings, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss
+                    model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args
                 )
+            current_epoch += 1
+
     finally:
         final_train_loss = avg_train_loss
         final_valid_loss = avg_valid_loss
-        writer.add_hparams(hparams, {'Final Training Loss': final_train_loss, 'Final Validation Loss': final_valid_loss})
+        writer.add_hparams(hparams, {'train/final': final_train_loss, 'train/final_valid': final_valid_loss})
         print(f"Final Validation Loss: {final_valid_loss}")    
 
         input = input.view(-1).unsqueeze(0).cpu()
@@ -186,13 +185,13 @@ def main():
         output /= torch.max(torch.abs(output))
 
         save_in = f"{args.audio_dir}input_{hparams['conf_name']}.wav"
-        torchaudio.save(save_in, input, conf_settings['sample_rate'])
+        torchaudio.save(save_in, input, hparams['sample_rate'])
 
         save_out = f"{args.audio_dir}output_{hparams['conf_name']}.wav"
-        torchaudio.save(save_out, output, conf_settings['sample_rate'])
+        torchaudio.save(save_out, output, hparams['sample_rate'])
 
         save_target = f"{args.audio_dir}target_{hparams['conf_name']}.wav"
-        torchaudio.save(save_target, target, conf_settings['sample_rate'])
+        torchaudio.save(save_target, target, hparams['sample_rate'])
 
         writer.close()
 

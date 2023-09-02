@@ -28,29 +28,24 @@ def main():
     sample_rate = args.sample_rate
     bit_rate = args.bit_rate
 
-    model, model_name, hparams, optimizer_state_dict, scheduler_state_dict, last_epoch, rf, params = load_model_checkpoint(device, args.checkpoint, args)
-    
-    batch_size = hparams['batch_size']
-    max_epochs = hparams['max_epochs']
-    lr = hparams['lr']
+    model, _, _, hparams, rf, params = load_model_checkpoint(device, args.checkpoint, args)
 
     # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.logdir) / f"test/{model_name}"
+    log_dir = Path(args.log_dir)
     writer = SummaryWriter(log_dir=log_dir)
     
     # Load data
     if args.dataset == 'egfxset':
-        _, _, test_loader = load_egfxset(args.datadir, args.batch_size)
+        _, _, test_loader = load_egfxset(args.data_dir, hparams["batch_size"])
     if args.dataset == 'springset':
-        _, _, test_loader = load_springset(args.datadir, args.batch_size)
+        _, _, test_loader = load_springset(args.data_dir, hparams["batch_size"])
     
     mae = torch.nn.L1Loss()
-    mse = torch.nn.MSELoss()
     esr = auraloss.time.ESRLoss()
     dc = auraloss.time.DCLoss()
     mrstft = auraloss.freq.MultiResolutionSTFTLoss()
 
-    criterions = [mae, mse, esr, dc, mrstft]
+    criterions = [mae, esr, dc, mrstft]
     test_results = {"mae": [], "esr": [], "dc": [], "mrstft": []}
 
     num_batches = len(test_loader)
@@ -66,16 +61,14 @@ def main():
             global_step = step + 1
             print(f"Batch {global_step}/{num_batches}")
 
-            # move input and target to device
             input = input.to(device)                    
             target = target.to(device)
 
-            # forward pass
             output = model(input)
             
             end_time = datetime.now()
             duration = end_time - start_time
-            num_samples = input.size(-1) * batch_size
+            num_samples = input.size(-1) * hparams["batch_size"]
             lenght_in_seconds = num_samples / sample_rate
             rtf = duration.total_seconds() / lenght_in_seconds
             rtf_list.append(rtf)
@@ -85,30 +78,30 @@ def main():
                 batch_score = metric(output, target).item()
                 test_results[name].append(batch_score)
             
-            # Plot and save audios every n batches
+            # Save audios from last batch
             if step == num_batches - 1:
 
                 output = torchaudio.functional.highpass_biquad(output, sample_rate, 20)
                 target = torchaudio.functional.highpass_biquad(target, sample_rate, 20)
 
+                input = input.view(-1).unsqueeze(0).cpu()
+                target = target.view(-1).unsqueeze(0).cpu()
+                output = output.view(-1).unsqueeze(0).cpu()
+
                 input /= torch.max(torch.abs(input))
                 target /= torch.max(torch.abs(target))                
                 output /= torch.max(torch.abs(output))
 
-                inp = input.view(-1).unsqueeze(0).cpu()
-                tgt = target.view(-1).unsqueeze(0).cpu()
-                out = output.view(-1).unsqueeze(0).cpu()
+                sr_tag = str(int(args.sample_rate / 1000)) + 'kHz'
 
-                sr_tag = sample_rate // 1000
+                save_in = f"{args.audio_dir}/test/input_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_in, input, sample_rate=sample_rate)
 
-                save_in = f"{args.logdir}/audio/inp_{hparams['conf_name']}_{sr_tag}k.wav"
-                torchaudio.save(save_in, inp, sample_rate=sample_rate)
+                save_out = f"{args.audio_dir}/test/output_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_out, output, sample_rate=sample_rate)
 
-                save_out = f"{args.logdir}/audio/out_{hparams['conf_name']}_{sr_tag}k.wav"
-                torchaudio.save(save_out, out, sample_rate=sample_rate)
-
-                save_target = f"{args.logdir}/audio/tgt_{hparams['conf_name']}_{sr_tag}k.wav"
-                torchaudio.save(save_target, tgt, sample_rate=sample_rate)
+                save_target = f"{args.audio_dir}/test/target_{hparams['conf_name']}_{sr_tag}k.wav"
+                torchaudio.save(save_target, target, sample_rate=sample_rate)
 
     for name in test_results.keys():
         global_score = sum(test_results[name]) / len(test_results[name])

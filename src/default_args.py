@@ -8,11 +8,11 @@ def parse_args():
     parser.add_argument('--data_dir', type=str, default='data/raw', help='Path to the data folder')
 
     # Paths
-    parser.add_argument('--audio_dir', type=str, default='audio/', help='Path (rel) to the audio files')
-    parser.add_argument('--log_dir', type=str, default='logs/', help='Path (rel) to  the log directory')
-    parser.add_argument('--results_dir', type=str, default='results/', help='Path (rel) to the results directory')
-    parser.add_argument('--plots_dir', type=str, default='results/plots/', help='Path (rel) to the plot directory')
-    parser.add_argument('--models_dir', type=str, default='models/', help='Path (rel) to models checkpoints directory')
+    parser.add_argument('--audio_dir', type=str, default='audio', help='Path (rel) to the audio files')
+    parser.add_argument('--log_dir', type=str, default='logs', help='Path (rel) to  the log directory')
+    parser.add_argument('--results_dir', type=str, default='results', help='Path (rel) to the results directory')
+    parser.add_argument('--plots_dir', type=str, default='results/plots', help='Path (rel) to the plot directory')
+    parser.add_argument('--models_dir', type=str, default='models', help='Path (rel) to models checkpoints directory')
     
     # Audio
     parser.add_argument('--sample_rate', type=int, default=48000, help='sample rate of the audio') 
@@ -25,8 +25,6 @@ def parse_args():
     
     # # Training
     parser.add_argument('--max_epochs', type=int, default=150, help='the total number of epochs')
-    # parser.add_argument('--batch_size', type=int, default=16, help='batch size')
-    # parser.add_argument('--lr', type=float, default=5e-3, help='learning rate')
     
     parser.add_argument('--input', type=str, default=None, help='Path (rel) to audio file to process')
     parser.add_argument('--mix', type=float, default=100.0, help='mix parameter for the model')

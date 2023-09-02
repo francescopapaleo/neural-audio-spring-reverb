@@ -1,13 +1,11 @@
 import torch
+import copy
 from pathlib import Path
 from src.models.tcn import TCN
 from src.models.wavenet import PedalNetWaveNet
 from src.models.lstm import LSTM, LstmConvSkip
 from src.models.gcn import GCN
 from src.models.bkp_wavenet import WaveNet
-from src.default_args import parse_args
-
-args = parse_args()
 
 def select_device(device):
     if torch.cuda.is_available():
@@ -16,7 +14,7 @@ def select_device(device):
         device = torch.device("cpu")
     return device
 
-def initialize_model(device, hparams, conf_settings):
+def initialize_model(device, hparams):
     model_dict = {
         'TCN': TCN,
         'PedalNetWaveNet': PedalNetWaveNet,
@@ -47,7 +45,7 @@ def initialize_model(device, hparams, conf_settings):
     # Conditionally compute the receptive field for certain model types
     if hparams['model_type'] in ["TCN", "PedalNetWaveNet", "GCN"]:
         rf = model.compute_receptive_field()
-        print(f"Receptive field: {rf} samples or {(rf / conf_settings['sample_rate'])*1e3:0.1f} ms")    
+        print(f"Receptive field: {rf} samples or {(rf / hparams['sample_rate'])*1e3:0.1f} ms")    
     else:
         rf = None
 
@@ -57,49 +55,40 @@ def initialize_model(device, hparams, conf_settings):
     return model, rf, params
 
 def load_model_checkpoint(device, checkpoint_path, args):
+    """Load a model checkpoint"""
+
     checkpoint = torch.load(checkpoint_path, map_location=device)
-    model_name = checkpoint['name']
-    hparams = checkpoint['hparams']
     model_state_dict = checkpoint.get('model_state_dict')
     optimizer_state_dict = checkpoint.get('optimizer_state_dict', None)
     scheduler_state_dict = checkpoint.get('scheduler_state_dict', None)
-    conf_settings = checkpoint.get('conf_settings', None)
-    if conf_settings is not None:
-        conf_settings = checkpoint.get('conf_settings')
-        state_epoch = conf_settings.get('state_epoch', 0)  # If not found, start from epoch 0
-    else:
-        conf_settings = {
-            'sample_rate': args.sample_rate,
-            'bit_rate': args.bit_rate,
-            'max_epochs': args.max_epochs,
-            'state_epoch': 0,
-            'avg_valid_loss': None,
-        }
+    hparams = checkpoint['hparams']
 
-    model, rf, params = initialize_model(device, hparams, conf_settings)
+    model, rf, params = initialize_model(device, hparams)
     model.load_state_dict(model_state_dict)
     
-    return model, model_name, hparams, conf_settings, optimizer_state_dict, scheduler_state_dict, rf, params
+    return model, optimizer_state_dict, scheduler_state_dict, hparams, rf, params
 
-def save_model_checkpoint(model, hparams, conf_settings, optimizer, scheduler, epoch, timestamp, avg_valid_loss):
-    conf_name = hparams['conf_name']
-    conf_settings.update({
-            'max_epochs': args.max_epochs,
-            'state_epoch': epoch,
+
+def save_model_checkpoint(model, hparams, optimizer, scheduler, current_epoch, timestamp, avg_valid_loss, args):
+    """Save a model checkpoint"""
+
+    updated_hparams = copy.deepcopy(hparams)
+    updated_hparams.update({
+            'state_epoch': current_epoch,
             'avg_valid_loss': avg_valid_loss,
-        })
-
+    })
+    
+    sr_tag = str(int(args.sample_rate / 1000)) + 'kHz'
+    save_as = hparams['conf_name'] + '_' + hparams['criterion'] + '-' + sr_tag + '.pt'
     save_path = Path(args.models_dir)
-    save_path.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
-    
-    sr_tag = args.sample_rate / 1000
-    save_to = save_path / f'{conf_name}-{sr_tag}k.pt'
-    
+    save_path.mkdir(parents=True, exist_ok=True)
+    save_to = save_path / save_as
+
     torch.save({
-        'name': f'{conf_name}_{timestamp}',
+        'timestamp': timestamp,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'scheduler_state_dict': scheduler.state_dict(),
-        'hparams': hparams,
-        'conf_settings': conf_settings,
+        'hparams': updated_hparams,
     }, save_to)
+
