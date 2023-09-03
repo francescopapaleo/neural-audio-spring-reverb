@@ -8,15 +8,15 @@ args = parse_args()
 
 train_conf = [
     {
-    'conf_name': 'tcn-1800',
+    'conf_name': 'tcn-1800-4-workers',
     'model_type': 'TCN',
     'n_blocks': 5,
     'kernel_size': 9,
     'num_channels': 32,
     'dilation': 10,
     'cond_dim': 0,
-    'criterion': 'esr',
-    'pre_emphasis': 0.95,
+    'criterion': 'mrstft',
+    'pre_emphasis': None,
     'batch_size': 32,
     'lr': 5e-2,
     'sample_rate': args.sample_rate,
