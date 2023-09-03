@@ -1,15 +1,3 @@
-""" RT 60 measurement using Schroeder's method.
-
-Reference:
-----------
-Modified version of the source code from pyroomacoustics:
-https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental/rt60.py
-
-
-.. [1] M. R. Schroeder, "New Method of Measuring Reverberation Time,"
-    J. Acoust. Soc. Am., vol. 37, no. 3, pp. 409-412, Mar. 1968.
-"""
-
 import numpy as np
 from scipy.io import wavfile
 from pathlib import Path
@@ -22,6 +10,8 @@ eps = 1e-15
 
 def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_name=None):
     """
+    RT 60 measurement using Schroeder's method.
+
     Arguments
     ----------
     h (array_like): The impulse response.
@@ -37,6 +27,13 @@ def measure_rt60(h, sample_rate, decay_db=60, rt60_tgt=None, plot=True, file_nam
     Returns
     -------
     float: The estimated RT60 value in seconds.
+
+    Modified version of the source code from pyroomacoustics:
+    https://github.com/LCAV/pyroomacoustics/blob/master/pyroomacoustics/experimental/rt60.py
+
+
+    .. [1] M. R. Schroeder, "New Method of Measuring Reverberation Time,"
+        J. Acoust. Soc. Am., vol. 37, no. 3, pp. 409-412, Mar. 1968.
     """
     
     h = np.array(h)

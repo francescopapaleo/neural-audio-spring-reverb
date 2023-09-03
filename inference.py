@@ -5,8 +5,9 @@ import torch.nn.functional as F
 from pathlib import Path
 from datetime import datetime
 
-from src.models.helpers import select_device, load_model_checkpoint
 from src.default_args import parse_args
+from src.models.helpers import select_device, load_model_checkpoint
+
 
 def make_inference(input: torch.Tensor, sample_rate, model, device, mix) -> torch.Tensor:   
     """

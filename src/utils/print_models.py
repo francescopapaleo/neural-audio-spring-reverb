@@ -1,8 +1,11 @@
-from torchinfo import summary
-from src.models.helpers import load_model_checkpoint, select_device
-from pathlib import Path
 import torch
+from torchinfo import summary
+from pathlib import Path
+from pathlib import Path
+
 from src.default_args import parse_args
+from src.models.helpers import load_model_checkpoint, select_device
+
 
 args = parse_args()
 

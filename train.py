@@ -14,8 +14,8 @@ from src.train_conf import train_conf
 from src.models.helpers import select_device, initialize_model, save_model_checkpoint, load_model_checkpoint
 from src.default_args import parse_args
 
-def main():
-    args = parse_args()
+def train(args):
+    
     torch.manual_seed(42)
     
     device = select_device(args.device)
@@ -60,8 +60,6 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     log_dir = Path(args.log_dir) / f"{hparams['conf_name']}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
-
-    # print(model)
 
     # Define loss function and optimizer
     mae = torch.nn.L1Loss().to(device)
@@ -218,4 +216,5 @@ def main():
 
 if __name__ == "__main__":
 
-    main()
+    args = parse_args()
+    train(args)

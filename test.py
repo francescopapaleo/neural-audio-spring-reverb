@@ -7,12 +7,13 @@ from datetime import datetime
 from torch.utils.tensorboard import SummaryWriter
 from pathlib import Path
 
+from src.default_args import parse_args
 from src.dataload.egfxset import load_egfxset
 from src.dataload.springset import load_springset
 from src.models.helpers import select_device, load_model_checkpoint
-from src.default_args import parse_args
 
-def main():
+
+def test(args):
     print("Testing model...")
     print(torchaudio.get_audio_backend())
 
@@ -30,16 +31,12 @@ def main():
 
     model, _, _, hparams, rf, params = load_model_checkpoint(device, args.checkpoint, args)
 
-    # timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_dir = Path(args.log_dir)
+    # Initialize Tensorboard writer
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = Path(args.log_dir) / f"{hparams['conf_name']}_{timestamp}"
     writer = SummaryWriter(log_dir=log_dir)
     
-    # Load data
-    if args.dataset == 'egfxset':
-        _, _, test_loader = load_egfxset(args.data_dir, hparams["batch_size"])
-    if args.dataset == 'springset':
-        _, _, test_loader = load_springset(args.data_dir, hparams["batch_size"])
-    
+    # Define metrics
     mae = torch.nn.L1Loss()
     esr = auraloss.time.ESRLoss()
     dc = auraloss.time.DCLoss()
@@ -48,9 +45,18 @@ def main():
     criterions = [mae, esr, dc, mrstft]
     test_results = {"mae": [], "esr": [], "dc": [], "mrstft": []}
 
-    num_batches = len(test_loader)
     rtf_list = []
 
+    # Load data
+    if args.dataset == 'egfxset':
+        _, _, test_loader = load_egfxset(args.data_dir, batch_size=hparams['batch_size'], num_workers=args.num_workers)
+    elif args.dataset == 'springset':
+        _, _, test_loader = load_springset(args.data_dir, batch_size=hparams['batch_size'], num_workers=args.num_workers)
+    else:
+        raise ValueError('Dataset not found, options are: egfxset or springset')
+    
+    num_batches = len(test_loader)
+    
     model.eval()
     with torch.no_grad():
         for step, (dry, wet) in enumerate(test_loader):
@@ -81,8 +87,8 @@ def main():
             # Save audios from last batch
             if step == num_batches - 1:
 
-                output = torchaudio.functional.highpass_biquad(output, sample_rate, 20)
-                target = torchaudio.functional.highpass_biquad(target, sample_rate, 20)
+                # output = torchaudio.functional.highpass_biquad(output, sample_rate, 20)
+                # target = torchaudio.functional.highpass_biquad(target, sample_rate, 20)
 
                 input = input.view(-1).unsqueeze(0).cpu()
                 target = target.view(-1).unsqueeze(0).cpu()
@@ -117,4 +123,6 @@ def main():
     writer.close()
 
 if __name__ == "__main__":
-    main()
+    
+    args = parse_args
+    test(args)

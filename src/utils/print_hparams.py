@@ -1,9 +1,9 @@
 import torch
 import numpy as np
-
-from src.models.helpers import load_model_checkpoint, save_model_checkpoint, select_device
-from src.default_args import parse_args
 from pathlib import Path
+
+from src.default_args import parse_args
+from src.models.helpers import load_model_checkpoint, save_model_checkpoint, select_device
 
 
 def modify_criterion_in_checkpoint(checkpoint_path, args):
