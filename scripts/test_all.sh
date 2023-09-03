@@ -12,7 +12,7 @@ for checkpoint in "$checkpoints_dir"/*.pt; do
     printf "Testing checkpoint: %s\n" "$checkpoint"
     
     # for testing on egfxset uncomment the line below
-    python test.py --checkpoint "$checkpoint" --dataset egfxset --logdir "logs" --sample_rate 48000 --bit_rate 24
+    python test.py --checkpoint "$checkpoint" --dataset egfxset --log_dir "logs" --sample_rate 48000 --bit_rate 24 --num_workers 4
     
     # for testing on springset uncomment the line below
     # python test.py --checkpoint "$checkpoint" --dataset springset --logdir "logs" --sample_rate 16000 --bit_rate 16

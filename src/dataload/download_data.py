@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 from src.default_args import parse_args
 
+
 def download_file(destination, url):
     try:
         subprocess.run(["wget", "-P", str(destination), url], check=True)

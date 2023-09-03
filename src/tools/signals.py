@@ -1,3 +1,14 @@
+import numpy as np
+import torchaudio
+import torch
+import os
+from typing import Tuple
+from pathlib import Path
+import matplotlib.pyplot as plt
+
+from src.default_args import parse_args
+from src.tools.plotter import plot_data, save_plot, get_time_stamps_np
+
 """ 
 Signal Generators for Measurements
 ===================================
@@ -10,20 +21,9 @@ This module contains functions to generate the signals used in the measurements:
 Modified version from the originally written by Xavier Lizarraga
 """
 
-import numpy as np
-import torchaudio
-import torch
-import os
-from typing import Tuple
-from pathlib import Path
-import matplotlib.pyplot as plt
-
-from src.default_args import parse_args
-from src.tools.plotter import plot_data, save_plot, get_time_stamps_np
-
-
 def impulse(sample_rate: int, duration: float, decibels: float = -1.0) -> np.ndarray:
-    '''Generate an impulse
+    '''
+    Generate an impulse
 
     Arguments:
     ----------
@@ -40,7 +40,8 @@ def impulse(sample_rate: int, duration: float, decibels: float = -1.0) -> np.nda
 
 
 def sine(sample_rate: int, duration: float, amplitude: float, frequency: float = 440.0) -> np.ndarray:
-    '''Generate a sine wave
+    '''
+    Generate a sine wave
     
     Arguments:
     ----------
@@ -55,7 +56,8 @@ def sine(sample_rate: int, duration: float, amplitude: float, frequency: float =
 
 
 def sweep_tone(sample_rate: int, duration: float, amplitude: float, f0: float = 20, f1: float = 20000, inverse: bool = False) -> np.ndarray:
-    '''Generate a logaritmic sweep tone
+    '''
+    Generate a logaritmic sweep tone
     
     Arguments:
     ----------
@@ -77,7 +79,8 @@ def sweep_tone(sample_rate: int, duration: float, amplitude: float, f0: float = 
 
 
 def generate_reference(duration: float, sample_rate: int, decibels: float = -18, f0: float = 20) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    '''Generate the reference impulse response
+    '''
+    Generate the reference impulse response
 
     Arguments:
     ----------
@@ -107,7 +110,8 @@ def generate_reference(duration: float, sample_rate: int, decibels: float = -18,
 
 
 def save_audio(dir_path: str, file_name: str, sample_rate: int, bit_rate:int, waveform: np.ndarray):
-    '''Saves an audio array to a .wav file.
+    '''
+    Save an audio array to a .wav file.
 
     Arguments:
     ----------

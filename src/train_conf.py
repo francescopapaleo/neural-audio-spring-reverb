@@ -163,7 +163,7 @@ train_conf = [
     'criterion': 'esr',
     'pre_emphasis': 0.95,
     'batch_size': 8,
-    'lr': 5e-3,
+    'lr': 5e-2,
     'sample_rate': args.sample_rate,
     'bit_rate': args.bit_rate,
     },

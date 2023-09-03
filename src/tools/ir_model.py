@@ -5,11 +5,12 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from scipy import signal
 
+from src.default_args import parse_args
 from src.tools.signals import generate_reference
 from src.models.helpers import load_model_checkpoint
 from src.tools.plotter import plot_waterfall
 from src.inference import make_inference
-from src.default_args import parse_args
+
 
 def measure_impulse_response(checkpoint, sample_rate, bit_rate, device, duration, args):
     """ 

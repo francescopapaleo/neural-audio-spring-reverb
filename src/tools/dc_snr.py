@@ -2,9 +2,9 @@ import torch
 import csv
 from pathlib import Path
 
-from src.egfxset import load_egfxset
-from src.springset import load_springset
 from src.default_args import parse_args
+from src.dataload.egfxset import load_egfxset
+from src.dataload.springset import load_springset
 
 if __name__ == "__main__":
 

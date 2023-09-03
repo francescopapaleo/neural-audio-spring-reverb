@@ -7,7 +7,6 @@ from src.models.lstm import LSTM, LstmConvSkip
 from src.models.gcn import GCN
 from src.models.bkp_wavenet import WaveNet
 
-
 def select_device(device):
     """
     Select the device to be used for training and inference.

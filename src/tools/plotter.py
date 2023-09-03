@@ -1,13 +1,11 @@
-"""" Plotting utilities for the project.
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from pathlib import Path
+from scipy.signal import spectrogram
 
 from src.default_args import parse_args
-from scipy.signal import spectrogram
+
 
 def save_plot(plt, file_name):
     args = parse_args()
