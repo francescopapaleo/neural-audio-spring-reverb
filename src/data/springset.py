@@ -37,7 +37,7 @@ class SpringDataset(torch.utils.data.Dataset):
     """
     def __init__(self, root_dir, split=None, transforms=None):
         super(SpringDataset, self).__init__()
-        self.root_dir = Path(root_dir) / 'spring'
+        self.root_dir = Path(root_dir) / 'springset'
         self.split = split
         self.seed = torch.seed()
 

@@ -13,20 +13,23 @@ h5py==3.9.0
 matplotlib==3.7.2
 numpy==1.24.3
 scipy==1.11.2
+setuptools==65.5.0
 torch==2.0.1
 torchaudio==2.0.2
 torchinfo==1.8.0
 tensorboard==2.14.0
 ```
+
 You can install the dependencies by running the following command:
+
 ```terminal
 pip install -r requirements.txt
 ```
 
 Please make sure to use a compatible version of Python, preferably Python 3.11, along with the required packages mentioned above.
 
+## Command Line Arguments
 
-### Command Line Arguments
 ```terminal
 -h, --help                      show the help message and exit
 
@@ -51,15 +54,18 @@ Please make sure to use a compatible version of Python, preferably Python 3.11, 
 ```
 
 
-### How to Run
+## How to Run
+
 From the project root folder, run the following commands to download, train, test and inference:
 
 - To download the dataset:
+
 ```terminal
-python3 -m src.dataload.download_data --dataset DATASET_NAME
+python3 -m src.data.download --dataset DATASET_NAME
 ```
 
 - To train, test and inference:
+
 ```terminal
 python3 train.py --conf CONF --max_epochs MAX_EPOCHS
 
@@ -67,9 +73,9 @@ python3 test.py --checkpoint_path CHECKPOINT
 
 python3 inference.py --input INPUT_REL_PATH --checkpoint_path CHECKPOINT
 ```
+
 The code-structure allows to resume the training from a checkpoint, until the current epoch is equal to MAX_EPOCHS.
 To do so, simply add the `--checkpoint` argument to the `train.py` command.
-
 
 - To generate reference signals:
   
@@ -77,14 +83,20 @@ To do so, simply add the `--checkpoint` argument to the `train.py` command.
 python3 -m src.tools.signals
 ```
 
-- 
-### Tensorboard
+## Tensorboard
+
 To visualize the training process ot test results, run the following command from the project root folder:
+
 ```terminal
 tensorboard --logdir logs/
 ```
 
+## Notebooks
+
+Some notebooks are provided to visualize the audio feature extraction process from the datasets, they are located in the [notebooks](./notebooks/) folder. The features are available in the [results](./results/) folder. If you want to proceed to the feature extraction yourself, you will need to install the [Essentia](https://essentia.upf.edu/) library.
+
 ## Folder structure
+
 ```terminal
 .
 ├── audio

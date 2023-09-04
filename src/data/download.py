@@ -39,7 +39,10 @@ if __name__ == "__main__":
             download_file(data_dir, "https://zenodo.org/record/3746119/files/plate-spring.zip")
             unzip_file(data_dir / "plate-spring.zip", data_dir)
             (data_dir / "plate-spring.zip").unlink()  # Delete the zip file
-            (data_dir / "plate/").unlink()  # Delete the subdirectory
+            for file in (data_dir / "plate/").glob("*"):
+                file.unlink()  # Delete the files within 'plate' directory
+            (data_dir / "plate/").rmdir()  # Delete the 'plate' subdirectory
+            (data_dir / "spring/").rename(data_dir / "springset/")  # Rename 'spring' to 'springset'
             
         except Exception as e:
             print("An unexpected error occurred:", e)
