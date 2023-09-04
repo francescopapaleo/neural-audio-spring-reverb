@@ -1,6 +1,6 @@
 # Local files that should be ignored
 .DS_Store
-data/
+data/raw/*
 
 
 # IDE

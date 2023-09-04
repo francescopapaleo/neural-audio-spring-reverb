@@ -1,6 +1,4 @@
-# Neural Audio Effect Strategies for Spring Reverb Modelling
-
-***Thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.***
+# Neural Audio Spring Reverb
 
 *The need for artificial reverberation first arose in the broadcasting and recording industry, in the 1920s RCA already developed such devices that could respond to their needs. Towards the late 1920s, Hammond started producing the spring reverbs, the very first example of electromechanical reverberation. The spring reverb is as audio effect based on a relatively simple design, the electromechanical functioning of this reverb makes it a highly nonlinear and time-invatiant spatial system. After two decades of improvements and innovations, in the early 1980s AKG introduced the BX 20, a very natural sounding spring reverb that became a standard in the industry, still today this is one of the references in music production.*
 
@@ -119,8 +117,10 @@ tensorboard --logdir logs/
 └── train.py
 ```
 
-
 ### Citation
+
+This repository is part of my thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona (Spain).
+
 ```bibtex
 @misc{papaleo2023,
   title   = {Neural Audio Effects Strategies for Spring Reverb Modelling},
