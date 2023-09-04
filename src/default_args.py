@@ -3,7 +3,9 @@ import glob
 from argparse import ArgumentParser
 
 def parse_args():
-    parser = ArgumentParser(description='')
+    parser = ArgumentParser(
+        prog='main.py',
+        description='Models for spring reverb emulation ')
 
     # Data
     parser.add_argument('--dataset', type=str, default='egfxset', help='Dataset to use')

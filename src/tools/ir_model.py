@@ -12,7 +12,7 @@ from src.tools.plotter import plot_waterfall
 from src.inference import make_inference
 
 
-def measure_impulse_response(checkpoint, sample_rate, bit_rate, device, duration, args):
+def measure_model_ir(checkpoint, sample_rate, bit_rate, device, duration, args):
     """ 
     Impulse response measurement of a trained model
     =========================================================
@@ -98,4 +98,4 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    measure_impulse_response(args.checkpoint, args.sample_rate, args.bit_rate, device, args.duration, args)
+    measure_model_ir(args.checkpoint, args.sample_rate, args.bit_rate, device, args.duration, args)

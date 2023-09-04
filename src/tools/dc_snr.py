@@ -3,8 +3,8 @@ import csv
 from pathlib import Path
 
 from src.default_args import parse_args
-from src.dataload.egfxset import load_egfxset
-from src.dataload.springset import load_springset
+from src.data.egfxset import load_egfxset
+from src.data.springset import load_springset
 
 if __name__ == "__main__":
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # Load data
     if args.dataset == 'egfxset':
-        train_loader, _, _ = load_egfxset(args.datadir, batch_size=1, train_ratio=1.0, val_ratio=0.0, test_ratio=0.0)
+        train_loader, _, _ = load_egfxset(args.datadir, batch_size=1, train_ratio=1.0, valid_ratio=0.0, test_ratio=0.0)
     
     elif args.dataset == 'springset':  # Added an 'elif' here for clarity.
         train_loader, _, _ = load_springset(args.datadir, batch_size=1, train_ratio=1.0)

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from src.default_args import parse_args
 from src.tools.plotter import plot_waterfall    
 
-def main(input_path, args):
+def measure_file_ir(input_path, args):
     """
     Extract the impulse response of an input file
     =============================================
@@ -67,4 +67,4 @@ def main(input_path, args):
 if __name__ == "__main__":
     args = parse_args()
 
-    main(args.input, args)
+    measure_file_ir(args.input, args)
