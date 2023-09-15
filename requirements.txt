@@ -1,0 +1,10 @@
+auraloss
+h5py
+matplotlib
+numpy
+pyyaml
+scipy
+setuptools
+torch
+torchaudio
+tensorboard

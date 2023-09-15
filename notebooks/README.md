@@ -1,0 +1,29 @@
+# Neural Audio Spring Reverb Notebooks
+
+This directory contains the notebooks used for the preparatory work and to generate the plots and audio examples.
+
+## Table of Contents
+
+- [01_SpringSet_Analysis.ipynb](01_SpringSet_Analysis.ipynb)
+
+- [02_EgfxSet_Analysis.ipynb](02_EgfxSet_Analysis.ipynb)
+
+- [03_Essentia_Feature_Extraction.ipynb](03_Essentia_Feature_Extraction.ipynb)
+    Extract the audio features from the two dataset, save in multiple csv files available [here](../data/features/).    
+
+- [04_DC_SNR.ipynb](04_DC_SNR.ipynb)
+    The computation of the DC and SNR values for the two dataset done in torch and torchaudio.
+
+- [05_Feature_Visualization.ipynb](05_Feature_Visualization.ipynb)
+    Visualize the extracted features on both datasets.
+
+- [Plot_Audio_Samples.ipynb](Plot_Audio_Samples.ipynb)
+    A "service notebook" to plot the audio samples saved during training or evaluation runs and located in the [audio](../audio/) directory.
+
+- [Tensorboard_Dev.ipynb](Tensorboard_Dev.ipynb)
+    Another "service notebook" to connect with [tensorboard.dev](../tensorboard/).
+    Please refer to [the documentation](https://tensorboard.dev/) of tensorboard.dev for more information.
+
+
+# Steerable discovery of neural audio effects
+The preparatory work on the TCN model for this project is based on the paper [Steerable discovery of neural audio effects](https://arxiv.org/abs/2110.00484) by Christian J. Steinmetz and Joshua D. Reiss. My fork of the original repository contains the Jupyter notebooks related to the spring reverb:  [Steerable discovery of neural audio effects](https://github.com/francescopapaleo/steerable-nafx).
