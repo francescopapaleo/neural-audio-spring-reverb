@@ -192,6 +192,7 @@ def train_model(args):
             if avg_valid_loss < min_valid_loss:
                 print(f"Epoch {epoch}: Loss improved from {min_valid_loss:4f} to {avg_valid_loss:4f} - > Saving model")
                 min_valid_loss = avg_valid_loss
+                patience_count = 0
                 save_model_checkpoint(
                     model, config, optimizer, scheduler, current_epoch, label, min_valid_loss, args
                 )

@@ -81,12 +81,13 @@ class EgfxDataset(Dataset):
 
 
 def contrast (tensor):
-    return F.contrast(tensor, 75)
+    return F.contrast(tensor, 50)
 
 def correct_dc_offset(tensor):
     return tensor - torch.mean(tensor)
 
 def peak_normalize(tensor):
+
     tensor /= torch.max(torch.abs(tensor))
     return tensor
 
@@ -102,9 +103,9 @@ def custom_collate(batch):
 
 TRANSFORMS = [contrast, correct_dc_offset, peak_normalize]
 
-def load_egfxset(data_dir, batch_size, train_ratio=0.6, valid_ratio=0.2, test_ratio=0.2, num_workers=4):
+def load_egfxset(data_dir, batch_size, train_ratio=0.6, valid_ratio=0.2, test_ratio=0.2, num_workers=4, transforms=TRANSFORMS):
     """Load and split the dataset"""
-    dataset = EgfxDataset(data_dir=data_dir, transforms=TRANSFORMS)
+    dataset = EgfxDataset(data_dir=data_dir, transforms=transforms)
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)

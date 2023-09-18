@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--data_dir', type=str, default='data/raw', help='Where the data will be downloaded to')
     parser.add_argument('--audio_dir', type=str, default='audio', help='Relative path to the audio directory')
     parser.add_argument('--log_dir', type=str, default='logs', help='Relative path to the Tensorboard log directory')
-    parser.add_argument('--plots_dir', type=str, default='plots', help='Relative path to the plots directory')
+    parser.add_argument('--plots_dir', type=str, default='docs/plots', help='Relative path to the plots directory')
     parser.add_argument('--models_dir', type=str, default='models', help='Relative path to the trained models directory')
     
     parser.add_argument('--dataset', type=str, default=None, help='Select the dataset to use (default: None)')

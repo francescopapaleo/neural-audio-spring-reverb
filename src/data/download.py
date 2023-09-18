@@ -65,3 +65,6 @@ def download_data(args):
             (egfxset_dir / "Spring-Reverb.zip").unlink()  # Delete the zip file
         except Exception as e:
             print("An unexpected error occurred:", e)
+
+    else:
+        raise ValueError("Dataset not found. Please select from 'springset' or 'egfxset'.")

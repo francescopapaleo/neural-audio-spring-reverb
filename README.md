@@ -10,12 +10,11 @@ auraloss==0.4.0
 h5py==3.9.0
 matplotlib==3.7.2
 numpy==1.24.3
-pyyaml==6.0.1
-scipy==1.11.1
-setuptools==68.0.0
+PyYAML==6.0.1
+scipy==1.11.2
+setuptools==65.5.0
 torch==2.0.1
 torchaudio==2.0.2
-tensorboard==2.12.1
 ```
 
 You can install the dependencies by running the following command:
@@ -103,7 +102,7 @@ python3 main.py ir --duration DURATION -c PT_CHECKPOINT_PATH
 ```
 A logaritimic sweep tone is generated and is processed by the model inference, the output is then convolved with the inverse filter previously generated. 
 
-- The plot is saved in the [``plots/measured_IR``](plots/measured_IR/) folder.
+- The plot is saved in the [``plots/measured_IR``](docs/plots/measured_IR/) folder.
 - The audio file corresponding to the measured IR is saved in the [``audio/measured_IR``](audio/measured_IR/) folder.
 
 ### Measure RT60
@@ -113,7 +112,7 @@ This action will call a function that loads the input audio and computes the RT6
 python3 main.py rt60 -i INPUT_FILE_PATH
 ```
 
-- The plot is saved in the [``plots/``](plots/) folder.
+- The plot is saved in the [``plots/``](docs/plots/) folder.
 
 ### Tensorboard logging
 To visualize the training process or test results, run the following command from the project root folder:
@@ -146,7 +145,7 @@ The training script saves the best model checkpoint if the average validation lo
 
 ``['scheduler_state_dict']``: scheduler state dict,
 
-``['config_state_dict']``: a configuration dict that contains all the parameters used for training and then recalled for evaluation and inference. A list of the keys contained in this dictionary is available in the [``default.yaml``](./configs/default.yaml) file.
+``['config_state_dict']``: a configuration dict that contains all the parameters used for training and then recalled for evaluation and inference. A list of the keys contained in this dictionary is available in the [``default.yaml``](./models/configs/default.yaml) file.
 
 ### Print all models details
 To access the ``['config_state_dict']`` of a pretrained model, there is an action that allows to print all the details of the pretrained models, it can be useful for debugging purposes.
@@ -183,14 +182,13 @@ Some notebooks are provided to visualize the audio feature extraction process fr
 |   |-- signals         # reference signals for measurements
 |   `-- train           # audio examples from the training script
 |-- docs
+|   |-- plots           # plots
 |-- data
 |   |-- features
 |   `-- raw             # destination folder for the downloaded dataset(s)
 |-- logs                # tensorboard logs
 |-- models              # trained models
 |-- notebooks           # jupyter notebooks
-|-- results
-|-- scripts
 |-- src                 # source code for this project
 |   |-- dataload
 |   |-- networks

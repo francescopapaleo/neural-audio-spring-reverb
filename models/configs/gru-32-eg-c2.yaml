@@ -1,5 +1,5 @@
-name: lstm-32-eg-c2
-model_type: LSTM_FiLM
+name: gru-4-eg-c2
+model_type: GRU
 
 criterion1: mrstft
 pre_emphasis: null
@@ -29,8 +29,11 @@ c1 : 0.5
 
 kernel_size: 3
 
-num_layers: 2
+num_layers: 4
 input_size: 1
 output_size: 1
 hidden_size: 32
+dropout_prob: 0.5
 use_skip: True
+
+
