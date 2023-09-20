@@ -16,7 +16,7 @@ from src.networks.lstm_film import LSTM_FiLM
 # def select_device(device):
 #     """
 #     Select the device to be used for training and inference.
-    
+
 #     Parameters:
 #         device: str
 #             The device to be used. Can be either 'cuda:0' or 'cpu'.
@@ -51,13 +51,13 @@ def initialize_model(device, config):
         device: torch.device
             The device (e.g., 'cuda' or 'cpu') to which the model should be transferred.
         hparams: dict
-            Hyperparameters dictionary containing settings and specifications for the model. 
-        
+            Hyperparameters dictionary containing settings and specifications for the model.
+
     Returns:
-        model: torch.nn.Module 
+        model: torch.nn.Module
             nitialized model of the type specified in hparams.
         rf: int or None
-            Receptive field of the model in terms of samples. 
+            Receptive field of the model in terms of samples.
             Only computed for specific model types ["TCN", "PedalNetWaveNet", "GCN"].
             Returns None for other model types.
         params: int
@@ -68,21 +68,15 @@ def initialize_model(device, config):
         'LSTM_FiLM': LSTM_FiLM,
         'GCN_FiLM': GCN_FiLM,
         'WaveNet': WaveNet,
-        'LSTM': LSTM,
-        'GCN': GCN,
         'GRU': GRU,
-        'LstmConvSkip': LSTM_CS,
     }
 
-    model_params = {      
+    model_params = {
         'TCN': {'num_blocks', 'kernel_size', 'num_channels', 'dilation_depth', 'cond_dim'},
         'GCN_FiLM': {'num_blocks', 'num_layers', 'num_channels', 'kernel_size', 'dilation_depth', 'cond_dim'},
         'LSTM_FiLM': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'use_skip', 'kernel_size', 'cond_dim'},
-        'GCN': {'num_blocks', 'num_layers', 'num_channels', 'kernel_size', 'dilation_depth', 'cond_dim'},
         'WaveNet': {'num_channels', 'dilation_depth', 'num_repeat', 'kernel_size', 'cond_dim'},
         'GRU': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'dropout_prob', 'use_skip', 'kernel_size', 'cond_dim'},
-        'LstmConvSkip': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'use_skip', 'kernel_size', 'cond_dim'},
-        'LSTM': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'use_skip', 'kernel_size', 'cond_dim'},
     }
 
     if config['model_type'] not in model_dict:
@@ -93,12 +87,11 @@ def initialize_model(device, config):
 
     model = model_dict[config['model_type']](**filtered_hparams).to(device)
     print(f"Configuration name: {config['name']}")
-    
-    # Conditionally compute the receptive field for certain model types
-    if config['model_type'] in ["TCN", "PedalNetWaveNet", "GCN"]:
-        rf = model.compute_receptive_field()
 
-        print(f"Receptive field: {rf} samples or {(rf / config['sample_rate'])*1e3:0.1f} ms")    
+    # Conditionally compute the receptive field for certain model types
+    if config['model_type'] in ["TCN", "WaveNet", "GCN_FiLM"]:
+        rf = model.compute_receptive_field()
+        print(f"Receptive field: {rf} samples or {(rf / config['sample_rate'])*1e3:0.1f} ms")
     else:
         rf = None
 
@@ -117,8 +110,8 @@ def load_model_checkpoint(args):
             The device (e.g., 'cuda' or 'cpu') where the checkpoint will be loaded.
         checkpoint_path : str
             Path to the checkpoint file to be loaded.
-        args : 
-            Additional arguments or configurations (currently unused in the function but can be 
+        args :
+            Additional arguments or configurations (currently unused in the function but can be
             utilized for future extensions).
 
     Returns:
@@ -131,7 +124,7 @@ def load_model_checkpoint(args):
         hparams : dict
             Hyperparameters dictionary loaded from the checkpoint.
         rf : int or None
-            Receptive field of the model in terms of samples, computed during model initialization. 
+            Receptive field of the model in terms of samples, computed during model initialization.
             Only computed for specific model types; None for others.
         params : int
             Total number of trainable parameters in the model.
@@ -145,7 +138,7 @@ def load_model_checkpoint(args):
 
     model, rf, params = initialize_model(args.device, loaded_config)
     model.load_state_dict(model_state_dict)
-    
+
     return model, optimizer_state_dict, scheduler_state_dict, loaded_config, rf, params
 
 
@@ -157,7 +150,7 @@ def save_model_checkpoint(model, config, optimizer, scheduler, current_epoch, la
     Parameters:
         model : torch.nn.Module
             The model whose state needs to be saved.
-        
+
         optimizer : torch.optim.Optimizer
             The optimizer used during training of the model.
         scheduler : torch.optim.lr_scheduler._LRScheduler
@@ -166,8 +159,8 @@ def save_model_checkpoint(model, config, optimizer, scheduler, current_epoch, la
             The current epoch during training when the checkpoint is saved.
         timestamp : str
             Timestamp indicating when the checkpoint was created or last modified.
-        
-        args : 
+
+        args :
             Additional arguments or configurations. Must have attributes 'sample_rate' and 'models_dir'.
 
     Returns:

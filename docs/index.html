@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Audio Effects Modelling Strategies for a Spring Reverb</title>
+</head>
+<body><h1>Neural Audio Effects Modelling Strategies for a Spring Reverb</h1>
+
+<p>Virtual analog modeling emulates the processing characteristics of a given physical device. This has been an active
+    field of research and commercial innovation in which two main perspectives have been historically adopted. The first
+    one: <strong>white-box</strong>, seeks to reproduce the exact behavior through algorithmic simulation of circuits or
+    physical phenomena. The second one: <strong>black-box</strong>, aims to learn the approximation function from
+    examples recorded at the input and output stages of the target device. In this second approach, deep learning has
+    emerged as a valuable strategy for linear systems, such as filters, as well as nonlinear time-dependent ones like
+    distortion circuits or compressors.</p>
+
+<p>The spring reverb is an audio effect with a very long and rooted history in music production and performance. Based
+    on a relatively simple design, this device is an effective tool for artificial reverberation. The electromechanical
+    functioning of this reverb makes it a nonlinear time-invariant spatial system that is difficult to fully emulate in
+    the digital domain with white-box modeling techniques.</p>
+
+<p>This thesis aims to address the modeling of spring reverb, leveraging end-to-end neural audio effect architectures
+    through supervised learning. Recurrent, convolutional, and hybrid models have successfully been used for similar
+    tasks, especially compressor and distortion circuit emulations. Using two available datasets of guitar recordings,
+    we evaluate with quantitative metrics, acoustical analysis, and signal processing measurements the efficiency and
+    the results of four neural network architectures to model this effect. We present the results and outline different
+    strategies for this modeling task, providing a reproducible experimental environment with code.</p>
+
+<h2>Audio Examples</h2>
+
+    <audio src="../audio/eval/pred-gcn-2500-kt-c2-mrstft-48kHz.wav" controls preload></audio>
+    <audio src="../audio/eval/pred-gcn-2500-kt-c2-mrstft-48kHz.wav" controls preload></audio>
+    <audio src="../audio/eval/pred-gcn-2500-kt-c2-mrstft-48kHz.wav" controls preload></audio>
+    <audio src="../audio/eval/pred-gcn-2500-kt-c2-mrstft-48kHz.wav" controls preload></audio>
+
+</body>
+</html>

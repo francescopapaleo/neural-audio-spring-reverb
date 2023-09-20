@@ -7,3 +7,4 @@ scipy==1.11.2
 setuptools==65.5.0
 torch==2.0.1
 torchaudio==2.0.2
+tensorboard==2.7.0

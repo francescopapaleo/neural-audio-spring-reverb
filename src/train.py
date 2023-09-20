@@ -59,20 +59,14 @@ def train_model(args):
     mae = torch.nn.L1Loss().to(args.device)
     dc = auraloss.time.DCLoss().to(args.device)
     esr = auraloss.time.ESRLoss().to(args.device)
-    mrstft =  auraloss.freq.MultiResolutionSTFTLoss(
-        fft_sizes=[1024, 2048, 8192],
-        hop_sizes=[256, 512, 2048],
-        win_lengths=[1024, 2048, 8192],
-        scale="mel",
-        n_bins=128,
-        sample_rate=config['sample_rate'],
-        perceptual_weighting=True,
-        ).to(args.device)
+    stft = auraloss.freq.STFTLoss().to(args.device)
+    mrstft =  auraloss.freq.MultiResolutionSTFTLoss().to(args.device)
     smooth = torch.nn.SmoothL1Loss().to(args.device)
 
     # Define individual loss choices
     criterion_choices = {
         'mae': mae,
+        'stft': stft,
         'mrstft': mrstft,
         'esr': esr,
         'dc': dc,
@@ -87,14 +81,12 @@ def train_model(args):
     
     # Load data
     if config['dataset'] == 'egfxset':
-        train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=config['batch_size'],
-                                                     num_workers=config['num_workers'])
+        train_loader, valid_loader, _ = load_egfxset(args.data_dir, batch_size=config['batch_size'],num_workers=config['num_workers'])
+
     elif config['dataset'] == 'springset':
-        train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=config['batch_size'],
-                                                       num_workers=config['num_workers'])
+        train_loader, valid_loader, _ = load_springset(args.data_dir, batch_size=config['batch_size'],num_workers=config['num_workers'])
     elif config['dataset'] == 'customset':
-        train_loader, valid_loader, _ = load_customset(args.data_dir, batch_size=config['batch_size'],
-                                                       num_workers=config['num_workers'])
+        train_loader, valid_loader, _ = load_customset(args.data_dir, batch_size=config['batch_size'],num_workers=config['num_workers'])
     else:
         raise ValueError('Dataset not found, options are: egfxset or springset')
 
@@ -125,7 +117,7 @@ def train_model(args):
 
             model.train()
             for batch_idx, (dry, wet) in enumerate(train_loader):
-                print(f"Epoch {epoch}: Batch {batch_idx}/{len(train_loader)}", end="\r")
+                # print(f"Epoch {epoch}: Batch {batch_idx}/{len(train_loader)}", end="\r")
                 # input shape: [batch, channel, lenght]
                 input = dry.to(args.device)                             
                 target = wet.to(args.device)

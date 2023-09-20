@@ -1,26 +1,27 @@
 # Neural Audio Spring Reverb Notebooks
 
-This directory contains the notebooks used for the preparatory work and to generate the plots and audio examples.
+This directory contains the notebooks used for the preparatory work and to generate the plots and audio examples. If you want to re-run these notebooks you need to install some additional packages:
+
+```
+pip install essentia soundfile pyloudnorm
+```
 
 ## Table of Contents
 
-- [01_SpringSet_Analysis.ipynb](01_SpringSet_Analysis.ipynb)
+1. [](01_SpringSetAnalysis.ipynb)
 
-- [02_EgfxSet_Analysis.ipynb](02_EgfxSet_Analysis.ipynb)
+1. [](02_EgfxSetAnalysis.ipynb)
 
-- [03_Essentia_Feature_Extraction.ipynb](03_Essentia_Feature_Extraction.ipynb)
+1. [](03_AudioFeaturesEssentiaStreaming.ipynb)
     Extract the audio features from the two dataset, save in multiple csv files available [here](../data/features/).    
 
-- [04_DC_SNR.ipynb](04_DC_SNR.ipynb)
-    The computation of the DC and SNR values for the two dataset done in torch and torchaudio.
-
-- [05_Feature_Visualization.ipynb](05_Feature_Visualization.ipynb)
+- [](03_FeatureVisualization.ipynb)
     Visualize the extracted features on both datasets.
 
-- [Plot_Audio_Samples.ipynb](Plot_Audio_Samples.ipynb)
+- [Plot_Audio_Samples.ipynb](PlotAudioSamples.ipynb)
     A "service notebook" to plot the audio samples saved during training or evaluation runs and located in the [audio](../audio/) directory.
 
-- [Tensorboard_Dev.ipynb](Tensorboard_Dev.ipynb)
+- [Tensorboard_Dev.ipynb](TensorboardDev.ipynb)
     Another "service notebook" to connect with [tensorboard.dev](../tensorboard/).
     Please refer to [the documentation](https://tensorboard.dev/) of tensorboard.dev for more information.
 

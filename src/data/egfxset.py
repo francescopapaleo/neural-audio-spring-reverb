@@ -26,7 +26,7 @@ class EgfxDataset(Dataset):
         self.data_dir = Path(data_dir) / 'egfxset'
         self.dry_dir = self.data_dir / 'Clean'
         self.wet_dir = self.data_dir / 'Spring Reverb'
-        self.positions = ['Middle']
+        self.positions = ['Bridge', 'Bridge-Middle', 'Middle', 'Middle-Neck', 'Neck']
         
         torch.random.manual_seed(random_seed)
         
@@ -81,13 +81,12 @@ class EgfxDataset(Dataset):
 
 
 def contrast (tensor):
-    return F.contrast(tensor, 50)
+    return F.contrast(tensor, 100)
 
 def correct_dc_offset(tensor):
     return tensor - torch.mean(tensor)
 
 def peak_normalize(tensor):
-
     tensor /= torch.max(torch.abs(tensor))
     return tensor
 
@@ -101,7 +100,7 @@ def custom_collate(batch):
 
     return dry_stacked.unsqueeze(0), wet_stacked.unsqueeze(0)
 
-TRANSFORMS = [contrast, correct_dc_offset, peak_normalize]
+TRANSFORMS = [contrast, correct_dc_offset]
 
 def load_egfxset(data_dir, batch_size, train_ratio=0.6, valid_ratio=0.2, test_ratio=0.2, num_workers=4, transforms=TRANSFORMS):
     """Load and split the dataset"""
@@ -109,7 +108,7 @@ def load_egfxset(data_dir, batch_size, train_ratio=0.6, valid_ratio=0.2, test_ra
 
     # Calculate the sizes of train, validation, and test sets
     total_size = len(dataset)
-    print(f"Total size: {total_size}")
+    print(f"Total dataset samples: {total_size}")
 
     train_size = int(train_ratio * total_size)
     valid_size = int(valid_ratio * total_size)
@@ -124,10 +123,10 @@ def load_egfxset(data_dir, batch_size, train_ratio=0.6, valid_ratio=0.2, test_ra
 
     # Create data loaders for train, validation, and test sets
     train_loader = DataLoader(train_data, batch_size, num_workers=num_workers,
-                              shuffle=True, drop_last=True, collate_fn=custom_collate, pin_memory=False)
+                              shuffle=True, drop_last=True, collate_fn=None, pin_memory=False)
     valid_loader = DataLoader(valid_data, batch_size, num_workers=num_workers,
-                              shuffle=False, drop_last=True, collate_fn=custom_collate, pin_memory=False)
+                              shuffle=False, drop_last=True, collate_fn=None, pin_memory=False)
     test_loader = DataLoader(test_data, batch_size, num_workers=num_workers,
-                             shuffle=False, drop_last=True, collate_fn=custom_collate, pin_memory=False)
+                             shuffle=False, drop_last=True, collate_fn=None, pin_memory=False)
 
     return train_loader, valid_loader, test_loader
