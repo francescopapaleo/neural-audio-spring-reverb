@@ -5,7 +5,7 @@ from random import sample
 from pathlib import Path
 from datetime import datetime
 
-from src.utils.checkpoints import load_model_checkpoint
+from src.networks.checkpoints import load_model_checkpoint
 
 def make_inference(args) -> torch.Tensor:   
     """

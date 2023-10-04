@@ -1,4 +1,4 @@
-name: gcn-2500-film-nocf-cont-100
+name: gcn-2500-film-nocollate-contrast-100
 model_type: GCN_FiLM
 
 criterion1: stft
@@ -14,8 +14,8 @@ lr: 0.001
 lr_scheduler: ReduceLROnPlateau
 lr_patience: 20
 
-batch_size: 4
-num_workers: 4
+batch_size: 8
+num_workers: 8
 
 max_epochs: 1000
 early_stop_patience: 100

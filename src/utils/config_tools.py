@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import traceback
 
-from src.utils.checkpoints import load_model_checkpoint, save_model_checkpoint
+from src.networks.checkpoints import load_model_checkpoint, save_model_checkpoint
 
 
 def modify_checkpoint(args):

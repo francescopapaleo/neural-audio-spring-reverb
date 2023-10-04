@@ -10,7 +10,7 @@ from pathlib import Path
 from src.data.egfxset import load_egfxset
 from src.data.springset import load_springset
 from src.data.customset import load_customset
-from src.utils.checkpoints import load_model_checkpoint
+from src.networks.checkpoints import load_model_checkpoint
 
 def evaluate_model(args):
     print("Evaluating model...")

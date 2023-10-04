@@ -12,7 +12,7 @@ from pathlib import Path
 from src.data.egfxset import load_egfxset
 from src.data.springset import load_springset
 from src.data.customset import load_customset
-from src.utils.checkpoints import initialize_model, save_model_checkpoint, load_model_checkpoint, parse_config
+from src.networks.checkpoints import initialize_model, save_model_checkpoint, load_model_checkpoint, parse_config
 
 
 def train_model(args):
