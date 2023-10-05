@@ -107,7 +107,7 @@ def train_model(args):
     if config['cond_dim'] > 0:
         c0 = config.get('c0', 0.0)
         c1 = config.get('c1', 0.0)
-        c = torch.tensor([c0, c1], device=args.device).view(1,1,-1)
+        c = torch.tensor([c0, c1], device=args.device, requires_grad=False).view(1,1,-1)
     else :
         c = None
 

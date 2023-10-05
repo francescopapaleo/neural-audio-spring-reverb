@@ -12,7 +12,7 @@ bit_rate: 24
 optimizer: Adam
 lr: 0.001
 lr_scheduler: ReduceLROnPlateau
-lr_patience: 20
+lr_patience: 10
 
 batch_size: 4
 num_workers: 4
@@ -27,7 +27,7 @@ cond_dim: 2
 c0 : 0.0
 c1 : 0.0
 
-kernel_size: 3
+kernel_size: 15
 
 num_layers: 4
 input_size: 1
