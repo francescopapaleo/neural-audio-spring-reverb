@@ -1,4 +1,5 @@
 name: wavenet-24-nocf
+model_type: WaveNet
 
 criterion1: stft
 pre_emphasis: null
@@ -11,13 +12,13 @@ bit_rate: 24
 optimizer: Adam
 lr: 0.001
 lr_scheduler: ReduceLROnPlateau
-lr_patience: 20
+lr_patience: 10
 
 batch_size: 4
 num_workers: 4
 
 max_epochs: 1000
-early_stop_patience: 100
+early_stop_patience: 70
 current_epoch: 0
 
 min_valid_loss: null
@@ -26,34 +27,7 @@ cond_dim: 2
 c0 : 0.0
 c1 : 0.0
 
-# Default params and values for WaveNet, TCN, GCN, and Lstm
-
-model_type: WaveNet
 num_channels: 32
 dilation_depth: 8
 num_repeat: 3
 kernel_size: 3
-
-# model_type: TCN
-# num_channels: 32
-# dilation_depth: 10
-# num_blocks: 5
-# kernel_size: 9 
-
-# model_type: GCN
-# num_channels: 16
-# dilation_depth: 6
-# num_blocks: 1
-# num_layers: 4
-# kernel_size: 41
-
-# model_type: LstmWithFiLM
-# input_size: 1
-# output_size: 1
-# num_layers: 2
-# hidden_size: 32
-# use_skip: True
-# dropout: 0.5
-# kernel_size: 3
-
-

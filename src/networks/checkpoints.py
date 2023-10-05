@@ -65,7 +65,7 @@ def initialize_model(device, config):
         'LSTM_FiLM': LSTM_FiLM,
         'GCN_FiLM': GCN_FiLM,
         'WaveNet': WaveNet,
-        'GRU': GRU_FiLM,
+        'GRU_FiLM': GRU_FiLM,
     }
 
     model_params = {

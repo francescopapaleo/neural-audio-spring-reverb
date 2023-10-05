@@ -106,7 +106,7 @@ def print_models(args):
                 for key, value in config.items():
                     f.write(f"{key}: {value}\n")
                 f.write("\n")
-                if config['model_type'] in ["TCN", "WaveNet", "GCN"]:
+                if config['model_type'] in ["TCN", "WaveNet", "GCN_FiLM"]:
                     rf = model.compute_receptive_field()
                     f.write(f"Receptive field: {rf} samples or {(rf / config['sample_rate']) * 1e3:0.1f} ms\n")
                 else:

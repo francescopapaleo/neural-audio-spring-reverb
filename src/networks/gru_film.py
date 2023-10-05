@@ -31,13 +31,16 @@ class GRU_FiLM(nn.Module):
     """
     GRU with convolutional feature extraction, optional skip connection, and FiLM layer
     """
-    def __init__(self, input_size=1, hidden_size=32, num_layers=1, output_size=1, dropout_prob=0.5, use_skip=True, kernel_size=3, cond_dim=2):
+    def __init__(self, input_size=1, hidden_size=32, num_layers=1, 
+                 output_size=1, dropout_prob=0.5, use_skip=True, 
+                 kernel_size=3, cond_dim=2):
         super(GRU_FiLM, self).__init__()
         
         self.use_skip = use_skip
         
         # Convolutional layer and batch normalization
-        self.conv1d = nn.Conv1d(input_size, hidden_size, kernel_size=kernel_size, padding=kernel_size // 2, bias=False)
+        self.conv1d = nn.Conv1d(input_size, hidden_size, kernel_size=kernel_size, 
+                                padding=kernel_size // 2, bias=False)
         self.bn1 = nn.BatchNorm1d(hidden_size)
         self.prelu1 = nn.PReLU()
 

@@ -19,7 +19,7 @@ class EgfxDataset(Dataset):
     """
     def __init__(self,
                  data_dir,
-                 sample_length=160000,
+                 sample_length=48000*4,
                  random_seed=42,
                  transforms=None
                 ):

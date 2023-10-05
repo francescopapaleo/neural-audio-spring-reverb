@@ -1,4 +1,4 @@
-name: tcn-3200-film-nocf
+name: tcn-3200-film-eg
 model_type: TCN
 
 criterion1: stft
@@ -12,7 +12,7 @@ bit_rate: 24
 optimizer: Adam
 lr: 0.001
 lr_scheduler: ReduceLROnPlateau
-lr_patience: 20
+lr_patience: 10
 
 batch_size: 4
 num_workers: 4

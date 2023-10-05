@@ -150,7 +150,6 @@ The training script saves the best model checkpoint if the average validation lo
 ### Print all models details
 To access the ``['config_state_dict']`` of a pretrained model, there is an action that allows to print all the details of the pretrained models, it can be useful for debugging purposes.
 
-```terminal
 This action will print the details of all pretrained models available in the [``models``](models/) folder.
 
 ```terminal
