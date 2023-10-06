@@ -1,0 +1,18 @@
+title: Neural Audio Effect Modelling Strategies for a Spring Reverb
+author:
+  name: Francesco Papaleo
+  email: francesco.papaleo {at} gmail.com
+
+description: >
+  Presentation page for the neural-audio-spring-reverb project.
+
+header_pages:
+  - index.md
+  - about.md
+  - references.md
+
+theme: minima
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
