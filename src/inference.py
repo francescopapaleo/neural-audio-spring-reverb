@@ -61,12 +61,15 @@ def make_inference(args) -> torch.Tensor:
     pred = pred.view(-1).unsqueeze(0).cpu()
     pred /= torch.max(torch.abs(pred))
 
-    file_name = Path(args.input).stem
-    sr_tag = str(int(config['sample_rate'] / 1000)) + 'k'
+    if isinstance(args.input, str):
+        file_name = Path(args.input).stem
+        sr_tag = str(int(config['sample_rate'] / 1000)) + 'k'
 
-    os.makedirs(f"{args.audio_dir}/processed", exist_ok=True)
-    save_out = f"{args.audio_dir}/processed/{file_name}*{config['name']}.wav"
-    
-    torchaudio.save(save_out, pred, sample_rate=config['sample_rate'])
+        os.makedirs(f"{args.audio_dir}/processed", exist_ok=True)
+        save_out = f"{args.audio_dir}/processed/{file_name}*{config['name']}.wav"
+
+        torchaudio.save(save_out, pred, sample_rate=config['sample_rate'])
+    else:
+        pass
 
     return pred

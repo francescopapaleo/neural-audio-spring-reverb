@@ -9,9 +9,26 @@ from scipy import signal
 from src.tools.ir_signals import generate_reference
 from src.networks.checkpoints import load_model_checkpoint
 from src.inference import make_inference
-from src.tools.plotter import plot_ir_spectrogram, plot_waterfall
+# from src.tools.plotter import plot_ir_spectrogram, plot_waterfall
 
+def plot_ir_spectrogram(signal, sample_rate, title, save_path):
+    fig, ax = plt.subplots(figsize=(5, 5))
 
+    # Calculate the duration of the signal in seconds
+    duration_seconds = len(signal) / sample_rate
+    
+    cax = ax.specgram(signal, NFFT=512, Fs=sample_rate, noverlap=256, cmap='hot', scale='dB', mode='magnitude', vmin=-100, vmax=0)
+    ax.set_ylabel('Frequency [Hz]')
+    ax.set_xlabel(f'Time [sec] ({duration_seconds:.2f} s)')  # Label in seconds
+    ax.grid(True)
+    ax.set_title(title)
+
+    cbar = fig.colorbar(mappable=cax[3], ax=ax, format="%+2.0f dB")
+    cbar.set_label('Intensity [dB]')
+
+    plt.tight_layout()
+    plt.savefig(save_path)
+    print(f"Saved spectrogram plot to {save_path}")
 
 def measure_model_ir(args):
     """ 
@@ -62,26 +79,7 @@ def measure_model_ir(args):
     # Normalize the impulse response
     impulse_response = impulse_response - np.mean(impulse_response)
     impulse_response /= np.max(np.abs(impulse_response))
-        
-    # # Only create a single subplot for the spectrogram
-    # fig, ax = plt.subplots(figsize=(10, 8))
-
-    # model_label = config['name']
-    # ax.set_title(f'Model: {model_label} Spectrogram')
     
-    # # Plot the spectrogram
-    # cax = ax.specgram(impulse_response, NFFT=512, Fs=config['bit_rate'], noverlap=256, cmap='hot', scale='dB', mode='magnitude', vmin=-100, vmax=0)
-    # ax.set_ylabel('Frequency [Hz]')
-    # ax.set_xlabel('Time [sec]')
-    # ax.grid(True)
-
-    # # Add the colorbar
-    # cbar = fig.colorbar(mappable=cax[3], ax=ax, format="%+2.0f dB")
-    # cbar.set_label('Intensity [dB]')
-
-    # plt.tight_layout()
-    # plt.savefig(f"plots/measured_IR/{Path(args.checkpoint).stem}_IR.png")
-    # print(f"Saved spectrogram plot to {Path(args.checkpoint).stem}_IR.png")
     plot_ir_spectrogram(impulse_response, config['sample_rate'], f"Model: {config['name']} Spectrogram", f"plots/measured_IR/{Path(args.checkpoint).stem}_IR.png")
 
     # Plot the waterfall spectrogram
@@ -90,7 +88,7 @@ def measure_model_ir(args):
 
     ir_tensor = torch.from_numpy(impulse_response).unsqueeze(0).float()
     
-    save_directory = "audio/measured_IR"
+    save_directory = "audio/IR_models"
     Path(save_directory).mkdir(parents=True, exist_ok=True)  # Ensure directory exists
     save_as = f"{save_directory}/{Path(args.checkpoint).stem}_IR.wav"
     torchaudio.save(save_as, ir_tensor, config['sample_rate'], bits_per_sample=config['bit_rate'])

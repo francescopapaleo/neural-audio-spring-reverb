@@ -82,6 +82,4 @@ class LSTM_FiLM(nn.Module):
         
         out = out.permute(0, 2, 1) # output shape for loss: [batch, channel, seq]
         
-        out = out + x
-
         return out

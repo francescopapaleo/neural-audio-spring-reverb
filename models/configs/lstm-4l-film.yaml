@@ -1,4 +1,4 @@
-name: lstm-4l-film
+name: lstm-4l-film-out+x
 model_type: LSTM_FiLM
 
 criterion1: stft
@@ -34,4 +34,4 @@ input_size: 1
 output_size: 1
 hidden_size: 32
 dropout_prob: 0.5
-use_skip: True
+use_skip: False

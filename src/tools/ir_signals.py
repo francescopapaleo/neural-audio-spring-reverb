@@ -13,6 +13,8 @@ This module contains functions to generate the signals used in the measurements:
 Modified version from the original written by Xavier Lizarraga
 """
 
+
+
 def impulse(sample_rate: int, duration: float, decibels: float = -1.0) -> np.ndarray:
     '''
     Generate an impulse

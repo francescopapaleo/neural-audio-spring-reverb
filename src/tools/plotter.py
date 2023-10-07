@@ -102,7 +102,6 @@ def plot_waterfall(waveform, title, sample_rate, args, stride=1):
     save_plot(fig, title, args)
 
 
-
 def plot_ir_spectrogram(signal, sample_rate, title, save_path):
     fig, ax = plt.subplots(figsize=(5, 5))
 
