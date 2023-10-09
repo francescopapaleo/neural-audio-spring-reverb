@@ -64,7 +64,7 @@ The CLI is managed in the [``main.py``](main.py) script. From the project root f
 **To download a dataset:**
 
 ```terminal
-python3 main.py download --dataset DATASET_NAME
+python main.py download --dataset DATASET_NAME
 ```
 
 **To train a model:**
@@ -72,22 +72,22 @@ python3 main.py download --dataset DATASET_NAME
 You can either start from scratch from a ``YAML`` configuration file or resume the training from a checkpoint (``.pt``). If you resume the training from a checkpoint, this will proceed until the current epoch is equal to MAX_EPOCHS.
 
 ```terminal
-python3 main.py train --init YAML_CONF_PATH
+python main.py train --init YAML_CONF_PATH
 
-python3 main.py train -c PT_CHECKPOINT_PATH
+python main.py train -c PT_CHECKPOINT_PATH
 ```
 
 **To test a model:**
 
 ```terminal
-python3 main.py eval -c PT_CHECKPOINT_PATH
+python main.py eval -c PT_CHECKPOINT_PATH
 ```
 The given checkpoint is loaded and the model is evaluated on the test set. The results are automatically logged by Tensorboard and stored in the  [``logs/``](logs/) folder.
 
 **Use a model for inference:**
 
 ```terminal
-python3 main.py infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
+python main.py infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
 ```
 
 ## Audio Measurement Tools
@@ -98,7 +98,7 @@ The folder [``tools``](src/tools/) contains some scripts to measure the impulse 
 This action will call a function that loads the model checkpoint, generate the test signals of the duration specified by the user and perform the IR measurement of the model.
 
 ```terminal
-python3 main.py ir --duration DURATION -c PT_CHECKPOINT_PATH
+python main.py ir --duration DURATION -c PT_CHECKPOINT_PATH
 ```
 A logaritimic sweep tone is generated and is processed by the model inference, the output is then convolved with the inverse filter previously generated. 
 
@@ -109,7 +109,7 @@ A logaritimic sweep tone is generated and is processed by the model inference, t
 This action will call a function that loads the input audio and computes the RT60 of the signal. A threshold of -5dB is set by default.
 
 ```terminal
-python3 main.py rt60 -i INPUT_FILE_PATH
+python main.py rt60 -i INPUT_FILE_PATH
 ```
 
 - The plot is saved in the [``plots/``](docs/plots/) folder.
@@ -209,13 +209,14 @@ Some notebooks are provided to visualize the audio feature extraction process fr
 This repository is part of my thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona (Spain).
 
 ```bibtex
-@misc{papaleo2023,
-  title   = {Neural Audio Effect Modelling Strategies for a Spring Reverb},
-  author  = {Francesco Papaleo and Xavier Lizarraga},
-  school  = {Universitat Pompeu Fabra},
-  year    = {2023},
-  month   = {August},
-  doi     = {},
-  url     = {}
+@phdthesis{francesco_papaleo_2023_8380480,
+  author       = {Francesco Papaleo},
+  title        = {{Neural Audio Effect Modelling Strategies for a 
+                   Spring Reverb}},
+  school       = {Universitat Pompeu Fabra},
+  year         = 2023,
+  month        = sep,
+  doi          = {10.5281/zenodo.8380480},
+  url          = {https://doi.org/10.5281/zenodo.8380480}
 }
 ```  

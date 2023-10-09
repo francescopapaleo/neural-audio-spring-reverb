@@ -32,10 +32,8 @@ def make_inference(args) -> torch.Tensor:
     
     # Add the batch dimension
     input = input.reshape(1, 1, -1).to(args.device)
-    
-    c = torch.rand(1,1,2, device=args.device)
 
-    # c = torch.tensor([0.5, 0.5], device=args.device).view(1,1,-1)
+    c = torch.tensor([args.c1, args.c2], device=args.device, requires_grad=False).view(1,1,-1)
 
     model.eval()
     with torch.no_grad():

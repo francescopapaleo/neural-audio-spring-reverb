@@ -29,7 +29,9 @@ def main():
     parser.add_argument('--init', type=str, default=None, help='Relative path to the YAML file to initialize the model with')
 
     parser.add_argument('-i', '--input', type=str, default=None, help='Relative path to the input audio file')    
-    
+    parser.add_argument('-c1', type=float, default=50.0, help='Parameter c1 for the model')
+    parser.add_argument('-c2', type=float, default=50.0, help='Parameter c2 for the model')
+
     parser.add_argument('--duration', type=float, default=5.0, help='')
     
     args = parser.parse_args()

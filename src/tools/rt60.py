@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.io import wavfile
+
 from pathlib import Path
 from src.tools.plotter import plot_rt60
 

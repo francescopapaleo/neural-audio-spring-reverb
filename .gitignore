@@ -135,7 +135,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
 # General
 .DS_Store
 .AppleDouble

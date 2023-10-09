@@ -50,7 +50,7 @@ def generate_spectrogram(waveform, sample_rate):
     frequencies, times, Sxx = spectrogram(
         waveform, 
         fs=sample_rate, 
-        window='blackmanharris',
+        window='hann',
         nperseg=32,
         noverlap=16,  
         scaling='spectrum', 
