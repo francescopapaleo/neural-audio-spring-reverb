@@ -138,11 +138,8 @@ def train_model(args):
     avg_valid_loss = np.inf
 
     if config["cond_dim"] > 0:
-        c0 = config.get("c0", 0.0)
-        c1 = config.get("c1", 0.0)
-        c = torch.tensor([c0, c1], device=args.device, requires_grad=False).view(
-            1, 1, -1
-        )
+        c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
+        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
     else:
         c = None
 
