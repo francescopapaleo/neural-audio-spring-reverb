@@ -1,4 +1,4 @@
-name: gcn-2500-film-blocks
+name: gcn-2500-updated
 model_type: GCN
 
 criterion1: stft
@@ -23,13 +23,15 @@ current_epoch: 0
 
 min_valid_loss: null
 
-cond_dim: 2
+cond_dim: 3
 c0 : 0.0
 c1 : 0.0
+c2 : 0.0
 
-kernel_size: 41
-n_blocks: 2
-n_channels: 32
-dilation_growth: 6
+n_channels: 16
 n_layers: 5
+dilation_growth: 8
+in_ch: 1
+out_ch: 1
+kernel_size: 3
 

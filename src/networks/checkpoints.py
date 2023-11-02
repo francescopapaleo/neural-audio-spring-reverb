@@ -113,11 +113,12 @@ def initialize_model(device, config):
             "cond_dim",
         },
         "GCN": {
-            "n_blocks",
-            "n_layers",
             "n_channels",
-            "kernel_size",
+            "n_layers",
             "dilation_growth",
+            "in_ch",
+            "out_ch",
+            "kernel_size",
             "cond_dim",
         },
     }
