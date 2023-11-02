@@ -8,6 +8,7 @@ from src.networks.wavenet import WaveNet
 from src.networks.gru_film import GRU_FiLM
 from src.networks.gcn_film import GCN_FiLM
 from src.networks.lstm_film import LSTM_FiLM
+from src.networks.gcn_blocks import GCN
 
 # DEVICE SELECTION HAS BEEN MOVED TO main.py
 # def select_device(device):
@@ -66,6 +67,7 @@ def initialize_model(device, config):
         'GCN_FiLM': GCN_FiLM,
         'WaveNet': WaveNet,
         'GRU_FiLM': GRU_FiLM,
+        'GCN': GCN,
     }
 
     model_params = {
@@ -74,6 +76,7 @@ def initialize_model(device, config):
         'LSTM_FiLM': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'use_skip', 'kernel_size', 'cond_dim'},
         'WaveNet': {'num_channels', 'dilation_depth', 'num_repeat', 'kernel_size', 'cond_dim'},
         'GRU_FiLM': {'input_size', 'hidden_size', 'num_layers', 'output_size', 'dropout_prob', 'use_skip', 'kernel_size', 'cond_dim'},
+        'GCN': {'n_blocks', 'n_layers', 'n_channels', 'kernel_size', 'dilation_growth', 'cond_dim'},
     }
 
     if config['model_type'] not in model_dict:

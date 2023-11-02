@@ -1,5 +1,5 @@
-name: gcn-2500-film-eg
-model_type: GCN_FiLM
+name: gcn-2500-film-blocks
+model_type: GCN
 
 criterion1: stft
 pre_emphasis: null
@@ -28,12 +28,8 @@ c0 : 0.0
 c1 : 0.0
 
 kernel_size: 41
-num_blocks: 2
-num_channels: 32
-dilation_depth: 6
-num_layers: 5
-num_repeat: 0
-input_size: 1
-output_size: 1
-hidden_size: 0
+n_blocks: 2
+n_channels: 32
+dilation_growth: 6
+n_layers: 5
 
