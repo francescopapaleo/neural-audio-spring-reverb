@@ -1,4 +1,4 @@
-''' 
+""" 
 Temporal Convolutional Network (TCN) with FiLM conditioning module.
 
 https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
@@ -8,14 +8,16 @@ https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
     author={Steinmetz, Christian J. and Reiss, Joshua D.},
     booktitle={5th Workshop on Creativity and Design at NeurIPS},
     year={2021}}
-    '''
+    """
 
 import torch
 
+
 def center_crop(x, length: int):
-        start = (x.shape[-1]-length)//2
-        stop  = start + length
-        return x[...,start:stop]
+    start = (x.shape[-1] - length) // 2
+    stop = start + length
+    return x[..., start:stop]
+
 
 def causal_crop(x, length: int):
     if x.shape[-1] != length:
@@ -44,23 +46,33 @@ class FiLM(torch.nn.Module):
         g, b = torch.chunk(cond, 2, dim=-1)
         g = g.permute(0, 2, 1)
         b = b.permute(0, 2, 1)
-        
+
         if self.batch_norm:
-            x = self.bn(x)      # apply BatchNorm without affine
-        x = (x * g) + b     # then apply conditional affine
+            x = self.bn(x)  # apply BatchNorm without affine
+        x = (x * g) + b  # then apply conditional affine
 
         return x
 
+
 class TCNBlock(torch.nn.Module):
-    def __init__(self, inum_channels, out_channels, kernel_size, dilation_depth, cond_dim=0, activation=True):
+    def __init__(
+        self,
+        inum_channels,
+        out_channels,
+        kernel_size,
+        dilation_depth,
+        cond_dim=0,
+        activation=True,
+    ):
         super().__init__()
         self.conv = torch.nn.Conv1d(
-            inum_channels, 
-            out_channels, 
-            kernel_size, 
-            dilation_depth, 
-            padding = ((kernel_size-1)//2) * dilation_depth, 
-            bias=True)
+            inum_channels,
+            out_channels,
+            kernel_size,
+            dilation_depth,
+            padding=((kernel_size - 1) // 2) * dilation_depth,
+            bias=True,
+        )
         if cond_dim > 0:
             self.film = FiLM(cond_dim, out_channels, batch_norm=False)
         if activation:
@@ -82,18 +94,20 @@ class TCNBlock(torch.nn.Module):
 
 
 class TCN(torch.nn.Module):
-    """ 
+    """
     Temporal convolutional network with conditioning module.
     """
-    def __init__(self, 
-                 input_size=1,
-                 output_size=1,
-                 num_blocks=10, 
-                 kernel_size=9,
-                 num_channels=32, 
-                 dilation_depth=4, 
-                 cond_dim=0):
-        
+
+    def __init__(
+        self,
+        input_size=1,
+        output_size=1,
+        num_blocks=10,
+        kernel_size=9,
+        num_channels=32,
+        dilation_depth=4,
+        cond_dim=0,
+    ):
         super(TCN, self).__init__()
         self.kernel_size = kernel_size
         self.num_channels = num_channels
@@ -107,7 +121,7 @@ class TCN(torch.nn.Module):
                 in_ch = input_size
                 out_ch = num_channels
                 act = True
-            elif (n+1) == num_blocks:
+            elif (n + 1) == num_blocks:
                 in_ch = num_channels
                 out_ch = output_size
                 act = True
@@ -115,23 +129,29 @@ class TCN(torch.nn.Module):
                 in_ch = num_channels
                 out_ch = num_channels
                 act = True
-      
-            dilation_depth = dilation_depth ** n
-            self.blocks.append(TCNBlock(in_ch, out_ch, kernel_size, 
-                                        dilation_depth, cond_dim=cond_dim, activation=act))
+
+            dilation_depth = dilation_depth**n
+            self.blocks.append(
+                TCNBlock(
+                    in_ch,
+                    out_ch,
+                    kernel_size,
+                    dilation_depth,
+                    cond_dim=cond_dim,
+                    activation=act,
+                )
+            )
 
     # iterate over blocks passing conditioning
     def forward(self, x, c=None):
         for block in self.blocks:
             x = block(x, c)
         return x
-    
 
     def compute_receptive_field(self):
-        """ Compute the receptive field in samples."""
+        """Compute the receptive field in samples."""
         rf = self.kernel_size
         for n in range(1, self.num_blocks):
             dilation = self.dilation_depth ** (n % self.stack_size)
             rf = rf + ((self.kernel_size - 1) * dilation)
         return rf
-

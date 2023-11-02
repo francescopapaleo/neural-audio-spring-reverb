@@ -7,7 +7,8 @@ from datetime import datetime
 
 from src.networks.checkpoints import load_model_checkpoint
 
-def make_inference(args) -> torch.Tensor:   
+
+def make_inference(args) -> torch.Tensor:
     """
     Make inference with the model on the input tensor
     =================================================
@@ -29,11 +30,13 @@ def make_inference(args) -> torch.Tensor:
         input, sample_rate = torchaudio.load(args.input)
     else:
         input = torch.tensor(args.input, dtype=torch.float32)
-    
+
     # Add the batch dimension
     input = input.reshape(1, 1, -1).to(args.device)
 
-    c = torch.tensor([args.c1, args.c2], device=args.device, requires_grad=False).view(1,1,-1)
+    c = torch.tensor([args.c1, args.c2], device=args.device, requires_grad=False).view(
+        1, 1, -1
+    )
 
     model.eval()
     with torch.no_grad():
@@ -41,18 +44,18 @@ def make_inference(args) -> torch.Tensor:
 
         # Process audio with the pre-trained model
         pred = model(input, c)
-        
+
         end_time = datetime.now()
         duration = end_time - start_time
         num_samples = input.size(-1)
-        length_in_seconds = num_samples / config['sample_rate']
+        length_in_seconds = num_samples / config["sample_rate"]
         rtf = duration.total_seconds() / length_in_seconds
         print(f"RTF: {rtf}")
 
     # Normalize
     pred /= pred.abs().max()
     # High-pass filter
-    pred = torchaudio.functional.highpass_biquad(pred, config['sample_rate'], 5)
+    pred = torchaudio.functional.highpass_biquad(pred, config["sample_rate"], 5)
     # Remove batch dimension
     pred = pred.view(1, -1)
 
@@ -61,12 +64,12 @@ def make_inference(args) -> torch.Tensor:
 
     if isinstance(args.input, str):
         file_name = Path(args.input).stem
-        sr_tag = str(int(config['sample_rate'] / 1000)) + 'k'
+        sr_tag = str(int(config["sample_rate"] / 1000)) + "k"
 
         os.makedirs(f"{args.audio_dir}/processed", exist_ok=True)
         save_out = f"{args.audio_dir}/processed/{file_name}*{config['name']}.wav"
 
-        torchaudio.save(save_out, pred, sample_rate=config['sample_rate'])
+        torchaudio.save(save_out, pred, sample_rate=config["sample_rate"])
     else:
         pass
 
