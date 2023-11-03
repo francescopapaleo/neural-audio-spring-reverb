@@ -12,7 +12,7 @@ from datetime import datetime
 import torch
 from pathlib import Path
 from argparse import ArgumentParser
-from src.networks.checkpoints import initialize_model
+from src.networks.model_utils import initialize_model
 
 
 def load_legacy_checkpoint(args):

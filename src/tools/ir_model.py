@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 
 from src.tools.ir_signals import generate_reference
-from src.networks.checkpoints import load_model_checkpoint
+from src.networks.model_utils import load_model_checkpoint
 from src.inference import make_inference
 
 # from src.tools.plotter import plot_ir_spectrogram, plot_waterfall

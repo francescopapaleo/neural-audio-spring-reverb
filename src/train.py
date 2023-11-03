@@ -12,7 +12,7 @@ from pathlib import Path
 from src.data.egfxset import load_egfxset
 from src.data.springset import load_springset
 from src.data.customset import load_customset
-from src.networks.checkpoints import (
+from src.networks.model_utils import (
     initialize_model,
     save_model_checkpoint,
     load_model_checkpoint,
@@ -137,6 +137,7 @@ def train_model(args):
     avg_train_loss = np.inf
     avg_valid_loss = np.inf
 
+    # Get the condition tensor
     if config["cond_dim"] > 0:
         c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
         c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)

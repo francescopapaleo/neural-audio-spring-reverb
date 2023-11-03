@@ -1,9 +1,11 @@
+import os
 import torch
 import numpy as np
-from pathlib import Path
 import traceback
 
-from src.networks.checkpoints import load_model_checkpoint, save_model_checkpoint
+from pathlib import Path
+from torchinfo import summary
+from src.networks.model_utils import load_model_checkpoint, save_model_checkpoint
 
 
 def modify_checkpoint(args):
@@ -103,7 +105,11 @@ def print_models(args):
 
     # List all files in the directory
     model_files = path_to_checkpoints.glob("*.pt")
-    with open(f"{args.log_dir}/model_summary.txt", "w") as f:
+
+    if not os.path.exists(args.log_dir):
+        os.makedirs(args.log_dir)
+
+    with open(f"{args.log_dir}/model_report.txt", "w") as f:
         for model_file in model_files:
             try:
                 args.checkpoint = model_file
@@ -126,8 +132,8 @@ def print_models(args):
                 for key, value in config.items():
                     f.write(f"{key}: {value}\n")
                 f.write("\n")
-                if config["model_type"] in ["TCN", "WaveNet", "GCN_FiLM"]:
-                    rf = model.compute_receptive_field()
+                if config["model_type"] in ["TCN", "WaveNet", "GCN"]:
+                    rf = model.calc_receptive_field()
                     f.write(
                         f"Receptive field: {rf} samples or {(rf / config['sample_rate']) * 1e3:0.1f} ms\n"
                     )
@@ -135,8 +141,8 @@ def print_models(args):
                     rf = None
                 f.write("\n")
                 f.write(f"Model architecture:\n")
-                # convert the model to a string and write it to the file
-                f.write(str(model))
+                model_report = summary(model, input_size=[(1, 1, 96000), (1, 3)])
+                f.write(str(model_report))
                 f.write("\n")
                 print("\n\n")
 

@@ -5,7 +5,7 @@ from random import sample
 from pathlib import Path
 from datetime import datetime
 
-from src.networks.checkpoints import load_model_checkpoint
+from src.networks.model_utils import load_model_checkpoint
 
 
 def make_inference(args) -> torch.Tensor:
@@ -31,12 +31,18 @@ def make_inference(args) -> torch.Tensor:
     else:
         input = torch.tensor(args.input, dtype=torch.float32)
 
-    # Add the batch dimension
-    input = input.reshape(1, 1, -1).to(args.device)
+    # Get the batch size from the model checkpoint parameters
+    batch_size = config["batch_size"]
 
-    c = torch.tensor([args.c1, args.c2], device=args.device, requires_grad=False).view(
-        1, 1, -1
-    )
+    # Reshape the input with the dynamically obtained batch size
+    input = input.reshape(batch_size, 1, -1).to(args.device)
+    
+    # Get the condition tensor
+    if config["cond_dim"] > 0:
+        c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
+        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
+    else:
+        c = None
 
     model.eval()
     with torch.no_grad():
@@ -55,7 +61,7 @@ def make_inference(args) -> torch.Tensor:
     # Normalize
     pred /= pred.abs().max()
     # High-pass filter
-    pred = torchaudio.functional.highpass_biquad(pred, config["sample_rate"], 5)
+    pred = torchaudio.functional.highpass_biquad(pred, config["sample_rate"], 20)
     # Remove batch dimension
     pred = pred.view(1, -1)
 

@@ -11,6 +11,12 @@ https://github.com/csteinmetz1/steerable-nafx/blob/main/steerable-nafx.ipynb
     """
 
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+from typing import Dict, List, Optional, Tuple, Union
+from torch import Tensor
+from src.networks.custom_layers import Conv1dCausal, FiLM
 
 
 def center_crop(x, length: int):
@@ -27,66 +33,53 @@ def causal_crop(x, length: int):
     return x
 
 
-class FiLM(torch.nn.Module):
-    def __init__(
-        self,
-        cond_dim,  # dim of conditioning input
-        num_features,  # dim of the conv channel
-        batch_norm=True,
-    ):
-        super().__init__()
-        self.num_features = num_features
-        self.batch_norm = batch_norm
-        if batch_norm:
-            self.bn = torch.nn.BatchNorm1d(num_features, affine=False)
-        self.adaptor = torch.nn.Linear(cond_dim, num_features * 2)
-
-    def forward(self, x, c):
-        cond = self.adaptor(c)
-        g, b = torch.chunk(cond, 2, dim=-1)
-        g = g.permute(0, 2, 1)
-        b = b.permute(0, 2, 1)
-
-        if self.batch_norm:
-            x = self.bn(x)  # apply BatchNorm without affine
-        x = (x * g) + b  # then apply conditional affine
-
-        return x
-
-
 class TCNBlock(torch.nn.Module):
     def __init__(
         self,
-        inum_channels,
-        out_channels,
-        kernel_size,
-        dilation_depth,
-        cond_dim=0,
+        in_ch: int,
+        out_ch: int,
+        kernel_size: int = 3,
+        dilation: int = 1,
+        stride: int = 1,
+        cond_dim: int = 0,
         activation=True,
     ):
         super().__init__()
-        self.conv = torch.nn.Conv1d(
-            inum_channels,
-            out_channels,
-            kernel_size,
-            dilation_depth,
-            padding=((kernel_size - 1) // 2) * dilation_depth,
-            bias=True,
-        )
-        if cond_dim > 0:
-            self.film = FiLM(cond_dim, out_channels, batch_norm=False)
-        if activation:
-            # self.act = torch.nn.Tanh()
-            self.act = torch.nn.PReLU()
-        self.res = torch.nn.Conv1d(inum_channels, out_channels, 1, bias=False)
+        self.in_ch = in_ch
+        self.out_ch = out_ch
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.stride = stride
+        self.cond_dim = cond_dim
 
-    def forward(self, x, c):
+        self.conv = Conv1dCausal(
+            in_channels=in_ch,
+            out_channels=out_ch,
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+        )
+
+        if cond_dim > 0:
+            self.film = FiLM(cond_dim=cond_dim, n_features=out_ch, batch_norm=True)
+
+        if activation:
+            self.act = torch.nn.PReLU()
+
+        self.res = nn.Conv1d(
+            in_channels=in_ch, out_channels=out_ch, kernel_size=(1,), bias=False
+        )
+
+    def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         x_in = x
         x = self.conv(x)
+
         if hasattr(self, "film"):
-            x = self.film(x, c)
+            x = self.film(x, cond)
+
         if hasattr(self, "act"):
             x = self.act(x)
+
         x_res = causal_crop(self.res(x_in), x.shape[-1])
         x = x + x_res
 
@@ -100,58 +93,72 @@ class TCN(torch.nn.Module):
 
     def __init__(
         self,
-        input_size=1,
-        output_size=1,
-        num_blocks=10,
-        kernel_size=9,
-        num_channels=32,
-        dilation_depth=4,
-        cond_dim=0,
+        n_channels: int,
+        n_layers: int,
+        dilation_growth: int,
+        in_ch: int = 1,
+        out_ch: int = 1,
+        kernel_size: int = 3,
+        cond_dim: int = 0,
     ):
-        super(TCN, self).__init__()
+        super().__init__()
+        self.in_ch = in_ch  # input channels
+        self.out_ch = out_ch  # output channels
         self.kernel_size = kernel_size
-        self.num_channels = num_channels
-        self.dilation_depth = dilation_depth
-        self.num_blocks = num_blocks
-        self.stack_size = num_blocks
+        self.cond_dim = cond_dim
 
-        self.blocks = torch.nn.ModuleList()
-        for n in range(num_blocks):
-            if n == 0:
-                in_ch = input_size
-                out_ch = num_channels
-                act = True
-            elif (n + 1) == num_blocks:
-                in_ch = num_channels
-                out_ch = output_size
-                act = True
+        # Compute convolution channels and dilations
+        self.channels = [n_channels] * n_layers
+        self.dilations = [dilation_growth**idx for idx in range(n_layers)]
+
+        # Blocks number is given by the number of elements in the channels list
+        self.n_blocks = len(self.channels)
+        assert len(self.dilations) == self.n_blocks
+
+        # Create a list of strides
+        self.strides = [1] * self.n_blocks
+
+        # Create a list of GCN blocks
+        self.blocks = nn.ModuleList()
+        block_out_ch = None
+
+        for idx, (curr_out_ch, dil, stride) in enumerate(
+            zip(self.channels, self.dilations, self.strides)
+        ):
+            if idx == 0:
+                block_in_ch = in_ch
             else:
-                in_ch = num_channels
-                out_ch = num_channels
-                act = True
+                block_in_ch = block_out_ch
+            block_out_ch = curr_out_ch
 
-            dilation_depth = dilation_depth**n
             self.blocks.append(
                 TCNBlock(
-                    in_ch,
-                    out_ch,
+                    block_in_ch,
+                    block_out_ch,
                     kernel_size,
-                    dilation_depth,
-                    cond_dim=cond_dim,
-                    activation=act,
+                    dil,
+                    stride,
+                    cond_dim,
                 )
             )
 
-    # iterate over blocks passing conditioning
-    def forward(self, x, c=None):
+        # Output layer
+        self.out_net = nn.Conv1d(
+            self.channels[-1], out_ch, kernel_size=(1,), stride=(1,), bias=False
+        )
+
+    def forward(self, x: Tensor, cond: Tensor) -> Tensor:
+        assert x.ndim == 3  # (batch_size, in_ch, samples)
         for block in self.blocks:
-            x = block(x, c)
+            x = block(x, cond)
+        x = self.out_net(x)
         return x
 
-    def compute_receptive_field(self):
+    def calc_receptive_field(self):
         """Compute the receptive field in samples."""
+        assert all(_ == 1 for _ in self.strides)  # TODO(cm): add support for dsTCN
+        assert self.dilations[0] == 1  # TODO(cm): add support for >1 starting dilation
         rf = self.kernel_size
-        for n in range(1, self.num_blocks):
-            dilation = self.dilation_depth ** (n % self.stack_size)
-            rf = rf + ((self.kernel_size - 1) * dilation)
+        for dil in self.dilations[1:]:
+            rf = rf + ((self.kernel_size - 1) * dil)
         return rf

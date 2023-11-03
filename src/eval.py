@@ -10,7 +10,7 @@ from pathlib import Path
 from src.data.egfxset import load_egfxset
 from src.data.springset import load_springset
 from src.data.customset import load_customset
-from src.networks.checkpoints import load_model_checkpoint
+from src.networks.model_utils import load_model_checkpoint
 
 
 def evaluate_model(args):
@@ -73,6 +73,13 @@ def evaluate_model(args):
     num_batches = len(test_loader)
     label = f"{config['name']}-{config['criterion1']}-{sr_tag}"
 
+    # Get the condition tensor
+    if config["cond_dim"] > 0:
+        c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
+        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
+    else:
+        c = None
+
     model.eval()
     with torch.no_grad():
         for step, (dry, wet) in enumerate(test_loader):
@@ -82,7 +89,6 @@ def evaluate_model(args):
 
             input = dry.to(args.device)
             target = wet.to(args.device)
-            c = torch.tensor([0.0, 0.0], device=args.device).view(1, 1, -1)
 
             pred = model(input, c)
 

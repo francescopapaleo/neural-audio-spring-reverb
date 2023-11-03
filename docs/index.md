@@ -26,10 +26,41 @@ permalink: /
 
 <h2>Audio Examples</h2>
 
-<!-- <audio src="../audio/" controls preload></audio>
-<audio src="../audio/" controls preload></audio>
-<audio src="../audio/" controls preload></audio>
-<audio src="../audio/" controls preload></audio> -->
+Some dry and processed audio examples are available below. The audio files are in `48kHz 24bit wav` format.
+
+**Drum loop (dry / raw)**
+
+<audio src="../audio/raw/drums-48k24b.wav" controls preload></audio>
+
+- Drum loop processed with the GCN model
+
+<audio src="../audio/processed/drums-48k24b*gcn-3250.wav" controls preload></audio>
+
+- Drum loop processed with the TCN model
+
+<audio src="../audio/processed/drums-48k24b*tcn-3900-updated.wav" controls preload></audio>
+
+- Drum loop processed with the WaveNet model
+
+<audio src="../audio/processed/drums-48k24b*wavenet-900.wav" controls preload></audio>
+
+
+- **Pluck synth sample (dry / raw)**
+
+<audio src="../audio/raw/pluck-48k24b.wav" controls preload></audio>
+
+- Pluck synth sample processed with the GCN model
+
+<audio src="../audio/processed/pluck-48k24b*gcn-3250.wav" controls preload></audio>
+
+- Pluck synth sample processed with the TCN model
+
+<audio src="../audio/processed/pluck-48k24b*tcn-3900-updated.wav" controls preload></audio>
+
+- Pluck synth sample processed with the WaveNet model
+
+<audio src="../audio/processed/pluck-48k24b*wavenet-900.wav" controls preload></audio>
+
 
 <h2>Bibtex Citation</h2>
 ```bibtex
