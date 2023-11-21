@@ -10,16 +10,14 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Presentation page for the neural-audio-spring-reverb project." />
 <meta property="og:description" content="Presentation page for the neural-audio-spring-reverb project." />
-<link rel="canonical" href="http://localhost:4000/" />
-<meta property="og:url" content="http://localhost:4000/" />
 <meta property="og:site_name" content="Neural Audio Effect Modelling Strategies for a Spring Reverb" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Home" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","author":{"@type":"Person","name":"Francesco Papaleo"},"description":"Presentation page for the neural-audio-spring-reverb project.","headline":"Home","name":"Neural Audio Effect Modelling Strategies for a Spring Reverb","url":"http://localhost:4000/"}</script>
+{"@context":"https://schema.org","@type":"WebSite","author":{"@type":"Person","name":"Francesco Papaleo"},"description":"Presentation page for the neural-audio-spring-reverb project.","headline":"Home","name":"Neural Audio Effect Modelling Strategies for a Spring Reverb","url":"/"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Neural Audio Effect Modelling Strategies for a Spring Reverb" />
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="/feed.xml" title="Neural Audio Effect Modelling Strategies for a Spring Reverb" />
 </head>
 <body><header class="site-header">
 
@@ -64,15 +62,60 @@
 
 <h2>Audio Examples</h2>
 
-<audio src="../audio/" controls="" preload=""></audio>
-<audio src="../audio/" controls="" preload=""></audio>
-<audio src="../audio/" controls="" preload=""></audio>
-<audio src="../audio/" controls="" preload=""></audio>
+<p>Some dry and processed audio examples are available below. The audio files are in <code class="language-plaintext highlighter-rouge">48kHz 24bit wav</code> format.</p>
+
+<p><strong>Drum loop (dry / raw)</strong></p>
+
+<audio src="https://github.com/francescopapaleo/neural-audio-spring-reverb/blob/e2a30261ab905c8496bd5082623b35e0a776fe78/audio/raw/drums-48k24b.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Drum loop processed with the GCN model</li>
+</ul>
+
+<audio src="/audio/processed/drums-48k24b*gcn-3250.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Drum loop processed with the TCN model</li>
+</ul>
+
+<audio src="/audio/processed/drums-48k24b*tcn-3900-updated.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Drum loop processed with the WaveNet model</li>
+</ul>
+
+<audio src="/audio/processed/drums-48k24b*wavenet-900.wav" controls="" preload=""></audio>
+
+<ul>
+  <li><strong>Pluck synth sample (dry / raw)</strong></li>
+</ul>
+
+<audio src="/audio/raw/pluck-48k24b.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Pluck synth sample processed with the GCN model</li>
+</ul>
+
+<audio src="/audio/processed/pluck-48k24b*gcn-3250.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Pluck synth sample processed with the TCN model</li>
+</ul>
+
+<audio src="/audio/processed/pluck-48k24b*tcn-3900-updated.wav" controls="" preload=""></audio>
+
+<ul>
+  <li>Pluck synth sample processed with the WaveNet model</li>
+</ul>
+
+<audio src="/audio/processed/pluck-48k24b*wavenet-900.wav" controls="" preload=""></audio>
 
 <h2>Bibtex Citation</h2>
+
 <div class="language-bibtex highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">@phdthesis</span><span class="p">{</span><span class="nl">francesco_papaleo_2023_8380480</span><span class="p">,</span>
   <span class="na">author</span>       <span class="p">=</span> <span class="s">{Francesco Papaleo}</span><span class="p">,</span>
-  <span class="na">title</span>        <span class="p">=</span> <span class="p">,</span>
+  <span class="na">title</span>        <span class="p">=</span> <span class="s">{Neural Audio Effect Modelling Strategies for a 
+                   Spring Reverb}</span><span class="p">,</span>
   <span class="na">school</span>       <span class="p">=</span> <span class="s">{Universitat Pompeu Fabra}</span><span class="p">,</span>
   <span class="na">year</span>         <span class="p">=</span> <span class="m">2023</span><span class="p">,</span>
   <span class="na">month</span>        <span class="p">=</span> <span class="nv">sep</span><span class="p">,</span>
@@ -90,7 +133,7 @@
     <div class="footer-col-wrapper">
       <div class="footer-col">
         <p class="feed-subscribe">
-          <a href="http://localhost:4000/feed.xml">
+          <a href="/feed.xml">
             <svg class="svg-icon orange">
               <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
             </svg><span>Subscribe</span>

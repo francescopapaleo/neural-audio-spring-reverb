@@ -4,7 +4,7 @@ title: References
 permalink: /references/
 ---
 
-# Main Code Sources
+<h2>Main Code Sources</h2>
 
 1. [Plate-Spring Dataset](https://zenodo.org/record/3746119)
 
@@ -22,7 +22,7 @@ permalink: /references/
 
 1. [PedalNetRT](https://github.com/GuitarML/PedalNetRT)
 
-# Selected Papers on Audio Effects Modeling, Emulation, Reverberation
+<h2>Selected Papers on Audio Effects Modeling, Emulation, Reverberation</h2>
 
 1. <A HREF="http://arxiv.org/abs/2112.02926">Steerable discovery of neural audio effects</A>
 
@@ -85,3 +85,16 @@ permalink: /references/
 1. <A HREF="https://proceedings.neurips.cc/paper/2019/hash/2afc4dfb14e55c6face649a1d0c1025b-Abstract.html">Temporal FiLM: Capturing Long-Range Sequence Dependencies with Feature-Wise Modulations.</A>
 
 1. <A HREF="https://www.mdpi.com/2076-3417/10/3/791">A History of Audio Effects</A>
+
+<h3>This website is made using Jekyll and Minima</h3>
+
+You can find the source code for Minima at GitHub:
+[jekyll][jekyll-organization] /
+[minima](https://github.com/jekyll/minima)
+
+You can find the source code for Jekyll at GitHub:
+[jekyll][jekyll-organization] /
+[jekyll](https://github.com/jekyll/jekyll)
+
+
+[jekyll-organization]: https://github.com/jekyll

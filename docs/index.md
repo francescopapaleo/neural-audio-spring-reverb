@@ -27,51 +27,55 @@ permalink: /
 <h2>Audio Examples</h2>
 
 Some dry and processed audio examples are available below. The audio files are in `48kHz 24bit wav` format.
+All the models have been trained with the same dataset, and the same training procedure with a single `NVIDIA GeForce GTX 1080 Ti GPU`. 
 
 **Drum loop (dry / raw)**
 
-<audio src="../audio/raw/drums-48k24b.wav" controls preload></audio>
+<audio src="assets/audio/raw/drums-48k24b.wav" controls preload></audio>
 
 - Drum loop processed with the GCN model
 
-<audio src="../audio/processed/drums-48k24b*gcn-3250.wav" controls preload></audio>
+<audio src="assets/audio/processed/drums-48k24b*gcn-3250.wav" controls preload></audio>
 
 - Drum loop processed with the TCN model
 
-<audio src="../audio/processed/drums-48k24b*tcn-3900-updated.wav" controls preload></audio>
+<audio src="assets/audio/processed/drums-48k24b*tcn-3900-updated.wav" controls preload></audio>
 
 - Drum loop processed with the WaveNet model
 
-<audio src="../audio/processed/drums-48k24b*wavenet-900.wav" controls preload></audio>
+<audio src="assets/audio/processed/drums-48k24b*wavenet-900.wav" controls preload></audio>
 
 
 - **Pluck synth sample (dry / raw)**
 
-<audio src="../audio/raw/pluck-48k24b.wav" controls preload></audio>
+<audio src="assets/audio/raw/pluck-48k24b.wav" controls preload></audio>
 
 - Pluck synth sample processed with the GCN model
 
-<audio src="../audio/processed/pluck-48k24b*gcn-3250.wav" controls preload></audio>
+<audio src="assets/audio/processed/pluck-48k24b*gcn-3250.wav" controls preload></audio>
 
 - Pluck synth sample processed with the TCN model
 
-<audio src="../audio/processed/pluck-48k24b*tcn-3900-updated.wav" controls preload></audio>
+<audio src="assets/audio/processed/pluck-48k24b*tcn-3900-updated.wav" controls preload></audio>
 
 - Pluck synth sample processed with the WaveNet model
 
-<audio src="../audio/processed/pluck-48k24b*wavenet-900.wav" controls preload></audio>
+<audio src="assets/audio/processed/pluck-48k24b*wavenet-900.wav" controls preload></audio>
 
 
 <h2>Bibtex Citation</h2>
+
+This is not a PhD thesis, but a Master's thesis, Zenodo does not allow to specify this in the metadata.  
+
 ```bibtex
 @phdthesis{francesco_papaleo_2023_8380480,
   author       = {Francesco Papaleo},
-  title        = {{Neural Audio Effect Modelling Strategies for a 
-                   Spring Reverb}},
+  title        = {Neural Audio Effect Modelling Strategies for a 
+                   Spring Reverb},
   school       = {Universitat Pompeu Fabra},
   year         = 2023,
   month        = sep,
   doi          = {10.5281/zenodo.8380480},
   url          = {https://doi.org/10.5281/zenodo.8380480}
 }
-```  
+```
