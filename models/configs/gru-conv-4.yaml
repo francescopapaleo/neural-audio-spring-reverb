@@ -1,0 +1,40 @@
+name: gru-conv-4
+model_type: GRU
+
+criterion1: stft
+pre_emphasis: null
+criterion2: smooth
+
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+
+batch_size: 2
+num_workers: 2
+
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 0
+
+min_valid_loss: null
+
+cond_dim: 3
+c0 : 0.0
+c1 : 0.0
+c2 : 0.0
+
+input_size: 1
+hidden_size: 64
+n_layers: 4
+output_size: 1
+dropout_prob: 0.5
+use_skip: True
+kernel_size: 3
+
+
+
