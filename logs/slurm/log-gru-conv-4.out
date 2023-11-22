@@ -1,0 +1,30 @@
+Using device: cuda:0
+Using configuration gru-conv-4
+Configuration name: gru-conv-4
+Parameters: 100.866 k
+Using losses: STFTLoss and SmoothL1Loss
+Total dataset samples: 690
+Training model for 1000 epochs, current epoch 0
+Epoch 0: Loss improved from  inf to 2.401845 - > Saving model
+Epoch 1: Loss improved from 2.401845 to 1.819099 - > Saving model
+Epoch 2: Loss improved from 1.819099 to 1.743349 - > Saving model
+Epoch 3: Loss improved from 1.743349 to 1.738001 - > Saving model
+Epoch 4: Loss improved from 1.738001 to 1.701754 - > Saving model
+Epoch 5: Loss improved from 1.701754 to 1.618922 - > Saving model
+Epoch 6: Loss improved from 1.618922 to 1.460861 - > Saving model
+Epoch 7: Loss improved from 1.460861 to 1.388840 - > Saving model
+Epoch 8: Loss improved from 1.388840 to 1.323046 - > Saving model
+Epoch 9: Loss improved from 1.323046 to 1.269793 - > Saving model
+Epoch 10: Loss improved from 1.269793 to 1.256353 - > Saving model
+Epoch 12: Loss improved from 1.256353 to 1.240384 - > Saving model
+Epoch 13: Loss improved from 1.240384 to 1.198131 - > Saving model
+Epoch 15: Loss improved from 1.198131 to 1.183573 - > Saving model
+Epoch 20: Loss improved from 1.183573 to 1.178216 - > Saving model
+Epoch 21: Loss improved from 1.178216 to 1.174855 - > Saving model
+Epoch 00033: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 00044: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 00055: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00066: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00077: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 121: Loss did not improve for 100 epochs, stopping training
+Epoch 121, final validation loss: 1.2026123171267302

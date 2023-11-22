@@ -1,0 +1,859 @@
+|------------------------------------------------------------------------------------------|
+
+Processing models/gru-conv-4-20231122-011632-48k.pt...
+Configuration name: gru-conv-4
+Model type: GRU
+Number of parameters: 100866
+name: gru-conv-4
+model_type: GRU
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 2
+num_workers: 2
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 21
+min_valid_loss: 1.1748549480369126
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+input_size: 1
+hidden_size: 64
+n_layers: 4
+output_size: 1
+dropout_prob: 0.5
+use_skip: True
+kernel_size: 3
+timestamp: 20231122-033246
+
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GRU                                      [1, 1, 96000]             --
+├─Conv1dCausal: 1-1                      [1, 64, 96000]            --
+│    └─Conv1d: 2-1                       [1, 64, 96000]            192
+├─BatchNorm1d: 1-2                       [1, 64, 96000]            128
+├─PReLU: 1-3                             [1, 64, 96000]            1
+├─GRU: 1-4                               [1, 96000, 64]            99,840
+├─FiLM: 1-5                              [1, 64, 96000]            --
+│    └─Linear: 2-2                       [1, 128]                  512
+│    └─BatchNorm1d: 2-3                  [1, 64, 96000]            128
+├─Conv1d: 1-6                            [1, 1, 96000]             1
+├─Conv1d: 1-7                            [1, 1, 96000]             64
+├─TanhAF: 1-8                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 100,866
+Trainable params: 100,866
+Non-trainable params: 0
+Total mult-adds (G): 9.61
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 247.30
+Params size (MB): 0.40
+Estimated Total Size (MB): 248.08
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/tcn-1700-updated-20231103-223153-48k.pt...
+Configuration name: tcn-1700-updated
+Model type: TCN
+Number of parameters: 5061
+name: tcn-1700-updated
+model_type: TCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 272
+min_valid_loss: 1.1551971505669987
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+n_channels: 16
+n_layers: 5
+dilation_growth: 14
+in_ch: 1
+out_ch: 1
+kernel_size: 3
+timestamp: 20231103-224152
+
+Receptive field: 82743 samples or 1723.8 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+TCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─TCNBlock: 2-1                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 16, 96000]            64
+│    │    └─FiLM: 3-2                    [1, 16, 96000]            160
+│    │    └─PReLU: 3-3                   [1, 16, 96000]            1
+│    │    └─Conv1d: 3-4                  [1, 16, 96000]            16
+│    └─TCNBlock: 2-2                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 16, 96000]            784
+│    │    └─FiLM: 3-6                    [1, 16, 96000]            160
+│    │    └─PReLU: 3-7                   [1, 16, 96000]            1
+│    │    └─Conv1d: 3-8                  [1, 16, 96000]            256
+│    └─TCNBlock: 2-3                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 16, 96000]            784
+│    │    └─FiLM: 3-10                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-11                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-12                 [1, 16, 96000]            256
+│    └─TCNBlock: 2-4                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 16, 96000]            784
+│    │    └─FiLM: 3-14                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-15                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-16                 [1, 16, 96000]            256
+│    └─TCNBlock: 2-5                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 16, 96000]            784
+│    │    └─FiLM: 3-18                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-19                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-20                 [1, 16, 96000]            256
+├─Conv1d: 1-2                            [1, 1, 96000]             16
+==========================================================================================
+Total params: 5,061
+Trainable params: 5,061
+Non-trainable params: 0
+Total mult-adds (M): 408.58
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 246.53
+Params size (MB): 0.02
+Estimated Total Size (MB): 246.93
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/gcn-4600-20231122-031250-48k.pt...
+Configuration name: gcn-4600
+Model type: GCN
+Number of parameters: 40320
+name: gcn-4600
+model_type: GCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 155
+min_valid_loss: 1.0214048448730917
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 32
+dilation_growth: 10
+kernel_size: 3
+timestamp: 20231122-045237
+
+Receptive field: 222223 samples or 4629.6 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─GCNBlock: 2-1                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 64, 96000]            256
+│    │    └─FiLM: 3-2                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-3                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-4                  [1, 32, 96000]            32
+│    └─GCNBlock: 2-2                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-6                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-7                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-8                  [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-3                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-10                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-11                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-12                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-4                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-14                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-15                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-16                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-5                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-18                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-19                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-20                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-6                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-21           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-22                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-23                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-24                 [1, 32, 96000]            1,024
+├─Conv1d: 1-2                            [1, 1, 96000]             32
+├─TanhAF: 1-3                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 40,320
+Trainable params: 40,320
+Non-trainable params: 0
+Total mult-adds (G): 3.50
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 738.05
+Params size (MB): 0.16
+Estimated Total Size (MB): 738.60
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/gcn-2750-20231122-030721-48k.pt...
+Configuration name: gcn-2750
+Model type: GCN
+Number of parameters: 152320
+name: gcn-2750
+model_type: GCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 214
+min_valid_loss: 1.0177815486403072
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 64
+dilation_growth: 9
+kernel_size: 3
+timestamp: 20231122-073904
+
+Receptive field: 132861 samples or 2767.9 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─GCNBlock: 2-1                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 128, 96000]           512
+│    │    └─FiLM: 3-2                    [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-3                 [1, 64, 96000]            --
+│    │    └─Conv1d: 3-4                  [1, 64, 96000]            64
+│    └─GCNBlock: 2-2                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 128, 96000]           24,704
+│    │    └─FiLM: 3-6                    [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-7                 [1, 64, 96000]            --
+│    │    └─Conv1d: 3-8                  [1, 64, 96000]            4,096
+│    └─GCNBlock: 2-3                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 128, 96000]           24,704
+│    │    └─FiLM: 3-10                   [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-11                [1, 64, 96000]            --
+│    │    └─Conv1d: 3-12                 [1, 64, 96000]            4,096
+│    └─GCNBlock: 2-4                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 128, 96000]           24,704
+│    │    └─FiLM: 3-14                   [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-15                [1, 64, 96000]            --
+│    │    └─Conv1d: 3-16                 [1, 64, 96000]            4,096
+│    └─GCNBlock: 2-5                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 128, 96000]           24,704
+│    │    └─FiLM: 3-18                   [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-19                [1, 64, 96000]            --
+│    │    └─Conv1d: 3-20                 [1, 64, 96000]            4,096
+│    └─GCNBlock: 2-6                     [1, 64, 96000]            --
+│    │    └─Conv1dCausal: 3-21           [1, 128, 96000]           24,704
+│    │    └─FiLM: 3-22                   [1, 128, 96000]           1,280
+│    │    └─GatedAF: 3-23                [1, 64, 96000]            --
+│    │    └─Conv1d: 3-24                 [1, 64, 96000]            4,096
+├─Conv1d: 1-2                            [1, 1, 96000]             64
+├─TanhAF: 1-3                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 152,320
+Trainable params: 152,320
+Non-trainable params: 0
+Total mult-adds (G): 13.89
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 1475.34
+Params size (MB): 0.61
+Estimated Total Size (MB): 1476.33
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/wavenet-900-20231120-085636-48k.pt...
+Configuration name: wavenet-900
+Model type: WaveNet
+Number of parameters: 71808
+name: wavenet-900
+model_type: WaveNet
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.005
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 55
+current_epoch: 164
+min_valid_loss: 0.9662433845155379
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 2
+n_stacks: 5
+n_channels: 32
+dilation_growth: 10
+kernel_size: 3
+timestamp: 20231120-114219
+
+Receptive field: 44445 samples or 925.9 ms
+
+Model architecture:
+====================================================================================================
+Layer (type:depth-idx)                             Output Shape              Param #
+====================================================================================================
+WaveNet                                            [1, 1, 96000]             --
+├─ModuleList: 1-1                                  --                        --
+│    └─WaveNet1dBlock: 2-1                         [1, 32, 96000]            --
+│    │    └─ModuleList: 3-1                        --                        32,416
+│    └─WaveNet1dBlock: 2-2                         [1, 32, 96000]            --
+│    │    └─ModuleList: 3-2                        --                        39,360
+├─Conv1d: 1-2                                      [1, 1, 96000]             32
+├─TanhAF: 1-3                                      [1, 1, 96000]             --
+====================================================================================================
+Total params: 71,808
+Trainable params: 71,808
+Non-trainable params: 0
+Total mult-adds (G): 6.28
+====================================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 1229.58
+Params size (MB): 0.29
+Estimated Total Size (MB): 1230.25
+====================================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/tcn-3900-updated-20231104-163500-48k.pt...
+Configuration name: tcn-3900-updated
+Model type: TCN
+Number of parameters: 44581
+name: tcn-3900-updated
+model_type: TCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 246
+min_valid_loss: 0.8516524311374215
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+n_channels: 16
+n_layers: 5
+dilation_growth: 8
+in_ch: 1
+out_ch: 1
+kernel_size: 41
+timestamp: 20231104-194056
+
+Receptive field: 187241 samples or 3900.9 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+TCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─TCNBlock: 2-1                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 16, 96000]            672
+│    │    └─FiLM: 3-2                    [1, 16, 96000]            160
+│    │    └─PReLU: 3-3                   [1, 16, 96000]            1
+│    │    └─Conv1d: 3-4                  [1, 16, 96000]            16
+│    └─TCNBlock: 2-2                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 16, 96000]            10,512
+│    │    └─FiLM: 3-6                    [1, 16, 96000]            160
+│    │    └─PReLU: 3-7                   [1, 16, 96000]            1
+│    │    └─Conv1d: 3-8                  [1, 16, 96000]            256
+│    └─TCNBlock: 2-3                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 16, 96000]            10,512
+│    │    └─FiLM: 3-10                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-11                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-12                 [1, 16, 96000]            256
+│    └─TCNBlock: 2-4                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 16, 96000]            10,512
+│    │    └─FiLM: 3-14                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-15                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-16                 [1, 16, 96000]            256
+│    └─TCNBlock: 2-5                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 16, 96000]            10,512
+│    │    └─FiLM: 3-18                   [1, 16, 96000]            160
+│    │    └─PReLU: 3-19                  [1, 16, 96000]            1
+│    │    └─Conv1d: 3-20                 [1, 16, 96000]            256
+├─Conv1d: 1-2                            [1, 1, 96000]             16
+==========================================================================================
+Total params: 44,581
+Trainable params: 44,581
+Non-trainable params: 0
+Total mult-adds (G): 4.20
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 246.53
+Params size (MB): 0.18
+Estimated Total Size (MB): 247.09
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Error loading models/gru-4layer-updated-20231104-160524-48k.pt:
+Error(s) in loading state_dict for GRU:
+	Missing key(s) in state_dict: "out_net.weight". 
+	Unexpected key(s) in state_dict: "lin.weight", "lin.bias", "res.bias". 
+	size mismatch for res.weight: copying a param with shape torch.Size([1, 1]) from checkpoint, the shape in current model is torch.Size([1, 1, 1]).
+|------------------------------------------------------------------------------------------|
+
+Processing models/gcn-1500-32ch-20231110-083019-48k.pt...
+Configuration name: gcn-1500-32ch
+Model type: GCN
+Number of parameters: 40320
+name: gcn-1500-32ch
+model_type: GCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 56
+min_valid_loss: inf
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 32
+dilation_growth: 8
+kernel_size: 3
+timestamp: 20231121-002757
+
+Receptive field: 74899 samples or 1560.4 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─GCNBlock: 2-1                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 64, 96000]            256
+│    │    └─FiLM: 3-2                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-3                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-4                  [1, 32, 96000]            32
+│    └─GCNBlock: 2-2                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-6                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-7                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-8                  [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-3                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-10                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-11                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-12                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-4                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-14                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-15                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-16                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-5                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-18                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-19                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-20                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-6                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-21           [1, 64, 96000]            6,208
+│    │    └─FiLM: 3-22                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-23                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-24                 [1, 32, 96000]            1,024
+├─Conv1d: 1-2                            [1, 1, 96000]             32
+├─TanhAF: 1-3                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 40,320
+Trainable params: 40,320
+Non-trainable params: 0
+Total mult-adds (G): 3.50
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 738.05
+Params size (MB): 0.16
+Estimated Total Size (MB): 738.60
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/gcn-1500-16ch-20231110-003247-48k.pt...
+Configuration name: gcn-1500-16ch
+Model type: GCN
+Number of parameters: 11200
+name: gcn-1500-16ch
+model_type: GCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 56
+min_valid_loss: inf
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 16
+dilation_growth: 8
+kernel_size: 3
+timestamp: 20231121-002657
+
+Receptive field: 74899 samples or 1560.4 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─GCNBlock: 2-1                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 32, 96000]            128
+│    │    └─FiLM: 3-2                    [1, 32, 96000]            320
+│    │    └─GatedAF: 3-3                 [1, 16, 96000]            --
+│    │    └─Conv1d: 3-4                  [1, 16, 96000]            16
+│    └─GCNBlock: 2-2                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 32, 96000]            1,568
+│    │    └─FiLM: 3-6                    [1, 32, 96000]            320
+│    │    └─GatedAF: 3-7                 [1, 16, 96000]            --
+│    │    └─Conv1d: 3-8                  [1, 16, 96000]            256
+│    └─GCNBlock: 2-3                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 32, 96000]            1,568
+│    │    └─FiLM: 3-10                   [1, 32, 96000]            320
+│    │    └─GatedAF: 3-11                [1, 16, 96000]            --
+│    │    └─Conv1d: 3-12                 [1, 16, 96000]            256
+│    └─GCNBlock: 2-4                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 32, 96000]            1,568
+│    │    └─FiLM: 3-14                   [1, 32, 96000]            320
+│    │    └─GatedAF: 3-15                [1, 16, 96000]            --
+│    │    └─Conv1d: 3-16                 [1, 16, 96000]            256
+│    └─GCNBlock: 2-5                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 32, 96000]            1,568
+│    │    └─FiLM: 3-18                   [1, 32, 96000]            320
+│    │    └─GatedAF: 3-19                [1, 16, 96000]            --
+│    │    └─Conv1d: 3-20                 [1, 16, 96000]            256
+│    └─GCNBlock: 2-6                     [1, 16, 96000]            --
+│    │    └─Conv1dCausal: 3-21           [1, 32, 96000]            1,568
+│    │    └─FiLM: 3-22                   [1, 32, 96000]            320
+│    │    └─GatedAF: 3-23                [1, 16, 96000]            --
+│    │    └─Conv1d: 3-24                 [1, 16, 96000]            256
+├─Conv1d: 1-2                            [1, 1, 96000]             16
+├─TanhAF: 1-3                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 11,200
+Trainable params: 11,200
+Non-trainable params: 0
+Total mult-adds (M): 890.88
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 369.41
+Params size (MB): 0.04
+Estimated Total Size (MB): 369.84
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/lstm-4layer-updated-20231104-160430-48k.pt...
+Configuration name: lstm-4layer-updated
+Model type: LSTM
+Number of parameters: 34338
+name: lstm-4layer-updated
+model_type: LSTM
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 70
+current_epoch: 43
+min_valid_loss: 1.1463749811929815
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+input_size: 1
+hidden_size: 32
+n_layers: 4
+output_size: 1
+dropout_prob: 0.5
+use_skip: True
+kernel_size: 3
+timestamp: 20231104-175644
+
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+LSTM                                     [1, 1, 96000]             --
+├─Conv1dCausal: 1-1                      [1, 32, 96000]            --
+│    └─Conv1d: 2-1                       [1, 32, 96000]            96
+├─BatchNorm1d: 1-2                       [1, 32, 96000]            64
+├─FiLM: 1-3                              [1, 32, 96000]            --
+│    └─Linear: 2-2                       [1, 64]                   256
+│    └─BatchNorm1d: 2-3                  [1, 32, 96000]            64
+├─LSTM: 1-4                              [1, 96000, 32]            33,792
+├─Linear: 1-5                            [1, 96000, 1]             33
+├─Linear: 1-6                            [1, 96000, 1]             33
+==========================================================================================
+Total params: 34,338
+Trainable params: 34,338
+Non-trainable params: 0
+Total mult-adds (G): 3.25
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 99.84
+Params size (MB): 0.14
+Estimated Total Size (MB): 100.36
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/gcn-3250-20231120-232431-48k.pt...
+Configuration name: gcn-3250
+Model type: GCN
+Number of parameters: 431872
+name: gcn-3250
+model_type: GCN
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+batch_size: 4
+num_workers: 4
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 363
+min_valid_loss: 0.7457286435015061
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 32
+dilation_growth: 5
+kernel_size: 41
+timestamp: 20231121-144346
+
+Receptive field: 156241 samples or 3255.0 ms
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GCN                                      [1, 1, 96000]             --
+├─ModuleList: 1-1                        --                        --
+│    └─GCNBlock: 2-1                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-1            [1, 64, 96000]            2,688
+│    │    └─FiLM: 3-2                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-3                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-4                  [1, 32, 96000]            32
+│    └─GCNBlock: 2-2                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-5            [1, 64, 96000]            84,032
+│    │    └─FiLM: 3-6                    [1, 64, 96000]            640
+│    │    └─GatedAF: 3-7                 [1, 32, 96000]            --
+│    │    └─Conv1d: 3-8                  [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-3                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-9            [1, 64, 96000]            84,032
+│    │    └─FiLM: 3-10                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-11                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-12                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-4                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-13           [1, 64, 96000]            84,032
+│    │    └─FiLM: 3-14                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-15                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-16                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-5                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-17           [1, 64, 96000]            84,032
+│    │    └─FiLM: 3-18                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-19                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-20                 [1, 32, 96000]            1,024
+│    └─GCNBlock: 2-6                     [1, 32, 96000]            --
+│    │    └─Conv1dCausal: 3-21           [1, 64, 96000]            84,032
+│    │    └─FiLM: 3-22                   [1, 64, 96000]            640
+│    │    └─GatedAF: 3-23                [1, 32, 96000]            --
+│    │    └─Conv1d: 3-24                 [1, 32, 96000]            1,024
+├─Conv1d: 1-2                            [1, 1, 96000]             32
+├─TanhAF: 1-3                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 431,872
+Trainable params: 431,872
+Non-trainable params: 0
+Total mult-adds (G): 41.09
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 738.05
+Params size (MB): 1.73
+Estimated Total Size (MB): 740.17
+==========================================================================================
+|------------------------------------------------------------------------------------------|
+
+Processing models/gru-conv-4-128-20231122-074120-48k.pt...
+Configuration name: gru-conv-4-128
+Model type: GRU
+Number of parameters: 398338
+name: gru-conv-4-128
+model_type: GRU
+criterion1: stft
+pre_emphasis: None
+criterion2: smooth
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 10
+batch_size: 2
+num_workers: 2
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 13
+min_valid_loss: 1.14391717530679
+cond_dim: 3
+c0: 0.0
+c1: 0.0
+c2: 0.0
+input_size: 1
+hidden_size: 128
+n_layers: 4
+output_size: 1
+dropout_prob: 0.5
+use_skip: True
+kernel_size: 3
+timestamp: 20231122-094119
+
+
+Model architecture:
+==========================================================================================
+Layer (type:depth-idx)                   Output Shape              Param #
+==========================================================================================
+GRU                                      [1, 1, 96000]             --
+├─Conv1dCausal: 1-1                      [1, 128, 96000]           --
+│    └─Conv1d: 2-1                       [1, 128, 96000]           384
+├─BatchNorm1d: 1-2                       [1, 128, 96000]           256
+├─PReLU: 1-3                             [1, 128, 96000]           1
+├─GRU: 1-4                               [1, 96000, 128]           396,288
+├─FiLM: 1-5                              [1, 128, 96000]           --
+│    └─Linear: 2-2                       [1, 256]                  1,024
+│    └─BatchNorm1d: 2-3                  [1, 128, 96000]           256
+├─Conv1d: 1-6                            [1, 1, 96000]             1
+├─Conv1d: 1-7                            [1, 1, 96000]             128
+├─TanhAF: 1-8                            [1, 1, 96000]             --
+==========================================================================================
+Total params: 398,338
+Trainable params: 398,338
+Non-trainable params: 0
+Total mult-adds (G): 38.09
+==========================================================================================
+Input size (MB): 0.38
+Forward/backward pass size (MB): 493.06
+Params size (MB): 1.59
+Estimated Total Size (MB): 495.04
+==========================================================================================

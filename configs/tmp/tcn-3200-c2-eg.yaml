@@ -1,0 +1,36 @@
+name: tcn-3200-c2-eg-all
+model_type: TCN
+
+criterion1: mrstft
+pre_emphasis: null
+criterion2: smooth
+
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+
+optimizer: Adam
+lr: 0.005
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+
+batch_size: 4
+num_workers: 4
+
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 0
+
+min_valid_loss: null
+
+cond_dim: 2
+c0 : 1.0
+c1 : 1.0
+
+kernel_size: 15
+num_blocks: 10
+num_channels: 32
+dilation_depth: 10
+input_size: 1
+output_size: 1
+

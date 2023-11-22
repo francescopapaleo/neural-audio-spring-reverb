@@ -1,0 +1,8 @@
+Using device: cuda:0
+Using configuration gcn-test
+Configuration name: gcn-test
+Receptive field: 361 samples or 7.5 ms
+Parameters: 89.088 k
+Using losses: STFTLoss and SmoothL1Loss
+Total dataset samples: 690
+Training model for 1000 epochs, current epoch 0

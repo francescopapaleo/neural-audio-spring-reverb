@@ -167,8 +167,8 @@ if __name__ == "__main__":
         out_ch = 1,
         n_blocks = 6,
         n_channels = 32,
-        dilation_growth = 5,
-        kernel_size = 41,
+        dilation_growth = 10,
+        kernel_size = 3,
         cond_dim = 3,
     )
     
