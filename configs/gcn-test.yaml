@@ -1,4 +1,4 @@
-name: gcn-test
+name: gcn-test-05-k3
 model_type: GCN
 
 criterion1: stft
@@ -24,14 +24,14 @@ current_epoch: 0
 min_valid_loss: null
 
 cond_dim: 3
-c0 : 0.0
-c1 : 0.0
-c2 : 0.0
+c0 : 0.5
+c1 : 0.5
+c2 : 0.5
 
 in_ch: 1
 out_ch: 1
-n_blocks: 2
+n_blocks: 6
 n_channels: 32
-dilation_growth: 8
-kernel_size: 41
+dilation_growth: 2
+kernel_size: 3
 

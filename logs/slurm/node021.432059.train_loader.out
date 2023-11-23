@@ -1,0 +1,36 @@
+Using device: cuda:0
+Configuration name: gru-128-maxpool
+Parameters: 398.208 k
+Using losses: STFTLoss and SmoothL1Loss
+Total dataset samples: 690
+Training model for 1000 epochs, current epoch 2
+Epoch 2: Loss improved from 1.668477 to 1.534143 - > Saving model
+Epoch 3: Loss improved from 1.534143 to 1.506741 - > Saving model
+Epoch 4: Loss improved from 1.506741 to 1.457694 - > Saving model
+Epoch 5: Loss improved from 1.457694 to 1.415247 - > Saving model
+Epoch 7: Loss improved from 1.415247 to 1.310763 - > Saving model
+Epoch 8: Loss improved from 1.310763 to 1.307883 - > Saving model
+Epoch 9: Loss improved from 1.307883 to 1.296067 - > Saving model
+Epoch 10: Loss improved from 1.296067 to 1.295500 - > Saving model
+Epoch 11: Loss improved from 1.295500 to 1.237269 - > Saving model
+Epoch 13: Loss improved from 1.237269 to 1.230743 - > Saving model
+Epoch 15: Loss improved from 1.230743 to 1.220175 - > Saving model
+Epoch 16: Loss improved from 1.220175 to 1.215047 - > Saving model
+Epoch 00029: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 28: Loss improved from 1.215047 to 1.208032 - > Saving model
+Epoch 29: Loss improved from 1.208032 to 1.198598 - > Saving model
+Epoch 33: Loss improved from 1.198598 to 1.196429 - > Saving model
+Epoch 38: Loss improved from 1.196429 to 1.190329 - > Saving model
+Epoch 43: Loss improved from 1.190329 to 1.188248 - > Saving model
+Epoch 44: Loss improved from 1.188248 to 1.186439 - > Saving model
+Epoch 47: Loss improved from 1.186439 to 1.182261 - > Saving model
+Epoch 53: Loss improved from 1.182261 to 1.179787 - > Saving model
+Epoch 54: Loss improved from 1.179787 to 1.179766 - > Saving model
+Epoch 64: Loss improved from 1.179766 to 1.174425 - > Saving model
+Epoch 00077: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 81: Loss improved from 1.174425 to 1.172268 - > Saving model
+Epoch 92: Loss improved from 1.172268 to 1.171676 - > Saving model
+Epoch 00105: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00116: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00127: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 136: Loss improved from 1.171676 to 1.170251 - > Saving model

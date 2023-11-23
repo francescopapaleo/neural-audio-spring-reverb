@@ -40,9 +40,11 @@ class GRU(nn.Module):
             dilation=1,
             bias=False,
         )
-        self.bn1 = nn.BatchNorm1d(self.hidden_size)
-        self.prelu1 = nn.PReLU()
 
+        self.relu1 = nn.ReLU()
+        self.mp1 = nn.MaxPool1d(kernel_size=self.kernel_size, stride=1, padding=kernel_size // 2)
+        # self.bn1 = nn.BatchNorm1d(self.hidden_size)
+        
         # GRU layer
         self.gru = nn.GRU(
             self.hidden_size,
@@ -58,7 +60,7 @@ class GRU(nn.Module):
         # Optional skip connection
         if self.use_skip:
             self.res = nn.Conv1d(
-                in_channels=input_size, out_channels=output_size, kernel_size=(1,), bias=False
+                in_channels=input_size, out_channels=self.hidden_size, kernel_size=(1,), bias=False
             )
 
         # Output layer
@@ -75,8 +77,9 @@ class GRU(nn.Module):
 
         # Feature extraction
         x_features = self.conv1d(x)
-        x_features = self.bn1(x_features)
-        x_features = self.prelu1(x_features)
+        # x_features = self.bn1(x_features)
+        x_features = self.relu1(x_features)
+        x_features = self.mp1(x_features)
 
         # GRU layer
         x_permuted = x_features.permute(0, 2, 1)
@@ -123,4 +126,4 @@ if __name__ == "__main__":
     x = torch.randn(1, 1, 48000)
     cond = torch.randn(1, 3)
 
-    summary(model, input_data=(x, cond), depth=4, verbose=2)
+    summary(model, input_data=(x, cond), depth=4, verbose=1)

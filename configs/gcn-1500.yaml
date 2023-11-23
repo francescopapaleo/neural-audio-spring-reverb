@@ -1,4 +1,4 @@
-name: gcn-1500
+name: gcn-1500-test
 model_type: GCN
 
 criterion1: stft
@@ -24,9 +24,9 @@ current_epoch: 0
 min_valid_loss: null
 
 cond_dim: 3
-c0 : 0.0
-c1 : 0.0
-c2 : 0.0
+c0 : 0.5
+c1 : 0.5
+c2 : 0.5
 
 in_ch: 1
 out_ch: 1

@@ -96,7 +96,8 @@ class GCN(nn.Module):
         # Compute convolution channels and dilations
         self.channels = [n_channels] * n_blocks
         self.dilations = [dilation_growth ** idx for idx in range(n_blocks)]
-
+        print(f"Dilations: {self.dilations}")
+              
         # Blocks number is given by the number of elements in the channels list
         self.n_blocks = len(self.channels)
         assert len(self.dilations) == self.n_blocks
@@ -165,10 +166,10 @@ if __name__ == "__main__":
     model = GCN(
         in_ch = 1,
         out_ch = 1,
-        n_blocks = 6,
+        n_blocks = 2,
         n_channels = 32,
-        dilation_growth = 10,
-        kernel_size = 3,
+        dilation_growth = 256,
+        kernel_size = 99,
         cond_dim = 3,
     )
     
@@ -178,7 +179,7 @@ if __name__ == "__main__":
     x = torch.randn(1, 1, 48000)
     cond = torch.randn(1, 3)
 
-    summary(model, input_data=(x, cond), depth=4, verbose=2)
+    summary(model, input_data=(x, cond), depth=4, verbose=1)
     rf = model.calc_receptive_field()
     print(f"Receptive field: {rf} samples or {(rf / sample_rate)*1e3:0.1f} ms")
 

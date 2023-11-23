@@ -1,4 +1,4 @@
-name: gcn-4600
+name: gcn-4600-test-film
 model_type: GCN
 
 criterion1: stft

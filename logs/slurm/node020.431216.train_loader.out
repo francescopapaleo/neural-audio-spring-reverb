@@ -1,0 +1,71 @@
+Using device: cuda:0
+Using configuration gru-4layer-updated
+Configuration name: gru-4layer-updated
+Parameters: 25.824 k
+Using losses: STFTLoss and SmoothL1Loss
+Total dataset samples: 690
+Training model for 1000 epochs, current epoch 0
+Epoch 0: Loss improved from  inf to 1.884058 - > Saving model
+Epoch 1: Loss improved from 1.884058 to 1.846373 - > Saving model
+Epoch 2: Loss improved from 1.846373 to 1.788588 - > Saving model
+Epoch 3: Loss improved from 1.788588 to 1.779542 - > Saving model
+Epoch 4: Loss improved from 1.779542 to 1.741735 - > Saving model
+Epoch 5: Loss improved from 1.741735 to 1.725571 - > Saving model
+Epoch 6: Loss improved from 1.725571 to 1.695957 - > Saving model
+Epoch 7: Loss improved from 1.695957 to 1.674724 - > Saving model
+Epoch 8: Loss improved from 1.674724 to 1.664505 - > Saving model
+Epoch 9: Loss improved from 1.664505 to 1.655282 - > Saving model
+Epoch 10: Loss improved from 1.655282 to 1.637477 - > Saving model
+Epoch 11: Loss improved from 1.637477 to 1.627656 - > Saving model
+Epoch 12: Loss improved from 1.627656 to 1.615174 - > Saving model
+Epoch 13: Loss improved from 1.615174 to 1.586403 - > Saving model
+Epoch 14: Loss improved from 1.586403 to 1.579472 - > Saving model
+Epoch 15: Loss improved from 1.579472 to 1.565025 - > Saving model
+Epoch 16: Loss improved from 1.565025 to 1.563594 - > Saving model
+Epoch 17: Loss improved from 1.563594 to 1.543942 - > Saving model
+Epoch 18: Loss improved from 1.543942 to 1.536996 - > Saving model
+Epoch 19: Loss improved from 1.536996 to 1.520986 - > Saving model
+Epoch 21: Loss improved from 1.520986 to 1.490857 - > Saving model
+Epoch 24: Loss improved from 1.490857 to 1.464289 - > Saving model
+Epoch 26: Loss improved from 1.464289 to 1.444874 - > Saving model
+Epoch 27: Loss improved from 1.444874 to 1.419883 - > Saving model
+Epoch 29: Loss improved from 1.419883 to 1.405871 - > Saving model
+Epoch 30: Loss improved from 1.405871 to 1.384093 - > Saving model
+Epoch 32: Loss improved from 1.384093 to 1.369786 - > Saving model
+Epoch 38: Loss improved from 1.369786 to 1.332148 - > Saving model
+Epoch 40: Loss improved from 1.332148 to 1.324612 - > Saving model
+Epoch 42: Loss improved from 1.324612 to 1.324235 - > Saving model
+Epoch 44: Loss improved from 1.324235 to 1.310126 - > Saving model
+Epoch 45: Loss improved from 1.310126 to 1.300815 - > Saving model
+Epoch 47: Loss improved from 1.300815 to 1.298000 - > Saving model
+Epoch 51: Loss improved from 1.298000 to 1.276175 - > Saving model
+Epoch 54: Loss improved from 1.276175 to 1.273206 - > Saving model
+Epoch 56: Loss improved from 1.273206 to 1.268337 - > Saving model
+Epoch 62: Loss improved from 1.268337 to 1.260520 - > Saving model
+Epoch 66: Loss improved from 1.260520 to 1.247079 - > Saving model
+Epoch 70: Loss improved from 1.247079 to 1.238235 - > Saving model
+Epoch 72: Loss improved from 1.238235 to 1.229587 - > Saving model
+Epoch 76: Loss improved from 1.229587 to 1.225058 - > Saving model
+Epoch 80: Loss improved from 1.225058 to 1.216977 - > Saving model
+Epoch 84: Loss improved from 1.216977 to 1.210322 - > Saving model
+Epoch 85: Loss improved from 1.210322 to 1.198227 - > Saving model
+Epoch 90: Loss improved from 1.198227 to 1.196630 - > Saving model
+Epoch 94: Loss improved from 1.196630 to 1.195943 - > Saving model
+Epoch 99: Loss improved from 1.195943 to 1.191140 - > Saving model
+Epoch 105: Loss improved from 1.191140 to 1.184942 - > Saving model
+Epoch 111: Loss improved from 1.184942 to 1.175845 - > Saving model
+Epoch 00123: reducing learning rate of group 0 to 1.0000e-04.
+Epoch 123: Loss improved from 1.175845 to 1.174568 - > Saving model
+Epoch 124: Loss improved from 1.174568 to 1.171439 - > Saving model
+Epoch 131: Loss improved from 1.171439 to 1.170984 - > Saving model
+Epoch 135: Loss improved from 1.170984 to 1.166792 - > Saving model
+Epoch 140: Loss improved from 1.166792 to 1.166739 - > Saving model
+Epoch 142: Loss improved from 1.166739 to 1.165978 - > Saving model
+Epoch 00154: reducing learning rate of group 0 to 1.0000e-05.
+Epoch 154: Loss improved from 1.165978 to 1.163251 - > Saving model
+Epoch 00166: reducing learning rate of group 0 to 1.0000e-06.
+Epoch 00177: reducing learning rate of group 0 to 1.0000e-07.
+Epoch 00188: reducing learning rate of group 0 to 1.0000e-08.
+Epoch 192: Loss improved from 1.163251 to 1.161926 - > Saving model
+Epoch 292: Loss did not improve for 100 epochs, stopping training
+Epoch 292, final validation loss: 1.1645710468292236
