@@ -4,8 +4,8 @@ import torchaudio
 import torchaudio.functional as F
 import auraloss
 import numpy as np
+import wandb
 
-from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 from pathlib import Path
 
@@ -69,10 +69,8 @@ def train_model(args):
     # label = f"{sr_tag}-{config['name']}-{config['criterion1']}+{config['criterion2']}"
     label = f"{config['name']}-{timestamp}-{sr_tag}"
 
-    # Initialize Tensorboard writer
-    log_dir = Path(args.log_dir) / f"train/{label}"
-    os.makedirs(log_dir, exist_ok=True)
-    writer = SummaryWriter(log_dir=log_dir)
+    # Initialize WandB logger
+    wandb.init(project='neural-audio-spring-reverb', name=label)
 
     # Define loss function
     mae = torch.nn.L1Loss().to(args.device)
@@ -178,10 +176,10 @@ def train_model(args):
                 train_loss += loss.item()
 
                 lr = optimizer.param_groups[0]["lr"]
-                writer.add_scalar("train/learning_rate", lr, global_step=current_epoch)
+                wandb.log({"train/learning_rate": lr}, step=current_epoch)
 
             avg_train_loss = train_loss / len(train_loader)
-            writer.add_scalar("train/loss_train", avg_train_loss, global_step=epoch)
+            wandb.log({"train/loss_train": avg_train_loss}, step=epoch)
 
             model.eval()
             valid_loss = 0.0
@@ -209,9 +207,7 @@ def train_model(args):
                     valid_loss += loss.item()
                 avg_valid_loss = valid_loss / len(valid_loader)
 
-            writer.add_scalar(
-                "train/loss_valid", avg_valid_loss, global_step=current_epoch
-            )
+            wandb.log({"train/loss_valid": avg_valid_loss}, step=current_epoch)
 
             scheduler.step(avg_valid_loss)
 
@@ -249,11 +245,7 @@ def train_model(args):
     finally:
         final_train_loss = float(avg_train_loss)
         final_valid_loss = float(avg_valid_loss)
-        writer.add_hparams(
-            config,
-            {"train/final": final_train_loss, "train/final_valid": final_valid_loss},
-        )
-        print(f"Epoch {epoch}, final validation loss: {final_valid_loss}")
+        wandb.log({"train/final": final_train_loss, "train/final_valid": final_valid_loss})
 
         if pre_emphasis is not None:
             pred = F.deemphasis(pred, float(pre_emphasis))
@@ -275,5 +267,4 @@ def train_model(args):
         save_target = f"{args.audio_dir}/train/targ-{label}.wav"
         torchaudio.save(save_target, target, sample_rate=config["sample_rate"])
 
-        writer.flush()
-        writer.close()
+        wandb.finish()

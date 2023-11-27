@@ -1,0 +1,292 @@
+{
+    "os": "Linux-4.18.0-305.3.1.el8_4.x86_64-x86_64-with-glibc2.28",
+    "python": "3.9.18",
+    "heartbeatAt": "2023-11-27T13:41:37.126266",
+    "startedAt": "2023-11-27T13:41:36.442786",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "train",
+        "--init",
+        "configs/gcn.yaml"
+    ],
+    "state": "running",
+    "program": "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py",
+    "codePathLocal": "main.py",
+    "codePath": "main.py",
+    "git": {
+        "remote": "https://github.com/francescopapaleo/neural-audio-spring-reverb.git",
+        "commit": "40f1a6ad7eaf479ea36d79a0fe8615983ff02a25"
+    },
+    "email": "francesco.papaleo@gmail.com",
+    "root": "/gpfs/home/fpapaleo/neural-audio-spring-reverb",
+    "host": "node020",
+    "username": "fpapaleo",
+    "executable": "/home/fpapaleo/.conda/envs/myenv/bin/python",
+    "cpu_count": 24,
+    "cpu_count_logical": 48,
+    "cpu_freq": {
+        "current": 2657.8200208333333,
+        "min": 1000.0,
+        "max": 3200.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2899.975,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2306.535,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2696.143,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2433.475,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2621.991,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2692.533,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2364.394,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2873.303,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2638.557,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2883.519,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2888.976,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2722.288,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2625.512,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2673.544,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2680.794,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2691.345,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2252.924,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2262.085,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2265.029,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2677.667,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2711.917,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2601.865,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2695.085,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2728.79,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2703.246,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2739.596,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2547.854,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2757.118,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2638.495,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2729.502,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2468.525,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2698.582,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2735.809,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2899.817,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2899.508,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2746.706,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2612.719,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2660.869,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2664.53,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2675.089,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2691.854,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2691.078,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2691.243,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2714.026,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2684.567,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2596.804,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2706.465,
+            "min": 1000.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2733.113,
+            "min": 1000.0,
+            "max": 3200.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 218.45968627929688,
+            "used": 48.540367126464844
+        }
+    },
+    "gpu": "Tesla T4",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "Tesla T4",
+            "memory_total": 16106127360
+        }
+    ],
+    "memory": {
+        "total": 187.3282814025879
+    }
+}

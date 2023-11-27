@@ -34,3 +34,5 @@ Epoch 00105: reducing learning rate of group 0 to 1.0000e-06.
 Epoch 00116: reducing learning rate of group 0 to 1.0000e-07.
 Epoch 00127: reducing learning rate of group 0 to 1.0000e-08.
 Epoch 136: Loss improved from 1.171676 to 1.170251 - > Saving model
+Epoch 194: Loss improved from 1.170251 to 1.169747 - > Saving model
+Epoch 220, final validation loss: 1.1767462111901545

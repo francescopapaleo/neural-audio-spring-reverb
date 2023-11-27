@@ -1,0 +1,180 @@
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 36, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment

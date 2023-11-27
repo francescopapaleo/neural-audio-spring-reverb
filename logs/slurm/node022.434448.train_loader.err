@@ -1,0 +1,391 @@
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192035-lh6bnhe7
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/lh6bnhe7
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/lh6bnhe7
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192035-lh6bnhe7/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192207-eevgeq8z
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/eevgeq8z
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/eevgeq8z
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192207-eevgeq8z/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192231-ienuwvxv
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/ienuwvxv
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/ienuwvxv
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192231-ienuwvxv/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192254-16ygks86
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/16ygks86
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/16ygks86
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192254-16ygks86/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192312-lfjsnzjg
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/lfjsnzjg
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/lfjsnzjg
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192312-lfjsnzjg/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192331-4jnis2qf
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/4jnis2qf
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/4jnis2qf
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192331-4jnis2qf/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192349-2m8o67nv
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/2m8o67nv
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/2m8o67nv
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192349-2m8o67nv/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192408-ef2k7ye8
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/ef2k7ye8
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/ef2k7ye8
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192408-ef2k7ye8/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192425-h2xjxruw
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/h2xjxruw
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/h2xjxruw
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192425-h2xjxruw/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192443-j3pbdoof
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/j3pbdoof
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/j3pbdoof
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192443-j3pbdoof/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192502-0arsqjm4
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/0arsqjm4
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/0arsqjm4
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192502-0arsqjm4/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192520-wszcq8s2
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/wszcq8s2
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/wszcq8s2
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192520-wszcq8s2/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192538-irl992sk
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/irl992sk
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/irl992sk
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192538-irl992sk/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192557-5kdjzgbz
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/5kdjzgbz
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/5kdjzgbz
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192557-5kdjzgbz/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192615-pg9x1umy
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/pg9x1umy
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/pg9x1umy
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192615-pg9x1umy/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192635-htkgppfl
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/htkgppfl
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/htkgppfl
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192635-htkgppfl/logs
+wandb: Currently logged in as: francesco-papaleo. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.16.0
+wandb: Run data is saved locally in /gpfs/home/fpapaleo/neural-audio-spring-reverb/wandb/run-20231127_192656-9d441csa
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run evaluation
+wandb: ⭐️ View project at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb
+wandb: 🚀 View run at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/9d441csa
+Traceback (most recent call last):
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 72, in <module>
+    main()
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/main.py", line 53, in main
+    evaluate_model(args)
+  File "/gpfs/home/fpapaleo/neural-audio-spring-reverb/src/eval.py", line 32, in evaluate_model
+    mrstft = auraloss.freq.MultiResolutionSTFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 379, in __init__
+    STFTLoss(
+  File "/home/fpapaleo/.conda/envs/myenv/lib/python3.9/site-packages/auraloss/freq.py", line 159, in __init__
+    fb = librosa.filters.mel(sr=sample_rate, n_fft=fft_size, n_mels=n_bins)
+UnboundLocalError: local variable 'librosa' referenced before assignment
+wandb: 🚀 View run evaluation at: https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/runs/9d441csa
+wandb: ️⚡ View job at https://wandb.ai/francesco-papaleo/neural-audio-spring-reverb/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjExOTEwMTYxMA==/version_details/v3
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20231127_192656-9d441csa/logs

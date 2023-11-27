@@ -1,0 +1,1 @@
+{"train/learning_rate": 0.001, "_timestamp": 1701092512.7531357, "train/final": Infinity, "train/final_valid": Infinity, "_runtime": 16.30085277557373, "_step": 0, "_wandb": {"runtime": 15}}

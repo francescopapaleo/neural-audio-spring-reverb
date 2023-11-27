@@ -2,7 +2,7 @@ import os
 import torch
 import torchaudio
 import torchaudio.functional as F
-from torch.utils.tensorboard import SummaryWriter
+import wandb
 import auraloss
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +11,7 @@ from src.data.egfxset import load_egfxset
 from src.data.springset import load_springset
 from src.data.customset import load_customset
 from src.networks.model_utils import load_model_checkpoint
+from tqdm import tqdm
 
 
 def evaluate_model(args):
@@ -22,12 +23,8 @@ def evaluate_model(args):
 
     model, _, _, config, rf, params = load_model_checkpoint(args)
 
-    # Initialize Tensorboard writer
-    sr_tag = str(int(config["sample_rate"] / 1000)) + "kHz"
-    log_dir = (
-        Path(args.log_dir) / f"eval/{config['name']}-{config['criterion1']}-{sr_tag}"
-    )
-    writer = SummaryWriter(log_dir=log_dir)
+    # Initialize WandB logger
+    wandb.init(project='neural-audio-spring-reverb', name=config["name"])
 
     # Define metrics
     mae = torch.nn.L1Loss()
@@ -71,6 +68,7 @@ def evaluate_model(args):
         raise ValueError("Dataset not found, options are: egfxset or springset")
 
     num_batches = len(test_loader)
+    sr_tag = str(int(config["sample_rate"] / 1000)) + "k"
     label = f"{config['name']}-{config['criterion1']}-{sr_tag}"
 
     # Get the condition tensor
@@ -82,10 +80,9 @@ def evaluate_model(args):
 
     model.eval()
     with torch.no_grad():
-        for step, (dry, wet) in enumerate(test_loader):
+        for step, (dry, wet) in enumerate(tqdm(test_loader, total=num_batches, desc="Processing batches")):
             start_time = datetime.now()
             global_step = step + 1
-            print(f"Batch {global_step}/{num_batches}")
 
             input = dry.to(args.device)
             target = wet.to(args.device)
@@ -132,7 +129,6 @@ def evaluate_model(args):
     avg_rtf = sum(rtf_list) / len(rtf_list)
     mean_test_results["eval/rtf"] = avg_rtf
 
-    writer.add_hparams(config, mean_test_results)
+    wandb.log(mean_test_results)
 
-    writer.flush()
-    writer.close()
+    wandb.finish()
