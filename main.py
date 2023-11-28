@@ -11,7 +11,7 @@ def main():
     
     # Required arguments
     parser.add_argument('action',
-                        choices=['download','train','eval','infer','edit','report','ir','rt60'],
+                        choices=['download','train','eval','infer','edit','report','ir','rt60','wrap'],
                         help='The action to perform, check the doc.')
     
     # Optional arguments
@@ -21,7 +21,7 @@ def main():
     parser.add_argument('--data_dir', type=str, default='data/raw', help='Where the data will be downloaded to')
     parser.add_argument('--audio_dir', type=str, default='audio', help='Relative path to the audio directory')
     parser.add_argument('--log_dir', type=str, default='logs', help='Relative path to the Tensorboard log directory')
-    parser.add_argument('--plots_dir', type=str, default='docs/plots', help='Relative path to the plots directory')
+    parser.add_argument('--plots_dir', type=str, default='docs/assets/plots', help='Relative path to the plots directory')
     parser.add_argument('--models_dir', type=str, default='models', help='Relative path to the trained models directory')
     
     parser.add_argument('--dataset', type=str, default=None, help='Select the dataset to use (default: None)')
@@ -66,6 +66,9 @@ def main():
     elif args.action == 'rt60':
         from src.tools.rt60 import measure_rt60
         measure_rt60(args)
+    elif args.action == 'wrap':
+        from src.wrapper import wrap_model
+        wrap_model(args)
 
 if __name__ == "__main__":
     

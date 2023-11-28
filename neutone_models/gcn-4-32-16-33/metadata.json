@@ -1,0 +1,68 @@
+{
+    "model_name": "GCN.example",
+    "model_authors": [
+        "Francesco Papaleo"
+    ],
+    "model_version": "0.1.0",
+    "model_short_description": "Neural spring reverb effect",
+    "model_long_description": "\n        Neural spring reverb effect through Gated Convolutional Neural Network with FiLM.\n        Trained on EGFx dataset.\n    ",
+    "technical_description": "GCN model based on the idea proposed by Comunit\u00e0 et al.",
+    "technical_links": {
+        "Paper": "http://arxiv.org/abs/2211.00497.pdf",
+        "Code": "https://github.com/mcomunita/gcn-tfilm"
+    },
+    "tags": [
+        "audio effect",
+        "spring reverb",
+        "GCN"
+    ],
+    "citation": "Comunit\u00e0, M., Steinmetz, C. J., Phan, H., & Reiss, J. D. (2023). \n    Modelling Black-Box Audio Effects with Time-Varying Feature Modulation. \n    https://doi.org/10.1109/icassp49357.2023.10097173",
+    "is_experimental": false,
+    "neutone_parameters": {
+        "p1": {
+            "name": "depth",
+            "description": "Modulation Depth",
+            "type": "knob",
+            "used": "True",
+            "default_value": "0.5"
+        },
+        "p2": {
+            "name": "FiLM1",
+            "description": "Feature modulation 1",
+            "type": "knob",
+            "used": "True",
+            "default_value": "0.0"
+        },
+        "p3": {
+            "name": "FiLM2",
+            "description": "Feature modulation 2",
+            "type": "knob",
+            "used": "True",
+            "default_value": "0.0"
+        },
+        "p4": {
+            "name": "FiLM3",
+            "description": "Feature modulation 3",
+            "type": "knob",
+            "used": "True",
+            "default_value": "0.0"
+        }
+    },
+    "wet_default_value": 1.0,
+    "dry_default_value": 0.0,
+    "input_gain_default_value": 0.5,
+    "output_gain_default_value": 0.5,
+    "is_input_mono": true,
+    "is_output_mono": true,
+    "model_type": "mono-mono",
+    "native_sample_rates": [
+        48000
+    ],
+    "native_buffer_sizes": [
+        2048
+    ],
+    "look_behind_samples": 0,
+    "sdk_version": "1.4.2",
+    "pytorch_version": "2.0.1+cu117",
+    "date_created": 1701290795.5298986
+}

@@ -15,6 +15,9 @@ scipy==1.11.2
 setuptools==65.5.0
 torch==2.0.1
 torchaudio==2.0.2
+torchinfo==1.8.0
+neutone_sdk==1.4.2
+wandb==0.16.0
 ```
 
 You can install the dependencies by running the following command:
