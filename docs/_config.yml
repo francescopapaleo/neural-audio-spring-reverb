@@ -1,10 +1,12 @@
+# _config.yml
+
 title: Neural Audio Effect Modelling Strategies for a Spring Reverb
 author:
   name: Francesco Papaleo
-  email: francesco.papaleo {at} gmail.com
+  email: name.surname {at} gmail.com
 
 description: >
-  Presentation page for the neural-audio-spring-reverb project.
+  Repository for the MSc thesis in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona, Spain.
 
 header_pages:
   - index.md
@@ -16,3 +18,9 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+minima:
+  social_links:
+    - { platform: github,  user_url: "https://github.com/francescopapaleo" }
+    - { platform: linkedin, user_url: "https://www.linkedin.com/in/francescopapaleo/" }
+    - {platform: google_scholar, user_url: "https://scholar.google.com/citations?user=sTf2rzcAAAAJ&hl=en"}

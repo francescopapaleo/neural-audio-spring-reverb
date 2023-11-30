@@ -3,7 +3,9 @@ layout: base
 title: Home
 permalink: /
 ---
+
 <h2>Abstract</h2>
+
 <p>Virtual analog modeling emulates the processing characteristics of a given physical device. This has been an active
     field of research and commercial innovation in which two main perspectives have been historically adopted. The first
     one: <strong>white-box</strong>, seeks to reproduce the exact behavior through algorithmic simulation of circuits or
@@ -29,36 +31,40 @@ permalink: /
 Some dry and processed audio examples are available below. The audio files are in `48kHz 24bit wav` format.
 All the models have been trained with the same dataset, and the same training procedure with a single `NVIDIA GeForce GTX 1080 Ti GPU`. 
 
-**Drum loop (dry / raw)**
+<h3>Drum loop</h3>
+
+- Dry / raw 
 
 <audio src="assets/audio/raw/drums-48k24b.wav" controls preload></audio>
 
-- Drum loop processed with the GCN model
+- Processed with the GCN model
 
 <audio src="assets/audio/processed/drums-48k24b*gcn-3250.wav" controls preload></audio>
 
-- Drum loop processed with the TCN model
+- Processed with the TCN model
 
 <audio src="assets/audio/processed/drums-48k24b*tcn-3900-updated.wav" controls preload></audio>
 
-- Drum loop processed with the WaveNet model
+- Processed with the WaveNet model
 
 <audio src="assets/audio/processed/drums-48k24b*wavenet-900.wav" controls preload></audio>
 
 
-- **Pluck synth sample (dry / raw)**
+<h3>Pluck synth sample</h3>
+
+- Dry / raw
 
 <audio src="assets/audio/raw/pluck-48k24b.wav" controls preload></audio>
 
-- Pluck synth sample processed with the GCN model
+- Processed with the GCN model
 
 <audio src="assets/audio/processed/pluck-48k24b*gcn-3250.wav" controls preload></audio>
 
-- Pluck synth sample processed with the TCN model
+- Processed with the TCN model
 
 <audio src="assets/audio/processed/pluck-48k24b*tcn-3900-updated.wav" controls preload></audio>
 
-- Pluck synth sample processed with the WaveNet model
+- Processed with the WaveNet model
 
 <audio src="assets/audio/processed/pluck-48k24b*wavenet-900.wav" controls preload></audio>
 
