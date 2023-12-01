@@ -6,7 +6,7 @@ from datetime import datetime
 from src.networks.tcn import TCN
 from src.networks.wavenet import WaveNet
 from src.networks.gru import GRU
-from src.networks.gcn_old import GCN_FiLM
+from src.networks.gcn_tfilm import GCNTFiLM
 from src.networks.lstm import LSTM
 from src.networks.gcn import GCN
 
@@ -67,8 +67,7 @@ def initialize_model(device, config):
         "WaveNet": WaveNet,
         "GRU": GRU,
         "GCN": GCN,
-        "GCN_FiLM": GCN_FiLM,
-        
+        "GCNTFiLM": GCNTFiLM,
     }
 
     model_params = {
@@ -120,13 +119,16 @@ def initialize_model(device, config):
             "kernel_size",
             "cond_dim",
         },
-        "GCN_FiLM": {
-            "num_blocks",
-            "num_layers",
-            "num_channels",
+        "GCNTFiLM": {
+           "in_ch",
+            "out_ch",
+            "n_blocks",
+            "n_channels",
+            "dilation_growth",
             "kernel_size",
-            "dilation_depth",
             "cond_dim",
+            "rnn_block_size",
+            "rnn_type",
         },
     }
 
