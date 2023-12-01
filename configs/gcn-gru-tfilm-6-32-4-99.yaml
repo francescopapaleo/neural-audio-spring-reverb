@@ -1,0 +1,39 @@
+name: gcn-gru-tfilm-6-32-4-41
+model_type: GCN
+
+criterion1: stft
+pre_emphasis: null
+criterion2: smooth
+
+dataset: egfxset
+sample_rate: 48000
+bit_rate: 24
+
+optimizer: Adam
+lr: 0.001
+lr_scheduler: ReduceLROnPlateau
+lr_patience: 20
+
+batch_size: 8
+num_workers: 4
+
+max_epochs: 1000
+early_stop_patience: 100
+current_epoch: 0
+
+min_valid_loss: null
+
+cond_dim: 3
+c0 : 0.0
+c1 : 0.0
+c2 : 0.0
+
+in_ch: 1
+out_ch: 1
+n_blocks: 6
+n_channels: 32
+dilation_growth: 4
+kernel_size: 99
+tfilm_block_size: 128
+rnn_type: gru
+

@@ -93,6 +93,16 @@ The given checkpoint is loaded and the model is evaluated on the test set. The r
 python main.py infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
 ```
 
+## Neutone SDK
+
+This project integrates the [Neutone SDK](), which allows to wrap and export a trained model for using it into a DAW with the [Neutone plugin]() or for using it in a standalone application.
+
+To export a model, run the following command:
+
+```terminal
+python main.py wrap -c PT_CHECKPOINT_PATH
+```
+
 ## Audio Measurement Tools
 
 The folder [``tools``](src/tools/) contains some scripts to measure the impulse response of a spring reverb model or an audio file that contains the impulse response of a physical device. 
@@ -117,19 +127,6 @@ python main.py rt60 -i INPUT_FILE_PATH
 
 - The plot is saved in the [``plots/``](docs/plots/) folder.
 
-### Tensorboard logging
-To visualize the training process or test results, run the following command from the project root folder:
-
-```terminal
-tensorboard --logdir logs/
-```
-
-If you want to use tensorboard dev: 
-```terminal
-tensorboard dev upload --logdir logs/train \
- --name "Training runs" \
-    --description "Comparing several training runs"
-```
 
 ## Utilities
 
