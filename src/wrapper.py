@@ -58,7 +58,7 @@ def replace_modules(module):
 
 class GCNModelWrapper(WaveformToWaveformBase):
     def get_model_name(self) -> str:
-        return "GCN.example"  # <- EDIT THIS
+        return "GCN.NeuralSpringReverb"  # <- EDIT THIS
 
     def get_model_authors(self) -> List[str]:
         return ["Francesco Papaleo"]  # <- EDIT THIS
@@ -67,22 +67,19 @@ class GCNModelWrapper(WaveformToWaveformBase):
         return "Neural spring reverb effect"  # <- EDIT THIS
 
     def get_model_long_description(self) -> str:
-        return """
-            Neural spring reverb effect through Gated Convolutional Neural Network with FiLM.
-            Trained on EGFx dataset.
-        """ # <- EDIT THIS
+        return """""" # <- EDIT THIS
 
     def get_technical_description(self) -> str:
         return "GCN model based on the idea proposed by Comunità et al."    # <- EDIT THIS  
 
     def get_tags(self) -> List[str]:
-        return ["audio effect", "spring reverb", "GCN"] # <- EDIT THIS
+        return ["reverb"] # <- EDIT THIS
 
     def get_model_version(self) -> str:
-        return "0.1.0"  # <- EDIT THIS
+        return "1.0.0"  # <- EDIT THIS
 
     def is_experimental(self) -> bool:
-        return False  # <- EDIT THIS
+        return True  # <- EDIT THIS
 
     def get_technical_links(self) -> Dict[str, str]:
         return {
@@ -117,7 +114,7 @@ class GCNModelWrapper(WaveformToWaveformBase):
 
     @torch.jit.export
     def get_native_buffer_sizes(self) -> List[int]:
-        return [2048]
+        return [1024]
 
     def do_forward_pass(self, x: Tensor, params: Dict[str, Tensor]) -> torch.Tensor:
         # conditioning for FiLM layer
