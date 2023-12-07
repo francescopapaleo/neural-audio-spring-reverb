@@ -36,11 +36,15 @@ def make_inference(args) -> torch.Tensor:
 
     # Reshape the input with the dynamically obtained batch size
     input = input.reshape(batch_size, 1, -1).to(args.device)
-    
+
     # Get the condition tensor
     if config["cond_dim"] > 0:
         c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
-        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
+        c = (
+            torch.tensor(c_values, device=args.device, requires_grad=False)
+            .view(1, -1)
+            .repeat(config["batch_size"], 1)
+        )
     else:
         c = None
 

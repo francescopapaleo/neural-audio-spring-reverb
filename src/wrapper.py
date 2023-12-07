@@ -44,6 +44,7 @@ class Conv1dCached(nn.Module):  # Conv1d with cache
         x = self.conv(x)
         return x
 
+
 def replace_modules(module):
     for name, child in module.named_children():
         if isinstance(child, Conv1dCausal):
@@ -67,13 +68,13 @@ class GCNModelWrapper(WaveformToWaveformBase):
         return "Neural spring reverb effect"  # <- EDIT THIS
 
     def get_model_long_description(self) -> str:
-        return """""" # <- EDIT THIS
+        return """"""  # <- EDIT THIS
 
     def get_technical_description(self) -> str:
-        return "GCN model based on the idea proposed by Comunità et al."    # <- EDIT THIS  
+        return "GCN model based on the idea proposed by Comunità et al."  # <- EDIT THIS
 
     def get_tags(self) -> List[str]:
-        return ["reverb"] # <- EDIT THIS
+        return ["reverb"]  # <- EDIT THIS
 
     def get_model_version(self) -> str:
         return "1.0.0"  # <- EDIT THIS
@@ -85,12 +86,12 @@ class GCNModelWrapper(WaveformToWaveformBase):
         return {
             "Paper": "http://arxiv.org/abs/2211.00497.pdf",
             "Code": "https://github.com/mcomunita/gcn-tfilm",
-        }   # <- EDIT THIS
+        }  # <- EDIT THIS
 
     def get_citation(self) -> str:
         return """Comunità, M., Steinmetz, C. J., Phan, H., & Reiss, J. D. (2023). 
         Modelling Black-Box Audio Effects with Time-Varying Feature Modulation. 
-        https://doi.org/10.1109/icassp49357.2023.10097173""" # <- EDIT THIS
+        https://doi.org/10.1109/icassp49357.2023.10097173"""  # <- EDIT THIS
 
     def get_neutone_parameters(self) -> List[NeutoneParameter]:
         return [
@@ -124,7 +125,7 @@ class GCNModelWrapper(WaveformToWaveformBase):
         depth = params["depth"]
         cond = torch.stack([p1, p2, p3], dim=1) * depth
         cond = cond.expand(x.shape[0], 3)
-        
+
         # forward pass
         x = x.unsqueeze(1)
         x = self.model(x, cond)
@@ -133,11 +134,8 @@ class GCNModelWrapper(WaveformToWaveformBase):
 
 
 def wrap_model(args):
-
     if not os.path.exists(args.checkpoint):
-        raise FileNotFoundError(
-            "Checkpoint file not found"
-        )
+        raise FileNotFoundError("Checkpoint file not found")
 
     model, _, _, config, rf, params = load_model_checkpoint(args)
     model.eval()
@@ -166,4 +164,3 @@ def wrap_model(args):
         optimize=False,
         speed_benchmark=True,
     )
-

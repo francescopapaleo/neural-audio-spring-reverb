@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from src.networks.custom_layers import Conv1dCausal, FiLM
 
+
 class LSTM(nn.Module):
     """
     LSTM with convolutional feature extraction, optional skip connection, and FiLM layer

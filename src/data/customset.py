@@ -3,7 +3,6 @@ import torchaudio
 from torch.utils.data import Dataset, DataLoader
 import torchaudio.functional as F
 from pathlib import Path
-import os
 
 
 class CustomDataset(Dataset):
@@ -12,7 +11,7 @@ class CustomDataset(Dataset):
     Those can be a subset of another dataset or user-generated.
 
     The folder structure should be as follows:
-    data_dir                # Path to the data directory referenced in the program arguments
+    data_dir                # Path to the data directory
     ├── customset           # Main folder for the custom dataset
         ├── input           # Folder for the dry/input/x audio files
         │   ├── 1-0.wav
@@ -23,7 +22,8 @@ class CustomDataset(Dataset):
         │   ├── 1-1.wav
         │   ├── ...
 
-    File names should be in the format "dry-<alphanumericID>.wav" and "wet-<alphanumericID>.wav".
+    File names should be in the format "dry-<alphanumericID>.wav"
+    and "wet-<alphanumericID>.wav".
     """
 
     def __init__(

@@ -3,9 +3,9 @@ import torch.nn as nn
 
 from src.networks.custom_layers import Conv1dCausal, FiLM, TanhAF
 
+
 class GRU(nn.Module):
-    """
-    """
+    """ """
 
     def __init__(
         self,
@@ -42,9 +42,11 @@ class GRU(nn.Module):
         )
 
         self.relu1 = nn.ReLU()
-        self.mp1 = nn.MaxPool1d(kernel_size=self.kernel_size, stride=1, padding=kernel_size // 2)
+        self.mp1 = nn.MaxPool1d(
+            kernel_size=self.kernel_size, stride=1, padding=kernel_size // 2
+        )
         # self.bn1 = nn.BatchNorm1d(self.hidden_size)
-        
+
         # GRU layer
         self.gru = nn.GRU(
             self.hidden_size,
@@ -60,7 +62,10 @@ class GRU(nn.Module):
         # Optional skip connection
         if self.use_skip:
             self.res = nn.Conv1d(
-                in_channels=input_size, out_channels=self.hidden_size, kernel_size=(1,), bias=False
+                in_channels=input_size,
+                out_channels=self.hidden_size,
+                kernel_size=(1,),
+                bias=False,
             )
 
         # Output layer
@@ -88,7 +93,7 @@ class GRU(nn.Module):
 
         # Apply FiLM modulation
         out = self.film_layer(out, c)
-        
+
         # Add skip connection if it's enabled
         if self.use_skip:
             res = self.res(x)
@@ -104,8 +109,6 @@ class GRU(nn.Module):
 
 
 if __name__ == "__main__":
-
-
     from torchinfo import summary
 
     # Test GRU

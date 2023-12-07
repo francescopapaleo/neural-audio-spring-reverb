@@ -6,39 +6,44 @@ from src.networks.custom_layers import Conv1dCausal, GatedAF, TanhAF
 
 
 class TFiLM(torch.nn.Module):
-    def __init__(self,
-                 n_channels,
-                 n_params,
-                 tfilm_block_size,
-                 rnn_type='lstm'):
+    def __init__(self, n_channels, n_params, tfilm_block_size, rnn_type="lstm"):
         super().__init__()
         self.nchannels = n_channels
         self.nparams = n_params
         self.tfilm_block_size = tfilm_block_size
         self.num_layers = 1
         self.first_run = True
-        self.hidden_state = (torch.Tensor(0), torch.Tensor(0))  # (hidden_state, cell_state)
+        self.hidden_state = (
+            torch.Tensor(0),
+            torch.Tensor(0),
+        )  # (hidden_state, cell_state)
 
         # to downsample input
-        self.maxpool = torch.nn.MaxPool1d(kernel_size=tfilm_block_size,
-                                          stride=None,
-                                          padding=0,
-                                          dilation=1,
-                                          return_indices=False,
-                                          ceil_mode=False)
+        self.maxpool = torch.nn.MaxPool1d(
+            kernel_size=tfilm_block_size,
+            stride=None,
+            padding=0,
+            dilation=1,
+            return_indices=False,
+            ceil_mode=False,
+        )
 
-        if rnn_type.lower() == 'lstm':
-            self.rnn = torch.nn.LSTM(input_size=n_channels + n_params,
-                                     hidden_size=n_channels,
-                                     num_layers=self.num_layers,
-                                     batch_first=True,
-                                     bidirectional=False)
-        elif rnn_type.lower() == 'gru':
-            self.rnn = torch.nn.GRU(input_size=n_channels + n_params,
-                                    hidden_size=n_channels,
-                                    num_layers=self.num_layers,
-                                    batch_first=True,
-                                    bidirectional=False)
+        if rnn_type.lower() == "lstm":
+            self.rnn = torch.nn.LSTM(
+                input_size=n_channels + n_params,
+                hidden_size=n_channels,
+                num_layers=self.num_layers,
+                batch_first=True,
+                bidirectional=False,
+            )
+        elif rnn_type.lower() == "gru":
+            self.rnn = torch.nn.GRU(
+                input_size=n_channels + n_params,
+                hidden_size=n_channels,
+                num_layers=self.num_layers,
+                batch_first=True,
+                bidirectional=False,
+            )
         else:
             raise ValueError("Invalid rnn_type. Use 'lstm' or 'gru'.")
 
@@ -49,7 +54,11 @@ class TFiLM(torch.nn.Module):
 
         # pad input if it's not multiple of tfilm block size
         if (x_in_shape[2] % self.tfilm_block_size) != 0:
-            padding = torch.zeros(x_in_shape[0], x_in_shape[1], self.tfilm_block_size - (x_in_shape[2] % self.tfilm_block_size))
+            padding = torch.zeros(
+                x_in_shape[0],
+                x_in_shape[1],
+                self.tfilm_block_size - (x_in_shape[2] % self.tfilm_block_size),
+            )
             x = torch.cat((x, padding), dim=-1)
 
         x_shape = x.shape
@@ -61,7 +70,9 @@ class TFiLM(torch.nn.Module):
         if self.nparams > 0 and p is not None:
             p_up = p.unsqueeze(-1)
             p_up = p_up.repeat(1, 1, nsteps)  # upsample params [batch, nparams, nsteps]
-            x_down = torch.cat((x_down, p_up), dim=1)  # concat along channel dim [batch, nchannels+nparams, nsteps]
+            x_down = torch.cat(
+                (x_down, p_up), dim=1
+            )  # concat along channel dim [batch, nchannels+nparams, nsteps]
 
         # shape for LSTM (length, batch, channels)
         x_down = x_down.permute(2, 0, 1)
@@ -79,9 +90,9 @@ class TFiLM(torch.nn.Module):
 
         # reshape input and modulation sequence into blocks
         x_in = torch.reshape(
-            x, shape=(-1, self.nchannels, nsteps, self.tfilm_block_size))
-        x_norm = torch.reshape(
-            x_norm, shape=(-1, self.nchannels, nsteps, 1))
+            x, shape=(-1, self.nchannels, nsteps, self.tfilm_block_size)
+        )
+        x_norm = torch.reshape(x_norm, shape=(-1, self.nchannels, nsteps, 1))
 
         # multiply
         x_out = x_norm * x_in
@@ -90,7 +101,7 @@ class TFiLM(torch.nn.Module):
         x_out = torch.reshape(x_out, shape=(x_shape))
 
         # crop to original (input) shape
-        x_out = x_out[..., :x_in_shape[2]]
+        x_out = x_out[..., : x_in_shape[2]]
 
         return x_out
 
@@ -109,6 +120,7 @@ class GCNBlock(nn.Module):
         stride (int, optional): Stride for the convolution.
         cond_dim (int, optional): Dimensionality of the conditional input for FiLM.
     """
+
     def __init__(
         self,
         in_ch: int,
@@ -117,7 +129,7 @@ class GCNBlock(nn.Module):
         dilation: int = 1,
         stride: int = 1,
         cond_dim: int = 0,
-        rnn_type: str = 'lstm',
+        rnn_type: str = "lstm",
         tfilm_block_size: int = 128,
     ) -> None:
         super().__init__()
@@ -132,7 +144,7 @@ class GCNBlock(nn.Module):
 
         self.conv = Conv1dCausal(
             in_channels=in_ch,
-            out_channels=out_ch * 2,    # adapt for the Gated Activation Function
+            out_channels=out_ch * 2,  # adapt for the Gated Activation Function
             kernel_size=kernel_size,
             stride=stride,
             dilation=dilation,
@@ -140,7 +152,7 @@ class GCNBlock(nn.Module):
 
         if cond_dim > 0:
             self.film = TFiLM(
-                n_channels=out_ch * 2, 
+                n_channels=out_ch * 2,
                 n_params=cond_dim,
                 tfilm_block_size=tfilm_block_size,
                 rnn_type=self.rnn_type,
@@ -156,13 +168,11 @@ class GCNBlock(nn.Module):
 
     def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         x_in = x
-        x = self.conv(x) # Apply causal convolution
-        if self.film is not None: # Apply FiLM if conditional input is given
-            x = self.film(
-                x, cond
-            )  
-        x = self.gated_activation(x) # Apply gated activation function
-        x_res = self.res(x_in) # Apply residual convolution
+        x = self.conv(x)  # Apply causal convolution
+        if self.film is not None:  # Apply FiLM if conditional input is given
+            x = self.film(x, cond)
+        x = self.gated_activation(x)  # Apply gated activation function
+        x_res = self.res(x_in)  # Apply residual convolution
         x = x + x_res  # Apply residual connection
         return x
 
@@ -182,6 +192,7 @@ class GCNTFiLM(nn.Module):
     Returns:
         Tensor: The output of the GCN model.
     """
+
     def __init__(
         self,
         in_ch: int = 1,
@@ -192,19 +203,19 @@ class GCNTFiLM(nn.Module):
         kernel_size: int = 3,
         cond_dim: int = 3,
         tfilm_block_size: int = 128,
-        rnn_type: str = 'lstm',
+        rnn_type: str = "lstm",
     ) -> None:
         super().__init__()
         self.in_ch = in_ch  # input channels
-        self.out_ch = out_ch    # output channels
+        self.out_ch = out_ch  # output channels
         self.kernel_size = kernel_size
         self.cond_dim = cond_dim
 
         # Compute convolution channels and dilations
         self.channels = [n_channels] * n_blocks
-        self.dilations = [dilation_growth ** idx for idx in range(n_blocks)]
+        self.dilations = [dilation_growth**idx for idx in range(n_blocks)]
         print(f"Dilations: {self.dilations}")
-              
+
         # Blocks number is given by the number of elements in the channels list
         self.n_blocks = len(self.channels)
         assert len(self.dilations) == self.n_blocks
@@ -249,15 +260,15 @@ class GCNTFiLM(nn.Module):
     def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         # x.shape = (batch_size, in_ch, samples)
         # cond.shape = (batch_size, cond_dim)
-        for block in self.blocks: # Apply GCN blocks
+        for block in self.blocks:  # Apply GCN blocks
             x = block(x, cond)
-        x = self.out_net(x) # Apply output layer
+        x = self.out_net(x)  # Apply output layer
         x = self.af(x)  # Apply tanh activation function
         return x
 
     def calc_receptive_field(self) -> int:
         """Compute the receptive field in samples.
-        
+
         Returns:
             int: The receptive field of the model.
         """
@@ -268,22 +279,22 @@ class GCNTFiLM(nn.Module):
             rf = rf + ((self.kernel_size - 1) * dil)
         return rf
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     from torchinfo import summary
 
     model = GCNTFiLM(
-        in_ch = 1,
-        out_ch = 1,
-        n_blocks = 2,
-        n_channels = 32,
-        dilation_growth = 256,
-        kernel_size = 99,
-        cond_dim = 3,
-        tfilm_block_size = 128,
-        rnn_type = 'lstm',
+        in_ch=1,
+        out_ch=1,
+        n_blocks=2,
+        n_channels=32,
+        dilation_growth=256,
+        kernel_size=99,
+        cond_dim=3,
+        tfilm_block_size=128,
+        rnn_type="lstm",
     )
-    
+
     sample_rate = 48000
 
     model.eval()

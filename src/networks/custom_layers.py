@@ -28,7 +28,7 @@ class FiLM(nn.Module):
         self.adaptor = nn.Linear(cond_dim, n_features * 2)
         if batch_norm is True:
             self.bn = nn.BatchNorm1d(n_features)
-        
+
     def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         cond = self.adaptor(cond)
         g, b = torch.chunk(cond, 2, dim=-1)
@@ -109,6 +109,7 @@ class GatedAF(nn.Module):
         # Element-wise multiplication of tanh and sigmoid activations
         x = x_tanh * x_sigmoid
         return x
+
 
 class TanhAF(nn.Module):
     """Tanh activation function

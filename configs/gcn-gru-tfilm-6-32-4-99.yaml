@@ -1,4 +1,4 @@
-name: gcn-gru-tfilm-6-32-4-41
+name: gcn-gru-tfilm-6-32-4-99
 model_type: GCN
 
 criterion1: stft

@@ -215,7 +215,6 @@ class WaveNet(nn.Module):
 
 
 if __name__ == "__main__":
-    
     from torchinfo import summary
 
     # Test Model

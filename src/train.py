@@ -70,7 +70,7 @@ def train_model(args):
     label = f"{config['name']}-{timestamp}-{sr_tag}"
 
     # Initialize WandB logger
-    wandb.init(project='neural-audio-spring-reverb', name=label)
+    wandb.init(project="neural-audio-spring-reverb", name=label)
 
     # Define loss function
     mae = torch.nn.L1Loss().to(args.device)
@@ -138,7 +138,11 @@ def train_model(args):
     # Get the condition tensor
     if config["cond_dim"] > 0:
         c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
-        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
+        c = (
+            torch.tensor(c_values, device=args.device, requires_grad=False)
+            .view(1, -1)
+            .repeat(config["batch_size"], 1)
+        )
     else:
         c = None
 
@@ -245,7 +249,9 @@ def train_model(args):
     finally:
         final_train_loss = float(avg_train_loss)
         final_valid_loss = float(avg_valid_loss)
-        wandb.log({"train/final": final_train_loss, "train/final_valid": final_valid_loss})
+        wandb.log(
+            {"train/final": final_train_loss, "train/final_valid": final_valid_loss}
+        )
 
         if pre_emphasis is not None:
             pred = F.deemphasis(pred, float(pre_emphasis))

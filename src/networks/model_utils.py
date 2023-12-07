@@ -10,27 +10,6 @@ from src.networks.gcn_tfilm import GCNTFiLM
 from src.networks.lstm import LSTM
 from src.networks.gcn import GCN
 
-# DEVICE SELECTION HAS BEEN MOVED TO main.py
-# def select_device(device):
-#     """
-#     Select the device to be used for training and inference.
-
-#     Parameters:
-#         device: str
-#             The device to be used. Can be either 'cuda:0' or 'cpu'.
-#     Returns:
-#         device: torch.device
-#             The device to be used for training and inference.
-#     """
-#     if device is not None:
-#         device = torch.device(device)
-#     elif torch.cuda.is_available():
-#         device = torch.device("cuda:0")
-#     else:
-#         device = torch.device("cpu")
-#     print(f"Using device: {device}")
-#     return device
-
 
 def parse_config(config_path):
     """
@@ -72,7 +51,7 @@ def initialize_model(device, config):
 
     model_params = {
         "GCN": {
-           "in_ch",
+            "in_ch",
             "out_ch",
             "n_blocks",
             "n_channels",
@@ -120,7 +99,7 @@ def initialize_model(device, config):
             "cond_dim",
         },
         "GCNTFiLM": {
-           "in_ch",
+            "in_ch",
             "out_ch",
             "n_blocks",
             "n_channels",

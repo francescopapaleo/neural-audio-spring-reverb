@@ -1,8 +1,7 @@
 import subprocess
 from pathlib import Path
 
-""" 
-This script downloads the selected dataset.
+"""This script downloads the selected dataset.
 """
 
 
@@ -12,12 +11,14 @@ def download_file(destination, url):
         subprocess.run(["wget", "-P", str(destination), url], check=True)
     except FileNotFoundError:
         print(
-            "Error: The 'wget' command could not be found. Please ensure 'wget' is installed and available in your system's path."
+            "Error: The 'wget' command could not be found."
+            "Please ensure 'wget' is installed and available."
         )
         raise
     except subprocess.CalledProcessError:
         print(
-            "Error: The 'wget' command failed. Please check the URL or your internet connection."
+            "Error: The 'wget' command failed."
+            "Please check the URL or your internet connection."
         )
         raise
 
@@ -29,7 +30,8 @@ def unzip_file(zip_path, output_dir):
         subprocess.run(["unzip", str(zip_path), "-d", str(output_dir)], check=True)
     except FileNotFoundError:
         print(
-            "Error: The 'unzip' command could not be found. Please ensure 'unzip' is installed and available in your system's path."
+            "Error: The 'unzip' command could not be found."
+            "Please ensure 'unzip' is installed and available."
         )
         raise
     except subprocess.CalledProcessError:
@@ -43,7 +45,7 @@ def download_data(args):
     if args.dataset == "springset":
         try:
             # Create a subdirectory for 'springset'
-            springset_dir = args.data_dir / "springset"  # Convert to Path object
+            springset_dir = args.data_dir / "springset"
             springset_dir.mkdir(parents=True, exist_ok=True)
 
             download_file(
@@ -51,11 +53,11 @@ def download_data(args):
                 "https://zenodo.org/record/3746119/files/plate-spring.zip",
             )
             unzip_file(args.data_dir / "plate-spring.zip", args.data_dir)
-            (args.data_dir / "plate-spring.zip").unlink()  # Delete the zip file
+            (args.data_dir / "plate-spring.zip").unlink()  # Delete zip file
 
             for file in (args.data_dir / "plate/").glob("*"):
                 file.unlink()  # Delete the files within 'plate' directory
-            (args.data_dir / "plate").rmdir()  # Delete the 'plate' subdirectory
+            (args.data_dir / "plate").rmdir()  # Delete the 'plate' subdir
             (args.data_dir / "spring").rename(
                 args.data_dir / "springset"
             )  # Rename 'spring' to 'springset'

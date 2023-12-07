@@ -16,6 +16,7 @@ class GCNBlock(nn.Module):
         stride (int, optional): Stride for the convolution.
         cond_dim (int, optional): Dimensionality of the conditional input for FiLM.
     """
+
     def __init__(
         self,
         in_ch: int,
@@ -35,13 +36,13 @@ class GCNBlock(nn.Module):
 
         self.conv = Conv1dCausal(
             in_channels=in_ch,
-            out_channels=out_ch * 2,    # adapt for the Gated Activation Function
+            out_channels=out_ch * 2,  # adapt for the Gated Activation Function
             kernel_size=kernel_size,
             stride=stride,
             dilation=dilation,
         )
 
-        self.film = FiLM(cond_dim=cond_dim, n_features=out_ch * 2) 
+        self.film = FiLM(cond_dim=cond_dim, n_features=out_ch * 2)
 
         self.gated_activation = GatedAF()
 
@@ -51,13 +52,11 @@ class GCNBlock(nn.Module):
 
     def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         x_in = x
-        x = self.conv(x) # Apply causal convolution
-        if self.film is not None: # Apply FiLM if conditional input is given
-            x = self.film(
-                x, cond
-            )  
-        x = self.gated_activation(x) # Apply gated activation function
-        x_res = self.res(x_in) # Apply residual convolution
+        x = self.conv(x)  # Apply causal convolution
+        if self.film is not None:  # Apply FiLM if conditional input is given
+            x = self.film(x, cond)
+        x = self.gated_activation(x)  # Apply gated activation function
+        x_res = self.res(x_in)  # Apply residual convolution
         x = x + x_res  # Apply residual connection
         return x
 
@@ -77,6 +76,7 @@ class GCN(nn.Module):
     Returns:
         Tensor: The output of the GCN model.
     """
+
     def __init__(
         self,
         in_ch: int = 1,
@@ -89,15 +89,15 @@ class GCN(nn.Module):
     ) -> None:
         super().__init__()
         self.in_ch = in_ch  # input channels
-        self.out_ch = out_ch    # output channels
+        self.out_ch = out_ch  # output channels
         self.kernel_size = kernel_size
         self.cond_dim = cond_dim
 
         # Compute convolution channels and dilations
         self.channels = [n_channels] * n_blocks
-        self.dilations = [dilation_growth ** idx for idx in range(n_blocks)]
+        self.dilations = [dilation_growth**idx for idx in range(n_blocks)]
         print(f"Dilations: {self.dilations}")
-              
+
         # Blocks number is given by the number of elements in the channels list
         self.n_blocks = len(self.channels)
         assert len(self.dilations) == self.n_blocks
@@ -140,15 +140,15 @@ class GCN(nn.Module):
     def forward(self, x: Tensor, cond: Tensor) -> Tensor:
         # x.shape = (batch_size, in_ch, samples)
         # cond.shape = (batch_size, cond_dim)
-        for block in self.blocks: # Apply GCN blocks
+        for block in self.blocks:  # Apply GCN blocks
             x = block(x, cond)
-        x = self.out_net(x) # Apply output layer
+        x = self.out_net(x)  # Apply output layer
         x = self.af(x)  # Apply tanh activation function
         return x
 
     def calc_receptive_field(self) -> int:
         """Compute the receptive field in samples.
-        
+
         Returns:
             int: The receptive field of the model.
         """
@@ -159,20 +159,20 @@ class GCN(nn.Module):
             rf = rf + ((self.kernel_size - 1) * dil)
         return rf
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     from torchinfo import summary
 
     model = GCN(
-        in_ch = 1,
-        out_ch = 1,
-        n_blocks = 2,
-        n_channels = 32,
-        dilation_growth = 256,
-        kernel_size = 99,
-        cond_dim = 3,
+        in_ch=1,
+        out_ch=1,
+        n_blocks=2,
+        n_channels=32,
+        dilation_growth=256,
+        kernel_size=99,
+        cond_dim=3,
     )
-    
+
     sample_rate = 48000
 
     model.eval()

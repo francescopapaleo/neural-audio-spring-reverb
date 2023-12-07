@@ -24,7 +24,7 @@ def evaluate_model(args):
     model, _, _, config, rf, params = load_model_checkpoint(args)
 
     # Initialize WandB logger
-    wandb.init(project='neural-audio-spring-reverb', name=config["name"])
+    wandb.init(project="neural-audio-spring-reverb", name=config["name"])
 
     # Define metrics
     mae = torch.nn.L1Loss()
@@ -74,13 +74,19 @@ def evaluate_model(args):
     # Get the condition tensor
     if config["cond_dim"] > 0:
         c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
-        c = torch.tensor(c_values, device=args.device, requires_grad=False).view(1, -1).repeat(config["batch_size"], 1)
+        c = (
+            torch.tensor(c_values, device=args.device, requires_grad=False)
+            .view(1, -1)
+            .repeat(config["batch_size"], 1)
+        )
     else:
         c = None
 
     model.eval()
     with torch.no_grad():
-        for step, (dry, wet) in enumerate(tqdm(test_loader, total=num_batches, desc="Processing batches")):
+        for step, (dry, wet) in enumerate(
+            tqdm(test_loader, total=num_batches, desc="Processing batches")
+        ):
             start_time = datetime.now()
             global_step = step + 1
 
