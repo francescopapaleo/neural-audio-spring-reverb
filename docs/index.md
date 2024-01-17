@@ -4,8 +4,15 @@ title: Home
 permalink: /
 ---
 
-<h2>Abstract</h2>
+<center>
+<h2>
+<a href="https://github.com/francescopapaleo/neural-audio-spring-reverb">Code</a> |
+<a href="file:///Users/fra/Downloads/Francesco-Papaleo-Master-Thesis-2023.pdf">PDF</a>
+</h2>
+</center>
 
+
+<h2>Abstract</h2>
 <p>Virtual analog modeling emulates the processing characteristics of a given physical device. This has been an active
     field of research and commercial innovation in which two main perspectives have been historically adopted. The first
     one: <strong>white-box</strong>, seeks to reproduce the exact behavior through algorithmic simulation of circuits or

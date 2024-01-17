@@ -11,7 +11,7 @@ description: >
 header_pages:
   - index.md
   - about.md
-  - references.md
+  - resources.md
 
 theme: minima
 
@@ -23,4 +23,3 @@ minima:
   social_links:
     - { platform: github,  user_url: "https://github.com/francescopapaleo" }
     - { platform: linkedin, user_url: "https://www.linkedin.com/in/francescopapaleo/" }
-    - {platform: google_scholar, user_url: "https://scholar.google.com/citations?user=sTf2rzcAAAAJ&hl=en"}

@@ -1,3 +1,5 @@
+# ./main.py
+
 import os
 import torch
 from argparse import ArgumentParser
@@ -40,7 +42,7 @@ def main():
     parser.add_argument(
         "--data_dir",
         type=str,
-        default="data/raw",
+        default="data/raw/",
         help="Where the data will be downloaded to",
     )
     parser.add_argument(
