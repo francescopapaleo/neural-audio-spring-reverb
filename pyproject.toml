@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "neural-audio-spring-reverb"
+version = "0.4.0"
+description = "Neural Audio Effect Modelling Strategies for a Spring Reverb"
+authors = [{name = "Francesco Papaleo"}]
+license = {file = "LICENSE"}
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "auraloss==0.4.0",
+    "h5py==3.9.0",
+    "matplotlib==3.7.2",
+    "numpy==1.24.3",
+    "PyYAML==6.0.1",
+    "scipy==1.11.2",
+    "setuptools==65.5.0",
+    "torch==2.0.1",
+    "torchaudio==2.0.2",
+    "torchinfo==1.8.0",
+    "neutone_sdk==1.4.2",
+    "wandb==0.16.0"
+]
+
+[project.urls]
+homepage = "https://github.com/francescopapaleo/neural-audio-spring-reverb"
+repository = "https://github.com/francescopapaleo/neural-audio-spring-reverb"
+documentation = "https://github.com/francescopapaleo/neural-audio-spring-reverb/docs"
+
+[tool.hatch.metadata]
+# Specify the source directory (where your package code is)
+packages = [{include = "neural_audio_spring_reverb", from = "src"}]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
