@@ -26,8 +26,8 @@ def evaluate_model(args):
     model, _, _, config, rf, params = load_model_checkpoint(args)
 
     # Initialize WandB logger
-    wandb.init(project="neural-audio-spring-reverb", name=config["name"])
-
+    wandb.init(project="neural-audio-spring-reverb", name=config["name"], job_type="eval", config=config)
+    
     # Define metrics
     mae = torch.nn.L1Loss()
     esr = auraloss.time.ESRLoss()

@@ -70,7 +70,7 @@ def train_model(args):
     label = f"{config['name']}-{timestamp}-{sr_tag}"
 
     # Initialize WandB logger
-    wandb.init(project="neural-audio-spring-reverb", name=label)
+    wandb.init(project="neural-audio-spring-reverb", name=label, job_type="train", config=config)
 
     # Define loss function
     mae = torch.nn.L1Loss().to(args.device)

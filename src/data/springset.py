@@ -147,7 +147,10 @@ def peak_normalize(tensor):
 TRANSFORMS = [correct_dc_offset, peak_normalize]
 
 
-def load_springset(datadir, batch_size, train_ratio, num_workers=0):
+def load_springset(datadir,
+                   batch_size,
+                   train_ratio=0.6,
+                   num_workers=4):
     """Load and split the dataset"""
     trainset = SpringDataset(root_dir=datadir, split="train", transforms=TRANSFORMS)
     train_size = int(train_ratio * len(trainset))
