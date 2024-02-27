@@ -42,12 +42,6 @@ def train_model(args):
             )
             scheduler.load_state_dict(scheduler_state_dict)
 
-    # Step 3: Update Configuration with CLI arguments
-    if args.sample_rate is not None:
-        config["sample_rate"] = args.sample_rate
-    if args.bit_depth is not None:
-        config["bit_depth"] = args.bit_depth
-
     # Else, get configuration from the config file
     elif args.init is not None:
         config_file_path = Path(args.init)
@@ -58,6 +52,15 @@ def train_model(args):
         config = parse_config(config_file_path)
 
         print(f"Using configuration {config['name']}")
+
+
+        # Update Configuration with CLI arguments
+        if args.dataset is not None:
+            config["dataset"] = args.dataset
+        if args.sample_rate is not None:
+            config["sample_rate"] = args.sample_rate
+        if args.bit_depth is not None:
+            config["bit_depth"] = args.bit_depth
 
         model, rf, params = initialize_model(args.device, config)
         optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])

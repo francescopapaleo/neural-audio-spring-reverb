@@ -10,7 +10,7 @@ configs_dir="configs/"
 for config in "$configs_dir"/*.yaml; do
     # Call your test script with the checkpoint file as an argument
     
-    python main.py train --init "$config" --dataset springset --sample_rate 16000 --bit_depth 16
+    nafxsr train --init "$config" --dataset springset --sample_rate 16000 --bit_depth 16
     printf "Done.\n\n"
 
 done
