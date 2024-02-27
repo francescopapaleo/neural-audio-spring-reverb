@@ -1,3 +1,4 @@
 *.ipynb linguist-detectable=false
 *.zip filter=lfs diff=lfs merge=lfs -text
 *.nm filter=lfs diff=lfs merge=lfs -text
+.git_archival.txt  export-subst
