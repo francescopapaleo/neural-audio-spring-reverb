@@ -6,7 +6,6 @@ from datetime import datetime
 from neural_audio_spring_reverb.networks.tcn import TCN
 from neural_audio_spring_reverb.networks.wavenet import WaveNet
 from neural_audio_spring_reverb.networks.gru import GRU
-from neural_audio_spring_reverb.networks.gcn_tfilm import GCNTFiLM
 from neural_audio_spring_reverb.networks.lstm import LSTM
 from neural_audio_spring_reverb.networks.gcn import GCN
 
@@ -46,7 +45,6 @@ def initialize_model(device, config):
         "WaveNet": WaveNet,
         "GRU": GRU,
         "GCN": GCN,
-        "GCNTFiLM": GCNTFiLM,
     }
 
     model_params = {
@@ -97,17 +95,6 @@ def initialize_model(device, config):
             "use_skip",
             "kernel_size",
             "cond_dim",
-        },
-        "GCNTFiLM": {
-            "in_ch",
-            "out_ch",
-            "n_blocks",
-            "n_channels",
-            "dilation_growth",
-            "kernel_size",
-            "cond_dim",
-            "rnn_block_size",
-            "rnn_type",
         },
     }
 

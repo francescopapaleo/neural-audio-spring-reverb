@@ -89,6 +89,20 @@ def main():
     )
 
     parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=32,
+        help="The batch size to use for training (default: 32)",
+    )
+
+    parser.add_argument(
+        "--num_workers",
+        type=int,
+        default=4,
+        help="The number of workers to use for data loading (default: 4)",
+    )
+
+    parser.add_argument(
         "-c",
         "--checkpoint",
         type=str,

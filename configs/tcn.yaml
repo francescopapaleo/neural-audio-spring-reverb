@@ -10,9 +10,6 @@ lr: 0.001
 lr_scheduler: ReduceLROnPlateau
 lr_patience: 20
 
-batch_size: 8
-num_workers: 4
-
 max_epochs: 1000
 early_stop_patience: 100
 current_epoch: 0

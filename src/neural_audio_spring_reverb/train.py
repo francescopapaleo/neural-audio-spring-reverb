@@ -21,6 +21,7 @@ from .networks.model_utils import (
 
 
 def train_model(args):
+    torch.autograd.set_detect_anomaly(True)
     # If there's a checkpoint, resume training and load it first
     if args.checkpoint is not None:
         (
@@ -61,6 +62,10 @@ def train_model(args):
             config["sample_rate"] = args.sample_rate
         if args.bit_depth is not None:
             config["bit_depth"] = args.bit_depth
+        if args.batch_size is not None:
+            config["batch_size"] = args.batch_size
+        if args.num_workers is not None:
+            config["num_workers"] = args.num_workers
 
         model, rf, params = initialize_model(args.device, config)
         optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])
@@ -118,7 +123,6 @@ def train_model(args):
             args.data_dir,
             batch_size=config["batch_size"],
             num_workers=config["num_workers"],
-
         )
 
     elif config["dataset"] == "springset":
@@ -268,24 +272,24 @@ def train_model(args):
             {"train/final": final_train_loss, "train/final_valid": final_valid_loss}
         )
 
-        if pre_emphasis is not None:
-            pred = F.deemphasis(pred, float(pre_emphasis))
+        # if pre_emphasis is not None:
+        #     pred = F.deemphasis(pred, float(pre_emphasis))
 
-        pred = F.highpass_biquad(pred, config["sample_rate"], 10)
-        target = F.highpass_biquad(target, config["sample_rate"], 10)
+        # pred = F.highpass_biquad(pred, config["sample_rate"], 10)
+        # target = F.highpass_biquad(target, config["sample_rate"], 10)
 
-        pred = pred.view(-1).unsqueeze(0).cpu()
-        target = target.view(-1).unsqueeze(0).cpu()
+        # pred = pred.view(-1).unsqueeze(0).cpu()
+        # target = target.view(-1).unsqueeze(0).cpu()
 
-        target /= torch.max(torch.abs(target))
-        pred /= torch.max(torch.abs(pred))
+        # target /= torch.max(torch.abs(target))
+        # pred /= torch.max(torch.abs(pred))
 
-        os.makedirs(f"{args.audio_dir}/train", exist_ok=True)
+        # os.makedirs(f"{args.audio_dir}/train", exist_ok=True)
 
-        save_out = f"{args.audio_dir}/train/pred-{label}.wav"
-        torchaudio.save(save_out, pred, sample_rate=config["sample_rate"], bits_per_sample=config["bit_depth"])
+        # save_out = f"{args.audio_dir}/train/pred-{label}.wav"
+        # torchaudio.save(save_out, pred, sample_rate=config["sample_rate"], bits_per_sample=config["bit_depth"])
 
-        save_target = f"{args.audio_dir}/train/targ-{label}.wav"
-        torchaudio.save(save_target, target, sample_rate=config["sample_rate"], bits_per_sample=config["bit_depth"])
+        # save_target = f"{args.audio_dir}/train/targ-{label}.wav"
+        # torchaudio.save(save_target, target, sample_rate=config["sample_rate"], bits_per_sample=config["bit_depth"])
 
         wandb.finish()

@@ -17,18 +17,18 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "auraloss==0.4.0",
-    "h5py==3.9.0",
-    "matplotlib==3.7.2",
-    "numpy==1.24.3",
-    "PyYAML==6.0.1",
-    "scipy==1.11.2",
-    "setuptools==65.5.0",
+    "auraloss",
+    "h5py",
+    "matplotlib",
+    "numpy",
+    "PyYAML",
+    "scipy",
+    "setuptools",
     "torch",
     "torchaudio",
-    "torchinfo==1.8.0",
-    "neutone_sdk==1.4.2",
-    "wandb==0.16.0",
+    "torchinfo",
+    "neutone_sdk",
+    "wandb",
     "librosa",
 ]
 
