@@ -1,5 +1,5 @@
-name: WaveNet
-model_type: WaveNet
+name: GCN-3
+model_type: GCN-3
 
 criterion1: stft
 pre_emphasis: null
@@ -17,15 +17,13 @@ current_epoch: 0
 min_valid_loss: null
 
 cond_dim: 2
-c0: 0.0
-c1: 0.0
+c0 : 0.0
+c1 : 0.0
 
-# WaveNet
 in_ch: 1
 out_ch: 1
+n_channels: 32
 n_blocks: 2
-n_stacks: 5
-n_channels: 16
-dilation_growth: 10
+dilation_growth: 512
 kernel_size: 3
 

@@ -6,12 +6,12 @@ pre_emphasis: null
 criterion2: smooth
 
 optimizer: Adam
-lr: 0.001
+lr: 0.01
 lr_scheduler: ReduceLROnPlateau
-lr_patience: 20
+lr_patience: 10
 
-max_epochs: 1000
-early_stop_patience: 100
+max_epochs: 500
+early_stop_patience: 50
 current_epoch: 0
 
 min_valid_loss: null

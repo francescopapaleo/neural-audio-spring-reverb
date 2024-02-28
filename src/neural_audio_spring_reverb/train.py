@@ -82,15 +82,7 @@ def train_model(args):
     sr_tag = str(int(config["sample_rate"] / 1000)) + "kHz"
     # label = f"{sr_tag}-{config['name']}-{config['criterion1']}+{config['criterion2']}"
     label = f"{config['name']}-{args.dataset}-{timestamp}-{sr_tag}"
-
-    # Initialize WandB logger
-    wandb.init(
-        project="neural-audio-spring-reverb",
-        name=label,
-        job_type="train",
-        config=config,
-    )
-
+    
     # Define loss function
     mae = torch.nn.L1Loss().to(args.device)
     dc = auraloss.time.DCLoss().to(args.device)
@@ -146,14 +138,6 @@ def train_model(args):
     else:
         min_valid_loss = config["min_valid_loss"]
 
-    current_epoch = config["current_epoch"]
-    max_epochs = config["max_epochs"]
-    patience_count = 0
-
-    print(f"Training model for {max_epochs} epochs, current epoch {current_epoch}")
-    avg_train_loss = np.inf
-    avg_valid_loss = np.inf
-
     # Get the condition tensor
     if config["cond_dim"] > 0:
         c_values = [config.get(f"c{i}", 0.0) for i in range(config["cond_dim"])]
@@ -165,7 +149,24 @@ def train_model(args):
     else:
         c = None
 
+    current_epoch = config["current_epoch"]
+    max_epochs = config["max_epochs"]
+    patience_count = 0
+
+    print(f"Training model for {max_epochs} epochs, current epoch {current_epoch}")
+    avg_train_loss = np.inf
+    avg_valid_loss = np.inf
+
+    # Initialize WandB logger
+    run = wandb.init(
+        project="neural-audio-spring-reverb",
+        name=label,
+        job_type="train",
+        config=config,
+    )
+
     try:
+
         for epoch in range(current_epoch, max_epochs):
             train_loss = 0.0
 
@@ -202,7 +203,7 @@ def train_model(args):
                 wandb.log({"train/learning_rate": lr}, step=current_epoch)
 
             avg_train_loss = train_loss / len(train_loader)
-            wandb.log({"train/loss_train": avg_train_loss}, step=epoch)
+            wandb.log({"train/loss_train": avg_train_loss}, step=current_epoch)
 
             model.eval()
             valid_loss = 0.0
@@ -261,6 +262,7 @@ def train_model(args):
                     break
 
             current_epoch += 1
+            wandb.config.update({"current_epoch": current_epoch}, allow_val_change=True)
 
     except KeyboardInterrupt:
         print("\nTraining manually stopped by user. Processing the results...")
@@ -268,9 +270,8 @@ def train_model(args):
     finally:
         final_train_loss = float(avg_train_loss)
         final_valid_loss = float(avg_valid_loss)
-        wandb.log(
-            {"train/final": final_train_loss, "train/final_valid": final_valid_loss}
-        )
+        wandb.log({"train/final": final_train_loss}, step=current_epoch)
+        wandb.log({"train/final_valid": final_valid_loss}, step=current_epoch)
 
         # if pre_emphasis is not None:
         #     pred = F.deemphasis(pred, float(pre_emphasis))
