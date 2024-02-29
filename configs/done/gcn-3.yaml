@@ -1,5 +1,5 @@
 name: GCN-3
-model_type: GCN-3
+model_type: GCN
 
 criterion1: stft
 pre_emphasis: null

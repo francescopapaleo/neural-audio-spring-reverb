@@ -2,10 +2,10 @@ wandb_version: 1
 
 name:
   desc: null
-  value: LSTM
+  value: WaveNet-99
 model_type:
   desc: null
-  value: LSTM
+  value: WaveNet
 criterion1:
   desc: null
   value: stft
@@ -35,7 +35,7 @@ early_stop_patience:
   value: 50
 current_epoch:
   desc: null
-  value: 57
+  value: 213
 min_valid_loss:
   desc: null
   value: null
@@ -48,39 +48,39 @@ c0:
 c1:
   desc: null
   value: 0.0
-input_size:
+in_ch:
   desc: null
   value: 1
-hidden_size:
+out_ch:
+  desc: null
+  value: 1
+n_blocks:
+  desc: null
+  value: 2
+n_stacks:
+  desc: null
+  value: 2
+n_channels:
   desc: null
   value: 16
-n_layers:
+dilation_growth:
   desc: null
-  value: 4
-output_size:
-  desc: null
-  value: 1
-dropout_prob:
-  desc: null
-  value: 0.5
-use_skip:
-  desc: null
-  value: true
+  value: 10
 kernel_size:
   desc: null
-  value: 3
+  value: 99
 dataset:
   desc: null
-  value: egfxset
+  value: springset
 sample_rate:
   desc: null
-  value: 48000
+  value: 16000
 bit_depth:
   desc: null
-  value: 24
+  value: 16
 batch_size:
   desc: null
-  value: 16
+  value: 64
 num_workers:
   desc: null
   value: 16
@@ -92,7 +92,7 @@ _wandb:
     framework: torch
     is_jupyter_run: false
     is_kaggle_kernel: false
-    start_time: 1709158301.48475
+    start_time: 1709193943.965648
     t:
       1:
       - 1

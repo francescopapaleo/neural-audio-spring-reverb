@@ -2,10 +2,10 @@ wandb_version: 1
 
 name:
   desc: null
-  value: LSTM
+  value: GCN-3
 model_type:
   desc: null
-  value: LSTM
+  value: GCN
 criterion1:
   desc: null
   value: stft
@@ -35,7 +35,7 @@ early_stop_patience:
   value: 50
 current_epoch:
   desc: null
-  value: 57
+  value: 203
 min_valid_loss:
   desc: null
   value: null
@@ -48,39 +48,36 @@ c0:
 c1:
   desc: null
   value: 0.0
-input_size:
+in_ch:
   desc: null
   value: 1
-hidden_size:
-  desc: null
-  value: 16
-n_layers:
-  desc: null
-  value: 4
-output_size:
+out_ch:
   desc: null
   value: 1
-dropout_prob:
+n_channels:
   desc: null
-  value: 0.5
-use_skip:
+  value: 32
+n_blocks:
   desc: null
-  value: true
+  value: 2
+dilation_growth:
+  desc: null
+  value: 512
 kernel_size:
   desc: null
   value: 3
 dataset:
   desc: null
-  value: egfxset
+  value: springset
 sample_rate:
   desc: null
-  value: 48000
+  value: 16000
 bit_depth:
   desc: null
-  value: 24
+  value: 16
 batch_size:
   desc: null
-  value: 16
+  value: 64
 num_workers:
   desc: null
   value: 16
@@ -92,7 +89,7 @@ _wandb:
     framework: torch
     is_jupyter_run: false
     is_kaggle_kernel: false
-    start_time: 1709158301.48475
+    start_time: 1709187989.648352
     t:
       1:
       - 1

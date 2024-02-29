@@ -1,4 +1,4 @@
-name: TCN
+name: TCN-99
 model_type: TCN
 
 criterion1: stft
@@ -23,7 +23,7 @@ c1 : 0.0
 in_ch: 1
 out_ch: 1
 n_channels: 32
-n_layers: 5
+n_layers: 2
 dilation_growth: 14
-kernel_size: 3
+kernel_size: 99
 

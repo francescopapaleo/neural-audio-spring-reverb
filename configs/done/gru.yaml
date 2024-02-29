@@ -1,4 +1,4 @@
-name: GRU
+name: GRU-99
 model_type: GRU
 
 criterion1: stft
@@ -22,11 +22,11 @@ c1 : 0.0
 
 input_size: 1
 hidden_size: 16
-n_layers: 4
+n_layers: 2
 output_size: 1
 dropout_prob: 0.5
 use_skip: True
-kernel_size: 3
+kernel_size: 99
 
 
 

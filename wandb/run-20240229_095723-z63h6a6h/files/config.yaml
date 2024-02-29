@@ -2,10 +2,10 @@ wandb_version: 1
 
 name:
   desc: null
-  value: LSTM
+  value: GRU-99
 model_type:
   desc: null
-  value: LSTM
+  value: GRU
 criterion1:
   desc: null
   value: stft
@@ -35,7 +35,7 @@ early_stop_patience:
   value: 50
 current_epoch:
   desc: null
-  value: 57
+  value: 80
 min_valid_loss:
   desc: null
   value: null
@@ -56,7 +56,7 @@ hidden_size:
   value: 16
 n_layers:
   desc: null
-  value: 4
+  value: 2
 output_size:
   desc: null
   value: 1
@@ -68,7 +68,7 @@ use_skip:
   value: true
 kernel_size:
   desc: null
-  value: 3
+  value: 99
 dataset:
   desc: null
   value: egfxset
@@ -92,7 +92,7 @@ _wandb:
     framework: torch
     is_jupyter_run: false
     is_kaggle_kernel: false
-    start_time: 1709158301.48475
+    start_time: 1709200643.309752
     t:
       1:
       - 1

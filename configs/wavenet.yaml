@@ -1,4 +1,4 @@
-name: WaveNet
+name: WaveNet-99
 model_type: WaveNet
 
 criterion1: stft
@@ -24,8 +24,8 @@ c1: 0.0
 in_ch: 1
 out_ch: 1
 n_blocks: 2
-n_stacks: 5
+n_stacks: 2
 n_channels: 16
 dilation_growth: 10
-kernel_size: 3
+kernel_size: 99
 
