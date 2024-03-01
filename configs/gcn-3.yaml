@@ -25,5 +25,5 @@ out_ch: 1
 n_channels: 32
 n_blocks: 2
 dilation_growth: 512
-kernel_size: 99
+kernel_size: 3
 
