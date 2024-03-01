@@ -1,4 +1,4 @@
-name: GCN-3
+name: GCN-99
 model_type: GCN
 
 criterion1: stft
@@ -25,5 +25,5 @@ out_ch: 1
 n_channels: 32
 n_blocks: 2
 dilation_growth: 512
-kernel_size: 3
+kernel_size: 99
 

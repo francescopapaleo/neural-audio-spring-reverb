@@ -38,4 +38,4 @@ repository = "https://github.com/francescopapaleo/neural-audio-spring-reverb"
 documentation = "https://github.com/francescopapaleo/neural-audio-spring-reverb/docs"
 
 [project.scripts]
-nafxsr = "neural_audio_spring_reverb.__main__:main"
+nafx-springrev = "neural_audio_spring_reverb.__main__:main"
