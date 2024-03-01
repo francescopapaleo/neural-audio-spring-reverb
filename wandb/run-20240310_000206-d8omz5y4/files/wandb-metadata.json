@@ -1,0 +1,132 @@
+{
+    "os": "Linux-5.4.0-172-generic-x86_64-with-glibc2.35",
+    "python": "3.10.13",
+    "heartbeatAt": "2024-03-10T00:02:07.989402",
+    "startedAt": "2024-03-10T00:02:06.782972",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "eval",
+        "--checkpoint",
+        "models/LSTM-99-egfxset-20240229-143142-48kHz.pt"
+    ],
+    "state": "running",
+    "program": "/root/neural-audio-spring-reverb/.venv/bin/nafx-springrev",
+    "codePathLocal": ".venv/bin/nafx-springrev",
+    "codePath": ".venv/bin/nafx-springrev",
+    "git": {
+        "remote": "https://github.com/francescopapaleo/neural-audio-spring-reverb.git",
+        "commit": "3dbf8d877d68911a3171fc5dbca8ed9ac40335b2"
+    },
+    "email": "francesco.papaleo@gmail.com",
+    "root": "/root/neural-audio-spring-reverb",
+    "host": "b9138d24f869",
+    "username": "root",
+    "executable": "/root/neural-audio-spring-reverb/.venv/bin/python3",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 1576.2720625000004,
+        "min": 1500.0,
+        "max": 3100.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1499.38,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1498.7,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1499.733,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1498.974,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 2582.483,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1393.319,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1496.548,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1499.293,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1499.316,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1493.888,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1494.356,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1490.007,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1804.255,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1402.16,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1569.701,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1498.24,
+            "min": 1500.0,
+            "max": 3100.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 16.0,
+            "used": 12.205902099609375
+        }
+    },
+    "gpu": "NVIDIA RTX A5000",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA RTX A5000",
+            "memory_total": 25757220864
+        }
+    ],
+    "memory": {
+        "total": 440.5736999511719
+    }
+}

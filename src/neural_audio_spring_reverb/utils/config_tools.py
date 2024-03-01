@@ -141,7 +141,7 @@ def print_models(args):
                     rf = None
                 f.write("\n")
                 f.write(f"Model architecture:\n")
-                model_report = summary(model, input_size=[(1, 1, 96000), (1, 3)])
+                model_report = summary(model, input_size=[(1, 1, 96000), (1, 2)])
                 f.write(str(model_report))
                 f.write("\n")
                 print("\n\n")

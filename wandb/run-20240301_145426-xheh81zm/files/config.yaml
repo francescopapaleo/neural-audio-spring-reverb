@@ -1,0 +1,116 @@
+wandb_version: 1
+
+name:
+  desc: null
+  value: WaveNet-99
+model_type:
+  desc: null
+  value: WaveNet
+criterion1:
+  desc: null
+  value: stft
+pre_emphasis:
+  desc: null
+  value: null
+criterion2:
+  desc: null
+  value: smooth
+optimizer:
+  desc: null
+  value: Adam
+lr:
+  desc: null
+  value: 0.01
+lr_scheduler:
+  desc: null
+  value: ReduceLROnPlateau
+lr_patience:
+  desc: null
+  value: 10
+max_epochs:
+  desc: null
+  value: 500
+early_stop_patience:
+  desc: null
+  value: 50
+current_epoch:
+  desc: null
+  value: 163
+min_valid_loss:
+  desc: null
+  value: 1.1793627738952637
+cond_dim:
+  desc: null
+  value: 2
+c0:
+  desc: null
+  value: 0.0
+c1:
+  desc: null
+  value: 0.0
+in_ch:
+  desc: null
+  value: 1
+out_ch:
+  desc: null
+  value: 1
+n_blocks:
+  desc: null
+  value: 2
+n_stacks:
+  desc: null
+  value: 2
+n_channels:
+  desc: null
+  value: 16
+dilation_growth:
+  desc: null
+  value: 10
+kernel_size:
+  desc: null
+  value: 99
+dataset:
+  desc: null
+  value: springset
+sample_rate:
+  desc: null
+  value: 16000
+bit_depth:
+  desc: null
+  value: 16
+batch_size:
+  desc: null
+  value: 64
+num_workers:
+  desc: null
+  value: 16
+timestamp:
+  desc: null
+  value: 20240229-092928
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.13
+    cli_version: 0.16.3
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1709304866.699861
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 53
+      - 55
+      3:
+      - 2
+      - 13
+      - 16
+      - 23
+      4: 3.10.13
+      5: 0.16.3
+      8:
+      - 5
+      13: linux-x86_64
