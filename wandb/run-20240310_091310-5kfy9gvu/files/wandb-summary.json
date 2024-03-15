@@ -1,0 +1,1 @@
+{"train/learning_rate": 1.0000000000000004e-08, "_timestamp": 1710064311.5893207, "train/loss_train": 1.1172069549560546, "train/loss_valid": 1.1344176828861237, "_runtime": 2321.4976296424866, "_step": 101, "_wandb": {"runtime": 2320}, "train/final": 1.1172069549560546, "train/final_valid": 1.1344176828861237}
