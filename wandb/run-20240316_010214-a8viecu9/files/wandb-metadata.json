@@ -1,0 +1,48 @@
+{
+    "os": "macOS-12.7.3-x86_64-i386-64bit",
+    "python": "3.10.13",
+    "heartbeatAt": "2024-03-16T00:02:14.644405",
+    "startedAt": "2024-03-16T00:02:14.079703",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "eval",
+        "--checkpoint",
+        "models/GRU-99-egfxset-20240229-095722-48kHz.pt"
+    ],
+    "state": "running",
+    "program": "/Users/fra/.pyenv/versions/3.10.13/bin/nafx-springrev",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/francescopapaleo/neural-audio-spring-reverb.git",
+        "commit": "5782b810f00d0cdfdb7c1ec8d3341076f4d0b8a2"
+    },
+    "email": "francesco.papaleo@gmail.com",
+    "root": "/Users/fra/development/neural-audio-spring-reverb",
+    "host": "retina.home",
+    "username": "fra",
+    "executable": "/Users/fra/.pyenv/versions/3.10.13/bin/python3.10",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 2200,
+        "min": 2200,
+        "max": 2200
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2200,
+            "min": 2200,
+            "max": 2200
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 233.5667953491211,
+            "used": 14.354717254638672
+        }
+    },
+    "memory": {
+        "total": 16.0
+    }
+}

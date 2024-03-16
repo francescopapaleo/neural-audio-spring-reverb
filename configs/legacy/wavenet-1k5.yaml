@@ -30,4 +30,3 @@ num_channels: 16
 dilation_depth: 10
 num_repeat: 5
 kernel_size: 5
-
