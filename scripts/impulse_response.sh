@@ -12,7 +12,7 @@ for checkpoint in "$checkpoints_dir"/*.pt; do
     printf "Measuring IRs: %s\n" "$checkpoint"
     
     # for impulse response measurement uncomment the line below
-    python main.py ir --checkpoint "$checkpoint"
+    python nafx-springrev ir --checkpoint "$checkpoint"
 done
 
 printf "Done!\n"

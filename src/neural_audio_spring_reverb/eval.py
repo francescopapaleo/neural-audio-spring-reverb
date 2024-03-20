@@ -57,19 +57,19 @@ def evaluate_model(args):
         _, _, test_loader = load_egfxset(
             args.data_dir,
             batch_size=config["batch_size"],
-            num_workers=config["num_workers"],
+            num_workers=args.num_workers,
         )
     elif config["dataset"] == "springset":
         _, _, test_loader = load_springset(
             args.data_dir,
             batch_size=config["batch_size"],
-            num_workers=config["num_workers"],
+            num_workers=args.num_workers,
         )
     elif config["dataset"] == "customset":
         _, _, test_loader = load_customset(
             args.data_dir,
             batch_size=config["batch_size"],
-            num_workers=config["num_workers"],
+            num_workers=args.num_workers,
         )
     else:
         raise ValueError("Dataset not found, options are: egfxset or springset")
