@@ -23,6 +23,7 @@ def main():
             "ir",
             "rt60",
             "wrap",
+            "rtf"
         ],
         help="The action to perform, check the doc.",
     )
@@ -172,6 +173,11 @@ def main():
         from .wrapper import wrap_model
 
         wrap_model(args)
+
+    elif args.action == "rtf":
+        from .rtf import measure_rtf
+
+        measure_rtf(args)
 
 
 if __name__ == "__main__":

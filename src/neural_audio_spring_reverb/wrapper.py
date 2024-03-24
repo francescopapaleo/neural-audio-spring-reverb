@@ -98,7 +98,7 @@ class GCNModelWrapper(WaveformToWaveformBase):
             NeutoneParameter("depth", "Modulation Depth", 0.5),
             NeutoneParameter("FiLM1", "Feature modulation 1", 0.0),
             NeutoneParameter("FiLM2", "Feature modulation 2", 0.0),
-            NeutoneParameter("FiLM3", "Feature modulation 3", 0.0),
+            # NeutoneParameter("FiLM3", "Feature modulation 3", 0.0),
         ]
 
     @torch.jit.export
@@ -121,10 +121,10 @@ class GCNModelWrapper(WaveformToWaveformBase):
         # conditioning for FiLM layer
         p1 = params["FiLM1"]
         p2 = params["FiLM2"]
-        p3 = params["FiLM3"]
+        # p3 = params["FiLM3"]
         depth = params["depth"]
-        cond = torch.stack([p1, p2, p3], dim=1) * depth
-        cond = cond.expand(x.shape[0], 3)
+        cond = torch.stack([p1, p2], dim=1) * depth
+        cond = cond.expand(x.shape[0], 2)
 
         # forward pass
         x = x.unsqueeze(1)
