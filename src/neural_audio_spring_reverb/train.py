@@ -21,7 +21,9 @@ from .networks.model_utils import (
 
 
 def train_model(args):
+    torch.cuda.empty_cache()
     torch.autograd.set_detect_anomaly(True)
+
     # If there's a checkpoint, resume training and load it first
     if args.checkpoint is not None:
         (
@@ -68,6 +70,7 @@ def train_model(args):
             config["num_workers"] = args.num_workers
 
         model, rf, params = initialize_model(args.device, config)
+        config["params"] = params
         optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, "min", patience=config["lr_patience"], verbose=True
@@ -76,6 +79,8 @@ def train_model(args):
         raise ValueError(
             "Either a checkpoint or a configuration file must be specified."
         )
+    
+
 
     # Get the timestamp and label for the run
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")

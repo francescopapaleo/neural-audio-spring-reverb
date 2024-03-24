@@ -1,0 +1,1 @@
+{"params": 61312, "receptive_field": 8323, "_timestamp": 1711295763.5327363, "_runtime": 51.029088258743286, "_step": 1, "_wandb": {"runtime": 50}, "train/final": 1.6506048345565796, "train/final_valid": 2.2999474108219147}

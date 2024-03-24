@@ -8,6 +8,8 @@ import wandb
 import auraloss
 from datetime import datetime
 from pathlib import Path
+import time
+
 
 from .data.egfxset import load_egfxset
 from .data.springset import load_springset
@@ -18,7 +20,7 @@ from tqdm import tqdm
 
 def evaluate_model(args):
     print("Evaluating model...")
-    print(f"Using backend: {torchaudio.get_audio_backend()}")
+    # print(f"Using backend: {torchaudio.get_audio_backend()}")
 
     # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
     # torch.cuda.empty_cache()
@@ -51,6 +53,9 @@ def evaluate_model(args):
     test_results = {"eval/mae": [], "eval/esr": [], "eval/dc": [], "eval/mrstft": []}
 
     rtf_list = []
+
+    # config["batch_size"] = 16
+    # print(f"Sample rate: {config['sample_rate']} Hz")
 
     # Load data
     if config["dataset"] == "egfxset":
@@ -94,19 +99,20 @@ def evaluate_model(args):
         for step, (dry, wet) in enumerate(
             tqdm(test_loader, total=num_batches, desc="Processing batches")
         ):
-            start_time = datetime.now()
+            # start_time = datetime.now()
+            start_time = time.perf_counter()
             global_step = step + 1
 
             input = dry.to(args.device)
             target = wet.to(args.device)
-
             pred = model(input, c)
 
-            end_time = datetime.now()
+            # end_time = datetime.now()
+            end_time = time.perf_counter()
             duration = end_time - start_time
-            num_samples = input.size(-1) * config["batch_size"]
-            lenght_in_seconds = num_samples / config["sample_rate"]
-            rtf = duration.total_seconds() / lenght_in_seconds
+            num_samples = input.size(-1)
+            length_in_seconds = num_samples / config["sample_rate"]
+            rtf = duration / length_in_seconds
             rtf_list.append(rtf)
 
             # Compute metrics means for current batch

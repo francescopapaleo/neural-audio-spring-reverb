@@ -4,6 +4,7 @@ import os
 from random import sample
 from pathlib import Path
 from datetime import datetime
+import time
 
 from .networks.model_utils import load_model_checkpoint
 
@@ -50,17 +51,21 @@ def make_inference(args) -> torch.Tensor:
 
     model.eval()
     with torch.no_grad():
-        start_time = datetime.now()
+        # start_time = datetime.now()
+        start_time = time.perf_counter()
 
         # Process audio with the pre-trained model
         pred = model(input, c)
 
-        end_time = datetime.now()
+        # end_time = datetime.now()
+        end_time = time.perf_counter()
+
         duration = end_time - start_time
         num_samples = input.size(-1)
         length_in_seconds = num_samples / config["sample_rate"]
-        rtf = duration.total_seconds() / length_in_seconds
-        print(f"RTF: {rtf}")
+        # rtf = duration.total_seconds() / length_in_seconds
+        rtf = duration / length_in_seconds
+        print(f"RTF: {rtf:.3f}")
 
     # Normalize
     pred /= pred.abs().max()

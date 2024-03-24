@@ -1,0 +1,116 @@
+wandb_version: 1
+
+name:
+  desc: null
+  value: LSTM
+model_type:
+  desc: null
+  value: LSTM
+criterion1:
+  desc: null
+  value: stft
+pre_emphasis:
+  desc: null
+  value: null
+criterion2:
+  desc: null
+  value: smooth
+optimizer:
+  desc: null
+  value: Adam
+lr:
+  desc: null
+  value: 0.01
+lr_scheduler:
+  desc: null
+  value: ReduceLROnPlateau
+lr_patience:
+  desc: null
+  value: 10
+max_epochs:
+  desc: null
+  value: 500
+early_stop_patience:
+  desc: null
+  value: 50
+current_epoch:
+  desc: null
+  value: 7
+min_valid_loss:
+  desc: null
+  value: 1.1979975551366806
+cond_dim:
+  desc: null
+  value: 2
+c0:
+  desc: null
+  value: 0.0
+c1:
+  desc: null
+  value: 0.0
+input_size:
+  desc: null
+  value: 1
+hidden_size:
+  desc: null
+  value: 16
+n_layers:
+  desc: null
+  value: 4
+output_size:
+  desc: null
+  value: 1
+dropout_prob:
+  desc: null
+  value: 0.5
+use_skip:
+  desc: null
+  value: true
+kernel_size:
+  desc: null
+  value: 3
+dataset:
+  desc: null
+  value: egfxset
+sample_rate:
+  desc: null
+  value: 48000
+bit_depth:
+  desc: null
+  value: 24
+batch_size:
+  desc: null
+  value: 16
+num_workers:
+  desc: null
+  value: 16
+timestamp:
+  desc: null
+  value: 20240228-222917
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.13
+    cli_version: 0.16.4
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1711307671.0
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 53
+      - 55
+      3:
+      - 2
+      - 13
+      - 16
+      - 23
+      4: 3.10.13
+      5: 0.16.4
+      8:
+      - 5
+      13: linux-x86_64

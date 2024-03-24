@@ -23,12 +23,15 @@ def plot_waterfall(waveform, title, sample_rate, args, stride=1):
         scaling="spectrum",
         mode="magnitude",
     )
+
+    # Sxx_dBFS = 10 * np.log10(np.fmax(Sxx, 1e-9))
     # Convert magnitude to dB
-    Sxx_dBFS = 20 * np.log10(
+    Sxx_dBFS = 10 * np.log10(
         Sxx / 1.0 + np.finfo(float).eps
-    )  # Assuming Sxx is normalized
+    )
 
     fig = plt.figure(figsize=(10, 10))
+
     ax = fig.add_subplot(111, projection="3d")
 
     X, Y = np.meshgrid(frequencies, times[::stride])
@@ -135,12 +138,12 @@ def measure_model_ir(args):
     impulse_response = signal.convolve(
         sweep_output, inverse_filter, mode="full", method="direct"
     )
-    print(f"IR: {impulse_response.shape}")
+    # print(f"IR: {impulse_response.shape}")
 
     # Normalize the impulse response
     impulse_response = impulse_response - np.mean(impulse_response)
     impulse_response /= np.max(np.abs(impulse_response))
-    print(f"ir:{impulse_response.max(), impulse_response.min()}")
+    # print(f"ir:{impulse_response.max(), impulse_response.min()}")
 
     # Plot spectrogram
     spectra_file = Path(args.plots_dir) / f"IR_{Path(args.checkpoint).stem}.png"
@@ -158,7 +161,7 @@ def measure_model_ir(args):
     plot_waterfall(impulse_response, waterfall_file, config["sample_rate"], args, 1)
 
     ir_tensor = torch.from_numpy(impulse_response).unsqueeze(0).float()
-    print(f"tensor:{ir_tensor.max(),ir_tensor.min()}")
+    # print(f"tensor:{ir_tensor.max(),ir_tensor.min()}")
 
     # Create the directory if it does not exist
     save_directory = Path(args.audio_dir) / "IR_models"
@@ -170,3 +173,4 @@ def measure_model_ir(args):
     print(
         f"Saved measured impulse response to {save_as}, sample rate: {config['sample_rate']}, bit depth: {config['bit_depth']}"
     )
+    print("----------------------------------")

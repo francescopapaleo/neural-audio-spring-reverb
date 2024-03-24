@@ -12,7 +12,7 @@ for checkpoint in "$checkpoints_dir"/*.pt; do
     printf "Measuring IRs: %s\n" "$checkpoint"
     
     # for impulse response measurement uncomment the line below
-    nafx-springrev ir --checkpoint "$checkpoint"
+    nafx-springrev ir --checkpoint "$checkpoint" --device cpu
 done
 
 printf "Done!\n"
