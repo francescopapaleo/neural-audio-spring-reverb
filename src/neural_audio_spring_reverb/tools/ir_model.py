@@ -165,8 +165,8 @@ def measure_model_ir(args):
     Path(save_directory).mkdir(parents=True, exist_ok=True)
     save_as = f"{save_directory}/{Path(args.checkpoint).stem}_IR.wav"
     torchaudio.save(
-        save_as, ir_tensor, config["sample_rate"], bits_per_sample=config["bit_rate"]
+        save_as, ir_tensor, config["sample_rate"], bits_per_sample=config["bit_depth"]
     )
     print(
-        f"Saved measured impulse response to {save_as}, sample rate: {config['sample_rate']}, bit depth: {config['bit_rate']}"
+        f"Saved measured impulse response to {save_as}, sample rate: {config['sample_rate']}, bit depth: {config['bit_depth']}"
     )

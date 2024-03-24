@@ -10,7 +10,7 @@ checkpoints_dir="models"
 for checkpoint in "$checkpoints_dir"/*.pt; do
     # Call your test script with the checkpoint file as an argument
     
-    python main.py wrap --checkpoint "$checkpoint"
+    nafx-springrev wrap --checkpoint "$checkpoint"
     printf "Done.\n\n"
 
 done
