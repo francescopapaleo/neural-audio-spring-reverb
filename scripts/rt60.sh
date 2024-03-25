@@ -12,7 +12,7 @@ for ir_audio in "$IRs_dir"/*.wav; do
     printf "Measuring RT60: %s\n" "$ir_audio"
     
     # for impulse response measurement uncomment the line below
-    python -m src.tools.rt60 --device cuda:0 --sample_rate 48000 --bit_rate 24 --input "$ir_audio"
+    nafx-springrev rt60 --input "$ir_audio"
     
     done
 

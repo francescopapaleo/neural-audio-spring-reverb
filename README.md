@@ -44,7 +44,7 @@ The CLI is managed in the [``main.py``](main.py) script. From the project root f
 **To download a dataset:**
 
 ```terminal
-python main.py download --dataset DATASET_NAME
+nafx-springrev download --dataset DATASET_NAME
 ```
 
 Where DATASET_NAME can be: 'springset', 'egfxset' or 'customset'. The datasets are downloaded from the [Zenodo](https://zenodo.org/) repository and stored in the [``data/raw``](data/raw/) folder.
@@ -54,13 +54,13 @@ Where DATASET_NAME can be: 'springset', 'egfxset' or 'customset'. The datasets a
 You can start training from scratch from a ``YAML`` configuration file (some are provided in [``configs``](configs/) ) 
 
 ```terminal
-python main.py train --init YAML_CONF_PATH
+nafx-springrev train --init YAML_CONF_PATH
 ```
 
 Alternatively, you can load a pretrained model and resume the training from a checkpoint (``.pt``). If you resume the training from a checkpoint, this will proceed until the current epoch is equal to MAX_EPOCHS.
 
 ```terminal
-python main.py train -c PT_CHECKPOINT_PATH
+nafx-springrev train -c PT_CHECKPOINT_PATH
 ```
 Where PT_CHECKPOINT_PATH is the path to the checkpoint file.
 
@@ -70,7 +70,7 @@ Where PT_CHECKPOINT_PATH is the path to the checkpoint file.
 The given checkpoint is loaded and the model is evaluated on the test set. The results are automatically logged by Tensorboard and stored in the  [``logs/``](logs/) folder.
 
 ```terminal
-python main.py eval -c PT_CHECKPOINT_PATH
+nafx-springrev eval -c PT_CHECKPOINT_PATH
 ```
 
 
@@ -79,7 +79,7 @@ python main.py eval -c PT_CHECKPOINT_PATH
 This action will call a function that loads the model checkpoint and performs the inference on the input audio file. The output is saved in the [``audio/``](audio/) folder.
 
 ```terminal
-python main.py infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
+nafx-springrev infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
 ```
 
 
@@ -125,7 +125,7 @@ python main.py infer -i INPUT_FILE_PATH -c PT_CHECKPOINT_PATH
 
 POSITIONAL ARGUMENTS:
 action     
-'download', 'train', 'eval', 'infer', 'config_tools', 'measure_ir', 'measure_rt60', 'print_models' 
+'download', 'train', 'eval', 'infer', 'config_tools', 'measure_ir', 'measure_rt60', 'report' 
 
 OPTIONAL ARGUMENTS:
 --data_dir      DATA_DIR      datasets download destination folder
@@ -181,7 +181,7 @@ A logaritimic sweep tone is generated and is processed by the model inference, t
 This action will call a function that loads the input audio and computes the RT60 of the signal. A threshold of -5dB is set by default.
 
 ```terminal
-python main.py rt60 -i INPUT_FILE_PATH
+nafx-springrev rt60 -i INPUT_FILE_PATH
 ```
 
 - The plot is saved in the [``plots/``](docs/plots/) folder.
@@ -212,7 +212,7 @@ To access the ``['config_state_dict']`` of a pretrained model, there is an actio
 This action will print the details of all pretrained models available in the [``models``](models/) folder.
 
 ```terminal
-python main.py report
+nafx-springrev report
 ```
 - results are saved in a txt file in the [``logs/``](logs/) folder.
 
