@@ -39,10 +39,10 @@
             "default_value": "0.0"
         },
         "p4": {
-            "name": "FiLM3",
-            "description": "Feature modulation 3",
+            "name": "",
+            "description": "",
             "type": "knob",
-            "used": "True",
+            "used": "False",
             "default_value": "0.0"
         }
     },
@@ -62,5 +62,5 @@
     "look_behind_samples": 0,
     "sdk_version": "1.4.2",
     "pytorch_version": "2.1.2",
-    "date_created": 1711291958.332662
+    "date_created": 1711352233.3585558
 }
