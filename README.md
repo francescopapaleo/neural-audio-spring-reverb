@@ -4,15 +4,21 @@
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Folder structure](#folder-structure)
-- [Command Line Arguments](#command-line-arguments)
-- [Neutone SDK](#neutone-sdk)
-- [Audio Measurement Tools](#audio-measurement-tools)
-- [Utilities](#utilities)
-- [Notebooks](#notebooks)
-- [Citation](#citation)
+- [Neural Audio Spring Reverb](#neural-audio-spring-reverb)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Folder structure](#folder-structure)
+  - [Command Line Arguments](#command-line-arguments)
+  - [Neutone SDK](#neutone-sdk)
+  - [Audio Measurement Tools](#audio-measurement-tools)
+    - [Measure impulse response](#measure-impulse-response)
+    - [Measure RT60](#measure-rt60)
+  - [Utilities](#utilities)
+    - [Print all models details](#print-all-models-details)
+    - [Config Tools](#config-tools)
+  - [Notebooks](#notebooks)
+    - [Citation](#citation)
 
 
 ## Installation
@@ -233,18 +239,21 @@ Some notebooks are provided to visualize the audio feature extraction process fr
 
 
 ### Citation
-
-This repository is part of my thesis project for the MSc in Sound and Music Computing at the Music Technology Group, Universitat Pompeu Fabra, Barcelona (Spain). If you use this code, please consider citing the following:
+If you want to use this work, please consider citing the following paper:
 
 ```bibtex
-@phdthesis{francesco_papaleo_2023_8380480,
-  author       = {Francesco Papaleo},
-  title        = {{Neural Audio Effect Modelling Strategies for a 
-                   Spring Reverb}},
-  school       = {Universitat Pompeu Fabra},
-  year         = 2023,
-  month        = sep,
-  doi          = {10.5281/zenodo.8380480},
-  url          = {https://doi.org/10.5281/zenodo.8380480}
+@inproceedings{DAFx24_paper_77,
+    author = "Papaleo, Francesco and Lizarraga-Seijas, Xavier and Font, Frederic",
+    title = "{Evaluating Neural Networks Architectures for Spring Reverb Modelling}",
+    booktitle = "Proceedings of the 27-th Int. Conf. on Digital Audio Effects (DAFx24)",
+    editor = "De Sena, E. and Mannall, J.",
+    location = "Guildford, Surrey, UK",
+    eventdate = "2024-09-03/2024-09-07",
+    year = "2024",
+    month = "Sept.",
+    publisher = "",
+    issn = "2413-6689",
+    doi = "",
+    pages = ""
 }
 ```
