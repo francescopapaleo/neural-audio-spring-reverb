@@ -1,15 +1,3 @@
----
-layout: base
-title: Home
-permalink: /
----
-
-<center>
-<h2>
-<a href="https://github.com/francescopapaleo/neural-audio-spring-reverb">Code</a> |
-</h2>
-</center>
-
 <h1>Neural Audio Spring Reverb</h1>
 Reverberation is a key element in spatial audio perception, histor- ically achieved with the use of analogue devices, such as plate and spring reverb, and in the last decades with digital signal process- ing techniques that have allowed different approaches for Virtual Analogue Modelling (VAM). The electromechanical functioning of the spring reverb makes it a nonlinear system that is difficult to fully emulate in the digital domain with white-box modelling techniques. In this study, we compare five different neural net- work architectures, including convolutional and recurrent models, to assess their effectiveness in replicating the characteristics of this audio effect. The evaluation is conducted on two datasets at sam- pling rates of 16 kHz and 48 kHz. This paper specifically focuses on neural audio architectures that offer parametric control, aiming to advance the boundaries of current black-box modelling tech- niques in the domain of spring reverberation.
 
