@@ -1,8 +1,8 @@
 ---
+title: Evaluating Neural Networks Architectures for Spring Reverb Modelling
 layout: home
 ---
 
-# Evaluating Neural Networks Architectures for Spring Reverb Modelling
 <center> <h3>WORK IN PROGRESS</h3> </center>
 
 
