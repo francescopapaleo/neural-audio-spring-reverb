@@ -1,10 +1,8 @@
 ---
-layout: base
 title: About
+layout: page
 permalink: /about/
 ---
-
-<h2>About me</h2>
 
 <p>My journey has started as a sound engineer, for over 15 years I have been working in the music industry, on worldwide tours as well as in studio or interactive installations. My approach has always been to merge art and creativity with technology, employing cutting-edge DSP software and hardware to deliver unparalleled auditory experiences in the diverse settings I have worked in.</p>
 
