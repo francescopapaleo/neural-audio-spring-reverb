@@ -50,3 +50,7 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+header_pages:
+  - resources.md
+  - about.md
