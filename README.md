@@ -1,5 +1,7 @@
 # Neural Audio Spring Reverb
 
+This repository is based on the results of a Master's thesis developed at the Music Technology Group (MTG), Universitat Pompeu Fabra (UPF), Barcelona. The work was carried out by Francesco Papaleo and supervised by Xavier Lizarraga. If you use or build upon this work, please consider citing the associated publications listed in the [Acknowledgements](#acknowledgements) and [Citation](#citation) sections.
+
 *This project wants to address the modelling of the spring reverb, using deep neural networks, in particular: CNN (convolutional) and LSTM/GRU (recurrent). The main goal is to investigate the potential of neural networks in modelling such nonlinear time-invariant system, and to compare the results with the state of the art methods.*
 
 ## Table of Contents
@@ -18,6 +20,7 @@
     - [Print all models details](#print-all-models-details)
     - [Config Tools](#config-tools)
   - [Notebooks](#notebooks)
+    - [Acknowledgements](#acknowledgements)
     - [Citation](#citation)
 
 
@@ -237,6 +240,10 @@ python3 main.py edit -c PT_CHECKPOINT_PATH
 
 Some notebooks are provided to visualize the audio feature extraction process from the datasets, they are located in the [notebooks](./notebooks/) folder. The features are available in the [results](./results/) folder. If you want to proceed to the feature extraction yourself, you will need to install the [Essentia](https://essentia.upf.edu/) library.
 
+
+## Acknowledgements
+
+The Master's thesis *Neural Audio Effect Modelling Strategies for a Spring Reverb* by Francesco Papaleo, supervised by Xavier Lizarraga, carried out at the [Music Technology Group (MTG)](https://www.upf.edu/web/mtg/), can be found [here](https://zenodo.org/records/8380480).
 
 ### Citation
 If you want to use this work, please consider citing the following paper:
