@@ -161,3 +161,8 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Local Jekyll build artifacts
+docs/.bundle/
+docs/vendor/
+docs/_site/
